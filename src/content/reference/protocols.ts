@@ -53,7 +53,7 @@ export const PROTOCOLS: Protocol[] = [
   { name: 'IGMP / MLD', full: 'Group management', layer: 'L3', transport: 'IP protocol 2 / ICMPv6', what: 'Hosts join multicast groups (IPTV, market data).' },
   { name: 'IPsec', full: 'IP Security', layer: 'L3', transport: 'ESP (proto 50), AH (51), IKE UDP 500/4500', what: 'Encrypts/authenticates IP packets: site-to-site VPNs, cloud VPN gateways.', rfc: 'RFC 4301' },
   { name: 'GRE', full: 'Generic Routing Encapsulation', layer: 'L3 tunnel', transport: 'IP protocol 47', what: 'Wraps any packet inside IP (simple tunnels).', rfc: 'RFC 2784' },
-  { name: 'VXLAN', full: 'Virtual Extensible LAN', layer: 'L2 over L3', transport: 'UDP 4789', what: 'Carries Ethernet frames across an IP network with a 24-bit VNI (16 M segments). Used in DC fabrics and Kubernetes CNIs.', rfc: 'RFC 7348' },
+  { name: 'VXLAN', full: 'Virtual Extensible LAN', layer: 'L2 over L3', transport: 'UDP 4789', what: 'Carries Ethernet frames across an IP network with a 24-bit VNI (16 M segments). Used in data-center fabrics and cloud networks.', rfc: 'RFC 7348' },
   { name: 'WireGuard', full: 'WireGuard', layer: 'L3 tunnel', transport: 'UDP 51820', what: 'Minimal modern VPN using Curve25519 + ChaCha20-Poly1305.' },
   { name: 'OpenVPN', full: 'OpenVPN', layer: 'L3/L2 tunnel', transport: 'UDP 1194 / TCP', what: 'TLS-based VPN.' },
   // routing

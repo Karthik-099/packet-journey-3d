@@ -61,6 +61,10 @@ function useReading() {
 
 export function Learn() {
   const { active, read } = useReading();
+  // deep links like learn.html#http: the sections render after load, so scroll once they exist
+  useEffect(() => {
+    if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+  }, []);
   const pct = Math.round((read.size / TOC.length) * 100);
   return (
     <div className="site-bg">

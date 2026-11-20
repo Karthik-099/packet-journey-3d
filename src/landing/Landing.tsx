@@ -26,7 +26,7 @@ const FEATURES: { i: IconName; t: string; d: string }[] = [
   { i: 'satellite', t: 'Fiber vs Starlink vs GEO', d: 'Switch your access network and see the physics: ~5 ms per 1,000 km of glass, ~250 ms to a geostationary satellite.' },
   { i: 'gauge', t: 'Latency you can see', d: 'Every step adds its milliseconds. A trip summary shows how far your request travelled there and back.' },
   { i: 'play', t: 'Video mode with narration', d: 'Press play: the camera follows your packet around the planet with subtitles and an optional voice.' },
-  { i: 'cap', t: 'A complete reference', d: '25 protocol deep dives, 120+ ports, every HTTP status code, routing, cloud & Kubernetes networking, interview prep.' },
+  { i: 'cap', t: 'A complete reference', d: '25 protocol deep dives, 110 ports, every HTTP status code, routing, cables and satellites, cloud networking, interview prep.' },
 ];
 
 const STATS = [
@@ -206,7 +206,7 @@ export function Landing() {
           {(
             [
               { href: links.app, k: 'Interactive', t: 'The packet journey', d: '23 steps for a website visit, 16 for a message through the OSI stack. Play it like a video.', i: 'globe' },
-              { href: links.learn, k: 'Reference', t: 'Learn networking', d: 'How the world is connected, every major protocol in depth, ports, status codes, cloud, Kubernetes and more.', i: 'cap' },
+              { href: links.learn, k: 'Reference', t: 'Learn networking', d: 'How the world is connected, every major protocol in depth, ports, status codes, cloud networking and more.', i: 'cap' },
               { href: links.lab, k: 'Tool', t: 'Packet Lab', d: 'Open your own Wireshark capture (.pcap) and explore it layer by layer, privately in your browser.', i: 'flask' },
             ] as const
           ).map((c) => (

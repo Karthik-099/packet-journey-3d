@@ -128,7 +128,7 @@ const ipv6Str = (b: Uint8Array, o: number) => {
 };
 
 const ICMP: Record<number, string> = { 0: 'Echo reply', 3: 'Destination unreachable', 5: 'Redirect', 8: 'Echo request', 11: 'Time exceeded' };
-const WELL_KNOWN: Record<number, string> = { 22: 'SSH', 25: 'SMTP', 53: 'DNS', 67: 'DHCP', 68: 'DHCP', 80: 'HTTP', 123: 'NTP', 443: 'TLS/HTTPS', 3306: 'MySQL', 5432: 'PostgreSQL', 6443: 'Kubernetes API' };
+const WELL_KNOWN: Record<number, string> = { 22: 'SSH', 25: 'SMTP', 53: 'DNS', 67: 'DHCP', 68: 'DHCP', 80: 'HTTP', 123: 'NTP', 443: 'TLS/HTTPS', 3306: 'MySQL', 5432: 'PostgreSQL' };
 
 export function dissect(p: RawPacket, no: number): Dissected {
   const b = p.data;

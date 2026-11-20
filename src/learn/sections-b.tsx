@@ -65,7 +65,7 @@ export function Tls() {
           <ul>
             <li>Leaf certificate (domain) ← intermediate CA ← root CA in your OS/browser trust store.</li>
             <li>Browsers check: chain, hostname (SAN), dates, revocation, and Certificate Transparency logs.</li>
-            <li>ACME (Let's Encrypt, cert-manager in Kubernetes) automates issuance and renewal.</li>
+            <li>ACME (Let's Encrypt) automates certificate issuance and renewal.</li>
           </ul>
         </Card>
         <Card title="Things you'll meet in ops" tone="violet">
@@ -143,7 +143,7 @@ export function Ports() {
       <Simple head={['Range', 'Name', 'Notes']} rows={PORT_RANGES.map((r) => [<span className="font-mono text-blue-600">{r.range}</span>, <span className="text-ink">{r.name}</span>, r.note])} />
       <FilterTable<Port>
         rows={[...PORTS].sort((a, b) => parseInt(a.port) - parseInt(b.port))}
-        placeholder="Search ports, e.g. 443, ssh, kubernetes, database"
+        placeholder="Search ports, e.g. 443, ssh, dns, vpn"
         text={(p) => `${p.port} ${p.proto} ${p.service} ${p.use}`}
         cols={[
           { h: 'Port', cell: (p) => <span className="font-mono font-bold text-blue-600">{p.port}</span>, cls: 'whitespace-nowrap' },

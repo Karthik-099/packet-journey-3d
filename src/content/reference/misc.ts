@@ -17,7 +17,7 @@ export const DNS_RECORDS = [
   ['MX', 'Mail servers for the domain, with priorities'],
   ['TXT', 'Free text: SPF, DKIM, DMARC, domain verification'],
   ['PTR', 'Reverse DNS: IP → name (in in-addr.arpa / ip6.arpa)'],
-  ['SRV', 'Service location: host + port for _service._proto names (SIP, LDAP, Kubernetes)'],
+  ['SRV', 'Service location: host + port for _service._proto names (SIP, LDAP, XMPP)'],
   ['CAA', 'Which certificate authorities may issue certificates for the domain'],
   ['HTTPS / SVCB', 'Service binding: ALPN (h3), ECH keys, alternative endpoints, learned before connecting'],
   ['DS / DNSKEY / RRSIG / NSEC', 'DNSSEC: chain of trust, public keys, signatures, authenticated denial'],

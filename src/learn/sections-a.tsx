@@ -203,8 +203,8 @@ export function Dns() {
         <Card title="How CDNs use DNS" tone="emerald">
           <p>A CNAME hands you to the CDN's DNS, which answers with an edge near your resolver (or near your subnet with EDNS Client Subnet). Big providers combine this with anycast.</p>
         </Card>
-        <Card title="Kubernetes & cloud" tone="amber">
-          <p>CoreDNS answers <code>svc.namespace.svc.cluster.local</code>; private hosted zones (Route 53, Azure Private DNS) serve internal names; split-horizon gives different answers inside and outside.</p>
+        <Card title="Private & split-horizon DNS" tone="amber">
+          <p>Private hosted zones (Route 53, Azure Private DNS) serve internal names; split-horizon gives different answers inside and outside.</p>
         </Card>
       </Grid>
       <h3>Record types</h3>

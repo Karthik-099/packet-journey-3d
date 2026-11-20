@@ -1,141 +1,130 @@
 # Architecture & code walkthrough
 
-This document explains **every part of the code**: what it does, how the pieces talk to each other, and why each design choice was made. Read it top to bottom once and you can change any part of the project with confidence.
+This document explains every part of the code: what it does, how the pieces connect, and why each design choice was made.
 
 ---
 
-## 1. The big idea
+## 1. Design rules
 
-Three rules shape the whole codebase:
-
-1. **Content is data.** Every step of every journey is a typed object in `src/content/`. Text, packet inspectors, latency numbers and "who & where" tables live there. Adding or fixing a step never touches 3D code.
-2. **Packets are real.** Headers, checksums, CRC-32, DNS messages and TCP options are built byte-by-byte in `src/lib/` and verified by unit tests. The inspector, the header diagrams and the receiver "checks" all read those real bytes.
-3. **Rendering only reads state.** React components and the Three.js scenes read from one Zustand store plus a derived context (`Ctx`). Nothing in the UI computes networking facts itself.
+1. **Content is data.** Every step is a typed object in `src/content/`: text, packet inspectors, latency, "who & where" tables and RFC sources. Fixing or adding a step never touches 3D code.
+2. **Packets are real.** Headers, checksums, CRC-32, DNS messages, TCP options and pcap files are built and parsed byte by byte in `src/lib/`, with unit tests against known vectors.
+3. **Rendering only reads state.** React components and three.js scenes read one Zustand store plus a derived context (`Ctx`). The UI never computes networking facts itself.
+4. **Outside calls are optional and visible.** Every request to a third party lives in `lib/lookup.ts` or `lib/measure.ts`, is validated at that trust boundary, and can be switched off with **Live data**.
 
 ```
-            ┌────────────────────── src/lib (pure functions, unit-tested) ──────────────────────┐
-            │ bytes.ts  packets.ts  inspect.ts  hi.ts  cidr.ts  geo.ts  routing.ts  lookup.ts    │
-            └───────────────▲───────────────────────────────▲───────────────────────────────────┘
-                            │                               │
-   src/content (typed data: steps, network graph, glossary, reference tables)
-                            │  buildCtx(): toggles + live data → Ctx
-                            ▼
-                  src/store.ts (Zustand: step, toggles, live lookups)
-                 ┌──────────┴───────────┬──────────────────────────┐
-                 ▼                      ▼                          ▼
-        src/components (panel,   src/scene (R3F 3D world,   src/landing, src/learn
-        inspector, widgets)      lazy-loaded) / Scene2D     (marketing + reference pages)
+ browser APIs (Geolocation)        public APIs (DoH, geo-IP, Globalping, RIPEstat, PeeringDB)
+            │                                   │
+            ▼                                   ▼
+   src/store.ts  ◀── src/lib (pure, tested) ──▶ src/content (typed steps, graph, reference)
+            │  buildCtx(): toggles + live data → Ctx
+   ┌────────┼──────────────────────┬──────────────────────┐
+   ▼        ▼                      ▼                      ▼
+ components   scene (R3F, lazy)    learn/ + landing/      lab/ (pcap)
 ```
 
 ---
 
-## 2. Pages (Vite multi-page build)
+## 2. Pages
 
-| File | Entry | What it is |
+| Page | Entry | Purpose |
 |---|---|---|
-| `index.html` | `src/landing/main.tsx` | Landing page: hero, domain box, feature cards, comparison table. |
-| `app.html` | `src/main.tsx` → `src/App.tsx` | The interactive 3D journey. |
-| `learn.html` | `src/learn/main.tsx` | The learning reference (OSI, routing, DNS, TLS, HTTP, ports, protocols, cables, cloud…). |
+| `index.html` | `src/landing/main.tsx` | Landing: 3D hero globe (`HeroGlobe`, lazy), domain box, how-it-works, features, comparison. |
+| `app.html` | `src/main.tsx` → `App.tsx` | The 3D journey (website visit, message through the layers). |
+| `learn.html` | `src/learn/main.tsx` | Reference with interactive labs. |
+| `lab.html` | `src/lab/main.tsx` | Packet Lab (pcap/pcapng). |
 
-`vite.config.ts` lists the three inputs and reads `BASE_PATH` so the same build works on GitHub Pages (`/packet-journey-3d/`) and in the nginx container (`/`). The landing page hands a domain to the app as `app.html?d=example.com#g-key`.
-
----
-
-## 3. `src/lib`: the networking engine (no React, no Three.js)
-
-| File | Responsibility | Key functions |
-|---|---|---|
-| `bytes.ts` | Byte helpers | `utf8`, `toHex`, `toBin`, `concat`, `u16/u32`, `ipBytes`, `macStr`, `charBreakdown` |
-| `packets.ts` | Real packet builders | `inetChecksum` (RFC 1071), `crc32` (IEEE 802.3), `buildTcp` (with pseudo-header checksum), `buildIpv4`, `withTtl` (what a router does), `buildEthernet` (padding to 64 B + FCS), `buildUdp`, `buildDnsQuery`, `buildDnsAResponse`, `fakeTlsRecord` |
-| `inspect.ts` | Turns bytes into a Wireshark-style tree | `ethFields`, `ipFields`, `tcpFields`, `udpFields`, `dnsFields`, `payloadField`. Every field carries a `[start, end)` byte range so the hex view can highlight it. |
-| `hi.ts` | Journey 1 packet set | `buildHi(message, tls)` builds message → TLS record → TCP segment → IPv4 packet → Ethernet frame → bits, plus the SYN/SYN-ACK/ACK handshake. `receiverChecks` re-verifies FCS, IP checksum and TCP checksum on the real bytes. |
-| `cidr.ts` | Subnet math | `cidrInfo` (network, mask, broadcast, host range, /31 and /32 rules), `classify` (RFC 1918, CGNAT, documentation…), `sameSubnet` (the host's "local or via gateway?" decision). |
-| `geo.ts` | Earth geometry | `haversineKm`, `pathKm`, `fiberMs` (light in glass ≈ 204,000 km/s), `toXYZ` (lat/lon → sphere, matches the texture UVs). |
-| `routing.ts` | Shortest path over the backbone graph | `nearestHub`, `hubPath` (Dijkstra by fiber-km), `buildRoute(home, dest, access)`, which returns legs (access / land / subsea / space), the polyline and the one-way latency. `slantKm` computes satellite slant range. |
-| `lookup.ts` | Live data from the internet | `normalizeDomain` (URL → punycode hostname, validated), `doh` (dns.google JSON API), `resolveTarget` (A, AAAA, CNAME chain, zone NS found by walking up labels, TLD NS, NS/TLD IPs, geo-IP), `geoIp` (ipwho.is → ipapi.co fallback), `cdnOf` (edge detection by operator or CDN CNAME). All responses are validated at this trust boundary. |
-
-**Why so careful?** If the teaching is wrong, the project is worthless. Each file has tests (`*.test.ts`) with known vectors: CRC-32 of `"123456789"` = `0xCBF43926`, the textbook IPv4 checksum example, `"hi"` → 64-byte frame with 4 bytes of padding, Bengaluru → New York ≈ 90–130 ms one way, GEO satellite > 240 ms, and more.
+`vite.config.ts` builds all four and reads `BASE_PATH` (GitHub Pages sub-path vs `/` in the container). `VITE_SITE_URL` makes social preview URLs absolute. The landing page passes a domain as `app.html?d=example.com`.
 
 ---
 
-## 4. `src/content`: what the user reads
+## 3. `src/lib`: the engine (no React)
 
-| File | What's in it |
+| File | What it does |
 |---|---|
-| `types.ts` | The schema: `Step`, `Journey`, `Ctx`, `Host`, `Widget`, `Concept`. `Dyn<T>` = a value or a function of `Ctx`, so text can depend on toggles and live data. |
-| `ctx.ts` | `buildCtx(input)` derives everything content needs: packets for the typed message, your home location, the destination (edge vs geo-IP), and the full route. |
-| `journey-hi.ts` | 16 steps of a message going down the sender's stack and up the receiver's. |
-| `journey-google.ts` | 23 steps of visiting any website. Contains the latency model (`accessOneWay`, `coreOneWay`, `rtt`), `traceroute()`, `natTable()`, and "who & where" builders. |
-| `network.ts` | 29 hubs (landing cities and IXPs) and ~40 links (named submarine cables with waypoints, terrestrial fiber). |
-| `concepts.ts` | Glossary entries plus tooltips for clickable 3D objects. |
-| `reference/*.ts` | Ports, HTTP status codes (all IANA codes plus nginx/Cloudflare ones), protocol directory, OSI table, DNS records/RCODEs, ICMP types, TCP flags/states, subnet cheat sheet, satellite orbits, troubleshooting commands. |
+| `bytes.ts` | UTF-8, hex/binary, integer and address helpers. |
+| `packets.ts` | `inetChecksum` (RFC 1071), `crc32` (802.3), `buildTcp` (pseudo-header checksum, options), `buildIpv4`, `withTtl` (what a router does), `buildEthernet` (64-byte minimum + FCS), `buildUdp`, `buildDnsQuery/AResponse`, `fakeTlsRecord` (exact layout, stand-in cipher). |
+| `inspect.ts` | Bytes → Wireshark-style trees; each field carries a byte range for hex highlighting. |
+| `hi.ts` | Journey 1 packet set and receiver checks recomputed from the bytes. |
+| `cidr.ts` | Subnet maths, address classification, the "same subnet?" decision. |
+| `geo.ts` | Great-circle distance, fiber latency (~204,000 km/s), lat/lon → sphere (matches texture UVs). |
+| `routing.ts` | Hub graph shortest path (Dijkstra by fiber-km), optional **cut links**, satellite legs (slant range), full `Route` with legs, polyline and one-way time; `unreachable` when cuts leave no path. |
+| `lookup.ts` | `normalizeDomain` (URL/IDN → punycode, validated), DoH queries, zone NS discovery, TLD NS, geo-IP with fallback, CDN detection by operator or CNAME. |
+| `measure.ts` | Globalping MTR (create + polite polling, rate-limit message), hop geolocation, RIPEstat prefix/origin/RPKI, PeeringDB presence. |
+| `pcap.ts` | pcap (µs/ns, both endiannesses) and pcapng readers; dissector (Ethernet, VLAN, SLL/SLL2, raw IP, ARP, IPv4/6, ICMP/v6, TCP, UDP, DNS, HTTP, TLS records); statistics (protocols, conversations, DNS names, handshake RTT, retransmissions); pcap writer. |
+| `sample-capture.ts` | A realistic ARP → DNS → ping → TCP → HTTP → close capture built with `packets.ts`. |
+| `sim.ts` | Seeded PRNG, head-of-line blocking (TCP vs QUIC), congestion-window trace. |
 
-`content.test.ts` renders **every step under every toggle combination** (TLS, fiber/LEO/GEO, HTTP/2/3, nearby/far target, with/without detected location) and fails on `undefined`, `NaN` or a failing receiver check.
-
----
-
-## 5. State: `src/store.ts` and `src/hooks.ts`
-
-- **Zustand store**: current journey and step, playback (playing, speed, narration), detail mode, toggles (message, TLS, medium, access, destination, QUIC), 3D/2.5D view, live data (`me`, `target`) with status/error, and the actions `lookup(domain)` and `detectMe()`. Lookups are abortable: typing a new domain cancels the previous request.
-- **`useCtx()`** memoises `buildCtx` from the store, so 3D, panels and widgets all agree.
-- **Hooks**: `usePlayback` (video mode: waits for reading time, animation time `minPlayMs` and, with narration on, for `speechSynthesis` to finish), `useDeepLink` (`#g-dns-root` ⇄ store), `useShortcuts` (← → Space Home End E J ? Esc), `useReducedMotion`.
+Tests (`*.test.ts`) cover known vectors (CRC-32 of "123456789", textbook IP checksum), padding rules, DNS round trips, routing realism (Bengaluru → New York ≈ 90–130 ms one way, GEO > 240 ms), cable cuts, pcap/pcapng round trips, measurement parsing with mocked APIs, and simulation invariants (QUIC never later than TCP).
 
 ---
 
-## 6. UI components (`src/components`)
+## 4. `src/content`
 
-| Component | Role |
+| File | Contents |
 |---|---|
-| `TargetBar` | "Type any domain" box, live/built-in status, your IP/ISP line. Reads `?d=` on load. |
-| `LatencyBar` | Stacked bar of every step's milliseconds; fiber / LEO / GEO switch, edge vs geo-IP switch, HTTP/3 switch. |
-| `MessageInput` | Journey 1 message box, TLS and TCP/IP-model switches, live hex. |
-| `StepList`, `Controls`, `Help` | Navigation, timeline, speed, narration, share link, shortcut help. |
-| `SidePanel` | "What's happening", widget, "Who & where", "Under the hood", packet inspector. Beginner/Expert decides what's expanded. |
-| `PacketInspector` | Header tree + hex/binary dump; clicking a field highlights its byte range. |
-| `HeaderDiagram` | RFC-style 32-bit-row diagrams of TCP/IPv4/Ethernet headers, values read bit-by-bit from the real bytes. |
-| `widgets.tsx` | One widget per step type: UTF-8 table, handshake ladder, subnet AND, ARP, waveform (Manchester / on-off / BPSK), receiver checks, DNS ladder (live), NAT table, traceroute + world map (timed by real propagation), route legs, BGP longest-prefix match, TLS flight, HTTP, render pipeline, trip summary. |
-| `WorldMap` | Flat SVG map with the backbone graph and your route (used in the panel and the 2.5D view). |
-| `TripSummary` | "Your request travelled X km there and X km back", RTT, routers, cables, total load time; plus a compact HUD over the 3D view. |
-| `Concepts` | Slide-over glossary with a CIDR calculator. |
+| `types.ts` | `Step`, `Journey`, `Ctx`, `Host`, `Widget`, `Concept`. `Dyn<T>` = value or function of `Ctx`. |
+| `ctx.ts` | `buildCtx`: packets for the typed message; home = GPS ▸ IP geo ▸ example; destination = CDN edge or geo-IP; route (+ baseline when cables are cut). |
+| `journey-google.ts` | 23 steps; latency model; traceroute; NAT table; who-&-where builders. |
+| `journey-hi.ts` | 16 steps down and up the OSI stack. |
+| `network.ts` | Hubs (landing cities, IXPs) and links (named submarine cables with waypoints, terrestrial fiber). |
+| `refs.ts` | RFC / spec links per step (tested: ids exist, https only). |
+| `concepts.ts` | Glossary and 3D tooltips. |
+| `reference/*` | Ports, HTTP status codes, protocols, protocol deep dives, OSI/DNS/ICMP/TCP tables, satellites, tools. |
 
 ---
 
-## 7. The 3D world (`src/scene`, lazy-loaded)
+## 5. State and hooks
 
-Built with **React Three Fiber** (React renderer for Three.js) and **drei** helpers. The whole folder is loaded only when 3D is shown, so phones and the 2.5D view never download Three.js.
+- **`store.ts`** (Zustand): journey/step, playback, mode, toggles (message, TLS, medium, access, destination, QUIC), view, live data (`me`, `gps`, `target`, `measured`, `bgp`), incident `cut` list, and actions: `trace` (asks about location once, then looks up), `chooseLocation` (browser Geolocation API → `gps`), `lookup`, `detectMe`, `measure`, `fetchBgp`, `setOffline`.
+- **`hooks.ts`**: video-mode playback (waits for reading time, animation and narration), deep links, keyboard shortcuts, reduced motion.
+
+---
+
+## 6. UI (`src/components`)
+
+`TargetBar` (domain box, Live data, your location) · `LocationPrompt` (explains GPS before the browser asks) · `Onboarding` · `LatencyBar` · `MessageInput` · `StepList` · `Controls` (play, speed, narration, share, help) · `SidePanel` (what's happening, widget, who & where, under the hood, inspector, sources) · `PacketInspector` · `HeaderDiagram` (RFC-style rows read bit by bit) · `widgets.tsx` (UTF-8, handshake, subnet, ARP, waveform, checks, DNS ladder, NAT, traceroute, route legs, BGP, TLS, HTTP, render, summary) · `Measured` (real MTR + live BGP) · `Incident` (cable cuts) · `TripSummary` · `WorldMap` · `Concepts` · `Help`.
+
+---
+
+## 7. 3D (`src/scene`, lazy-loaded)
 
 | File | What it draws |
 |---|---|
-| `Scene.tsx` | The `<Canvas>`: picks `HiScene` or `WorldScene` inside the R3F tree, adds bloom/vignette (dropped automatically by `PerformanceMonitor` on slow GPUs), and pauses rendering (`frameloop="never"`) while hidden. |
-| `Earth.tsx` | Textured Earth: NASA Blue Marble (day), Black Marble (city lights as an emissive map), ocean specular mask, and a Fresnel-shader atmosphere. The backbone is merged into two `lineSegments` draw calls. `arc()` interpolates along great circles so lines hug the sphere. |
-| `WorldScene.tsx` | Places everything **where it physically is**: your home (laptop, router, Wi-Fi rings, dish), your ISP, the DNS cluster (anycast near you; a non-anycast authoritative server goes to its real geo-IP location), the destination data center, satellites and ground stations. `OnGlobe` stands each model upright on the surface using a local east/up/south frame. `motionFor()` choreographs the packet per step; travel steps run at **real propagation time × 40**. `WorldRig` flies the camera along a spherical path (never through the planet) and follows the packet in video mode. |
-| `models.tsx` | Low-poly models: laptop, router, ISP building, server pair, data center (instanced racks), dish, satellite, radio rings. |
-| `HiScene.tsx` | Journey 1: two 7-layer stacks, a cable with bit pulses, a packet whose header shells grow and shrink, handshake envelopes and ARP broadcast rings. |
-| `Scene2D.tsx` | The 2.5D fallback in CSS/SVG. |
-| `common.tsx` | Camera rig for Journey 1, `Label3D` (troika SDF text with a locally bundled font, so there are no DOM labels and no CDN fetch), clickable-object helpers, polyline sampling. |
-
-**Performance notes:** instanced meshes for keys, racks and satellites; merged line geometry; adaptive DPR; bloom off when frames drop; nothing renders while the 3D view is hidden.
+| `Scene.tsx` | Canvas; picks `HiScene` or `WorldScene` inside the R3F tree; bloom dropped by `PerformanceMonitor`; paused while hidden. |
+| `Earth.tsx` | NASA day map, city-lights emissive map, ocean specular, Fresnel atmosphere; backbone in merged line geometry, cut cables in red; `arc()` great-circle interpolation. |
+| `WorldScene.tsx` | Everything placed where it physically is (`OnGlobe` stands models on a local east/up/south frame); `motionFor()` packet choreography at real propagation time × 40; measured MTR path in green; `WorldRig` spherical camera (never through the planet) that follows the packet in video mode; labels only on the focused object. |
+| `models.tsx` | Laptop, router, ISP, server pair, data center (instanced racks), dish, satellite, radio rings. |
+| `HiScene.tsx` | Two 7-layer stacks, cable with bit pulses, packet with growing/shrinking header shells, handshake and ARP animations. |
+| `common.tsx` | Camera rig, `Label3D` (SDF text, bundled font), `glyphSafe` (keeps text inside the bundled font so troika never fetches CDN fallback fonts). |
+| `Scene2D.tsx` | CSS/SVG fallback for phones and browsers without WebGL. |
 
 ---
 
-## 8. Landing and Learn pages (`src/landing`, `src/learn`, `src/site`)
+## 8. Learn, Landing and Lab
 
-Plain React + Tailwind, no 3D. `site/Nav.tsx` holds the shared nav and footer. `learn/` is split into four section files. Interactive parts (live encapsulation table, CIDR calculator, searchable port/status/protocol tables, quiz) reuse the same `src/lib` code as the 3D journey, so the reference and the visualisation can never disagree. Reading progress is kept in `localStorage`.
-
----
-
-## 9. Delivery: CI/CD and runtime
-
-- **`.github/workflows/ci.yml`**: lint → typecheck → Vitest → build → Docker build & push to GHCR (tag = git SHA) → Trivy scan (SARIF to the Security tab; fails on fixable CRITICAL) → commits the new tag to `deploy/helm/.../values.yaml` for Argo CD.
-- **`.github/workflows/pages.yml`**: builds with the right base path and deploys to GitHub Pages.
-- **`Dockerfile`**: multi-stage `node:22-alpine` → `nginx:1.27-alpine` running as non-root on :8080; `nginx/` adds gzip, cache headers and security headers (CSP allowing only the APIs listed above).
-- **Helm** (`deploy/helm/packet-journey`): Deployment (read-only root FS, dropped capabilities, seccomp, probes on `/healthz`), Service, Ingress, HPA. **Argo CD** (`deploy/argocd/application.yaml`) syncs it to AKS.
+Plain React + Tailwind, light theme. Interactive parts reuse `src/lib`: live encapsulation, CIDR calculator, searchable port/status/protocol tables, protocol deep dives, the loss lab, the congestion-window chart and the BGP hijack demo (`learn/labs.tsx`), the quiz, and reading progress in `localStorage`. The Lab page uses `pcap.ts` and the same `PacketInspector` as the journey.
 
 ---
 
-## 10. How to…
+## 9. Testing
 
-- **Fix a sentence or add a step**: edit `src/content/journey-*.ts`. If the step needs a new panel widget, add a case in `components/widgets.tsx`; for packet movement in 3D, add a case in `motionFor()`.
-- **Add a cable**: append a `Link` with waypoints in `src/content/network.ts`. Routing, the globe and the flat map pick it up automatically.
-- **Add a port / status code / protocol**: edit `src/content/reference/*.ts`.
-- **Change the latency model**: `journey-google.ts` (`WIFI`, `ACCESS_FIXED`, `SERVER_MS`) and `lib/routing.ts` (`LAND_FACTOR`, satellite overheads).
+- **Unit (Vitest)**: `npm test`, 51 tests in `src/**/*.test.ts`.
+- **End-to-end (Playwright)**: `npm run e2e`. Walks every step of both journeys, the incident simulator, the Packet Lab sample and Learn filtering. **axe-core** checks the landing, Learn and Lab pages for serious accessibility violations. External APIs are blocked in tests so they're deterministic.
+
+---
+
+## 10. Delivery
+
+- **CI** (`.github/workflows/ci.yml`): verify (lint, typecheck, unit, build) → e2e + accessibility → infra (helm lint, terraform fmt/validate, policy syntax) → image (build, provenance, SPDX SBOM, cosign keyless sign + SBOM attestation) → Trivy → bump `values.yaml` for Argo CD.
+- **Pages** (`pages.yml`): static build to GitHub Pages.
+- **Container**: non-root nginx, strict CSP (only the APIs listed above), `Permissions-Policy: geolocation=(self)`, `/healthz`, internal `stub_status`.
+- **Kubernetes** (for hosting the site): Helm chart with exporter sidecar, HPA, PDB, optional ServiceMonitor; Kyverno policies; Terraform for AKS + Argo CD; Grafana dashboard.
+
+---
+
+## 11. How to…
+
+- **Fix text or add a step**: `src/content/journey-*.ts` (+ `refs.ts` for sources). New panel widget → `components/widgets.tsx`; packet movement → `motionFor()` in `WorldScene.tsx`.
+- **Add a cable**: append a `Link` with waypoints in `content/network.ts`; routing, globe, map and incident simulator pick it up.
+- **Add a port / status code / protocol / guide**: `content/reference/*.ts`.
+- **Tune latency**: `journey-google.ts` (`WIFI`, `ACCESS_FIXED`, `SERVER_MS`) and `lib/routing.ts` (`LAND_FACTOR`, satellite overheads).

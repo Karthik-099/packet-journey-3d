@@ -1,40 +1,41 @@
 # Packet Journey
 
-**See how the internet really works.** Type any website and follow your request from the key under your finger, through all seven OSI layers, your router, your ISP, submarine cables or satellites, to a data center and back. It runs in 3D, with real DNS, real geography and real packet bytes. A full networking reference ships alongside it.
+**See how the internet really works.** Type any website and follow your request from the key under your finger, through all seven OSI layers, your router and ISP, across submarine cables or satellites, to a data center and back. It's drawn on a 3D Earth, starts from your real location, and uses real DNS, real packet bytes and real measurements. A complete networking reference and a packet-capture lab come with it.
 
-> Built as an educational project and a DevOps portfolio piece. Everything technical is meant to be accurate; anything simplified is marked with a **simplified** tag in the app. If you spot a mistake, please [open an issue](#feedback--contributing).
+> An educational project and a DevOps portfolio piece. Every technical claim aims to be accurate and links to its RFC or spec; anything simplified carries a **simplified** tag. Spotted a mistake? Please [open an issue](#feedback--contributing).
 
-| Landing | 3D journey: the backbone | Learn |
+| Landing | The journey (measured vs modelled) | Learn |
 |---|---|---|
 | ![Landing page](docs/screenshots/landing.png) | ![Route over submarine cables](docs/screenshots/journey-core.png) | ![Learning reference](docs/screenshots/learn.png) |
 
 ---
 
-## What it does
+## What's inside
 
-### 1. Visit any website (23 steps)
-`app.html?d=example.com`
-- **Live lookup**: DNS-over-HTTPS (`dns.google`) resolves A/AAAA records and CNAME chains, finds the zone's nameservers and the TLD servers, and geolocates the server, its nameserver and **you** (public IP, city, ISP/ASN).
+### 1. Visit any website (23 steps): `app.html`
+- **Starts where you are.** With your permission, the browser's GPS puts you exactly on the globe; otherwise an IP-based estimate or an example location. Coordinates never leave the page.
+- **Live lookups**: DNS-over-HTTPS resolves A/AAAA and CNAME chains, finds the zone's nameservers and the TLD servers, and geolocates the server, its nameserver and you (ISP + ASN).
 - **Keyboard → OS → browser**: key matrix, USB HID report bytes, interrupts, URL parsing, HSTS, caches.
 - **All 6 DNS steps** with real packets: stub → recursive resolver → root → TLD → authoritative → answer.
-- **Local network**: subnet decision (AND with the mask), ARP for the gateway, Wi-Fi, NAT table with your real public IP.
-- **Access**: fiber (GPON) or **LEO / GEO satellite** with real slant-range light time.
-- **BGP**: longest-prefix match and AS path from your ISP's ASN to the destination's.
-- **Backbone**: Dijkstra over a model of the world's cables and IXPs. The packet rides real systems (AAE-1, SEA-ME-WE, i2i, APG, MAREA, Grace Hopper, EllaLink…) across a textured 3D Earth, timed at real light-in-glass speed. The traceroute view shows TTL counting down.
-- **Destination**: CDN edge vs geo-IP origin (anycast networks are detected), load balancer, TCP handshake, TLS 1.3 (SNI, certificate chain), HTTP/2 or HTTP/3, and the trip back.
-- **Rendering**: DOM, CSSOM, layout, paint, composite.
-- **Trip summary**: "your request travelled 10,803 km there and 10,803 km back in ≈ 115 ms through 9 routers and 3 submarine cables".
+- **Local network**: subnet decision, ARP for the gateway, Wi-Fi, NAT with your public IP.
+- **Access**: fiber (GPON), LEO satellite or GEO satellite, with real slant-range light time.
+- **BGP**: longest-prefix match, AS path, plus **live** prefix, origin AS, RPKI validity (RIPEstat) and IXP presence (PeeringDB).
+- **Backbone**: Dijkstra over a model of ~30 hubs and named submarine cables (AAE-1, SEA-ME-WE, i2i, APG, FASTER, MAREA, Grace Hopper, EllaLink, 2Africa…), animated at the real speed of light in glass. TTL counts down in a traceroute view.
+- **Measured, not modelled**: one click runs a **real MTR** from a probe in your country (Globalping) and draws it on the globe next to the model. Mumbai → naver.com: model 124 ms, measured 117 ms.
+- **Incident simulator**: cut submarine cables (one-click "Red Sea, February 2024" preset) and watch traffic reroute or fail.
+- **Destination**: CDN edge vs geo-IP origin (anycast networks detected by operator or CDN CNAME), load balancer, TCP, TLS 1.3, HTTP/2 or HTTP/3, the trip back, rendering, and a **trip summary** ("travelled 11,732 km each way, ≈124 ms round trip, through 7 routers and 3 submarine cables").
 
-### 2. Send a message through the 7 layers (16 steps)
-`app.html#hi-l7`
-Type anything ("how are you"). Watch it become UTF-8 bytes, optionally a TLS record, a TCP segment, an IPv4 packet, an Ethernet frame (padded to 64 bytes, with CRC-32) and finally signals on copper, fiber or Wi-Fi. The receiver then checks and strips each header. RFC-style header diagrams show the real field values.
+### 2. A message through the 7 layers (16 steps): `app.html#hi-l7`
+Type anything ("how are you"). It becomes UTF-8 bytes, optionally a TLS record, a TCP segment, an IPv4 packet and an Ethernet frame (padded to 64 bytes, CRC-32), then signals on copper, fiber or Wi-Fi. The receiver then checks and strips each header. RFC-style header diagrams show the real field values.
 
-### 3. Learn networking
-`learn.html`
-How the world is connected (tiers, peering, IXPs, RIRs) · OSI and TCP/IP with live encapsulation · addressing, subnets, NAT, IPv6, endpoints · routing (OSPF, IS-IS, BGP, anycast, ECMP, MPLS, RPKI) · DNS · TCP/UDP/QUIC (flags, states, MTU) · TLS & HTTPS · HTTP methods and **every status code** with production causes · **port list** · **protocol directory** (60+) · submarine cable anatomy (repeaters/EDFAs, power feed, branching units, landing stations, repair ships) and satellites (LEO/MEO/GEO) · how Google, Cloudflare, Meta, Netflix, AWS and Akamai run their networks · cloud and Kubernetes networking · security · troubleshooting commands · interview questions · a quiz · glossary.
+### 3. Learn networking: `learn.html`
+How the world is connected (tiers, peering, IXPs, RIRs) · OSI and TCP/IP with live encapsulation · addressing, subnets/CIDR calculator, NAT, IPv6, endpoints · routing (OSPF, IS-IS, BGP, anycast, ECMP, MPLS, RPKI) with a **BGP hijack demo** · DNS · TCP/UDP/QUIC with a **loss lab** (HTTP/2 head-of-line blocking vs HTTP/3) and a **congestion-window chart** · TLS & HTTPS · HTTP methods and **every status code** with real-world causes · **110 ports** · **60+ protocols** · **25 in-depth protocol guides** (how it works, format, security, common problems, commands) · submarine cable anatomy (repeaters/EDFAs, power feed, branching units, landing stations, repair ships) and satellites · how Google, Cloudflare, Meta, Netflix, AWS and Akamai run their networks · cloud networking · security · troubleshooting commands · interview questions · quiz · glossary. "Save as PDF" included.
+
+### 4. Packet Lab: `lab.html`
+Drop a Wireshark/tcpdump **.pcap or .pcapng**. It is decoded entirely in the browser: Ethernet, VLAN, Linux cooked, ARP, IPv4/IPv6, ICMP, TCP, UDP, DNS, HTTP and TLS records. You get a packet list, a layer tree with hex, protocol hierarchy, top conversations, DNS lookups, TCP handshake RTTs and retransmissions. A sample capture can be loaded or downloaded to open in Wireshark.
 
 ### Also
-Wireshark-style packet inspector (tree + hex/binary) · latency budget per step · video mode with camera follow, subtitles and optional voice narration · Beginner/Expert · deep links and share links · keyboard shortcuts (`?`) · click any 3D object for an explanation · 2.5D fallback for phones and browsers without WebGL · `prefers-reduced-motion` respected · "Save as PDF" for the reference.
+Wireshark-style inspector · latency budget · video mode (camera follows the packet, subtitles, optional voice) · Beginner/Expert · deep and share links · keyboard shortcuts (`?`) · first-visit guide · per-step RFC sources · 2.5D fallback for phones and browsers without WebGL · reduced-motion support · a **Live data** switch that turns off every outside request.
 
 ---
 
@@ -42,55 +43,57 @@ Wireshark-style packet inspector (tree + hex/binary) · latency budget per step 
 
 ```mermaid
 flowchart TB
-  subgraph pages["Three pages (Vite multi-page)"]
-    L[index.html<br/>Landing]
+  subgraph pages["Four pages (Vite multi-page)"]
+    L[index.html<br/>Landing + 3D hero]
     A[app.html<br/>3D journey]
     D[learn.html<br/>Reference]
+    P[lab.html<br/>Packet Lab]
   end
   subgraph lib["src/lib · pure TypeScript, unit-tested"]
-    P[packets / inspect / hi<br/>IPv4 · TCP · UDP · Ethernet+CRC-32 · DNS]
-    R[routing + geo<br/>Dijkstra over cable graph · light-in-fiber latency]
-    K[lookup<br/>DoH DNS · geo-IP · CDN detection]
-    C[cidr]
+    PK[packets · inspect · hi<br/>IPv4 · TCP · UDP · Ethernet+CRC-32 · DNS]
+    RT[routing · geo<br/>Dijkstra over cable graph · cable cuts · light-in-fiber · satellites]
+    LK[lookup<br/>DoH · geo-IP · CDN detection]
+    MS[measure<br/>MTR · RIPEstat · PeeringDB]
+    PC[pcap · sample-capture]
+    SM[sim · cidr]
   end
   subgraph content["src/content · data only"]
-    J[journey-hi / journey-google<br/>typed steps]
+    J[journey-google · journey-hi<br/>typed steps + RFC sources]
     N[network.ts<br/>hubs + cables]
-    REF[reference/*<br/>ports · status codes · protocols]
+    REF[reference/*<br/>ports · status codes · protocols · deep dives]
   end
-  S[(Zustand store<br/>+ buildCtx)]
-  ext1[(dns.google)]
-  ext2[(ipwho.is / ipapi.co)]
-  lib --> content --> S
-  K --> ext1 & ext2
-  S --> A
-  A --> UI[Panels · inspector · widgets]
-  A --> W[R3F 3D world<br/>lazy-loaded]
+  ST[(Zustand store + buildCtx)]
+  GEO((Browser Geolocation API))
+  X1[(dns.google)] & X2[(ipwho.is / ipapi.co)] & X3[(Globalping · RIPEstat · PeeringDB)]
+  lib --> content --> ST --> A
+  GEO --> ST
+  LK --> X1 & X2
+  MS --> X3
   REF --> D
-  lib --> D
+  PC --> P
+  SM --> D
 ```
 
-Full walkthrough of every module: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+The full walkthrough of every module is in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**. How it compares to existing tools: **[docs/COMPARISON.md](docs/COMPARISON.md)**.
 
 ### Libraries and why
 
-| Library | Why it's here |
+| Library | Why |
 |---|---|
-| **React 19 + TypeScript (strict)** | Component model for a UI with many linked panels; strict types keep the step schema and packet code honest. |
-| **Vite** | Fast dev server; multi-page build (landing / app / learn); code-splits the 3D bundle so it loads only when needed. |
-| **three.js** | WebGL rendering of the Earth, models and lines. |
-| **@react-three/fiber** | Lets the 3D scene be written as React components driven by the same store as the UI. |
-| **@react-three/drei** | Battle-tested helpers: OrbitControls, Line, Stars, RoundedBox, Billboard, SDF `Text`, PerformanceMonitor. |
-| **@react-three/postprocessing** | Bloom and vignette for the "network operations center" look (switched off automatically on slow GPUs). |
-| **Zustand** | Tiny global store; components and the R3F tree subscribe to exactly the slices they need. |
-| **Framer Motion** | Side-panel and drawer transitions. |
-| **Tailwind CSS v4** | Utility styling with a small custom theme; no CSS framework runtime. |
-| **topojson-client + world-atlas** | Natural Earth coastlines for the flat SVG map. |
-| **@fontsource/jetbrains-mono** | Bundled font for 3D text (troika needs WOFF; no third-party font CDN). |
-| **Vitest** | Unit tests for checksums, CRC, DNS, routing, CIDR, lookup parsing, and content. |
-| **ESLint + typescript-eslint** | Lint gate in CI. |
+| **React 19 + TypeScript (strict)** | Many linked panels sharing one state; strict types keep the step schema and packet code honest. |
+| **Vite** | Fast dev server, multi-page build, code-splitting so 3D loads only when needed. |
+| **three.js + @react-three/fiber + drei** | The 3D Earth, models and lines as React components driven by the same store as the UI. |
+| **@react-three/postprocessing** | Bloom/vignette, switched off automatically on slow GPUs. |
+| **Zustand** | Tiny store; components and the 3D tree subscribe to exactly what they need. |
+| **Framer Motion** | Panel and drawer transitions. |
+| **Tailwind CSS v4** | Utility styling with a small theme; no CSS framework runtime. |
+| **Inter + JetBrains Mono (fontsource)** | Bundled fonts: no font CDN. |
+| **topojson-client + world-atlas** | Natural Earth coastlines for the flat map. |
+| **Vitest** | 51 unit tests: checksums, CRC, DNS, routing, cable cuts, satellites, CIDR, lookups, measurements, pcap parsing, simulations, content. |
+| **Playwright + axe-core** | End-to-end tests of every journey step and accessibility checks in CI. |
+| **ESLint + typescript-eslint** | Lint gate. |
 
-**Data sources (all requests come from the visitor's browser):** `dns.google` (DNS-over-HTTPS JSON API), `ipwho.is` with `ipapi.co` fallback (geo-IP), NASA Blue Marble / Black Marble imagery (public domain, bundled), Natural Earth (public domain). Nothing is stored server-side: there are no accounts, no cookies and no analytics.
+**Data sources (requests come from the visitor's browser; nothing is stored server-side):** dns.google (DNS-over-HTTPS), ipwho.is / ipapi.co (geo-IP), Globalping (MTR), RIPEstat (routing/RPKI), PeeringDB (peering), NASA Blue Marble / Black Marble (public-domain imagery, bundled), Natural Earth (bundled). The **Live data** switch disables all of them.
 
 ---
 
@@ -98,48 +101,51 @@ Full walkthrough of every module: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ```bash
 npm ci
-npm run dev        # http://localhost:5173  (landing), /app.html, /learn.html
-make ci            # lint + typecheck + tests + build
-make up            # production image via docker compose → http://localhost:8080
+npm run dev          # http://localhost:5173  (landing) · /app.html · /learn.html · /lab.html
+make ci              # lint + typecheck + unit tests + build
+npm run e2e          # Playwright end-to-end + accessibility (after npx playwright install chromium)
+make up              # production container via docker compose → http://localhost:8080
 ```
 
 ## Deploy
 
 ### GitHub Pages
-`.github/workflows/pages.yml` builds with `BASE_PATH=/<repo>/` and deploys on every push to `main`.
-One-time setup: **Settings → Pages → Source: GitHub Actions**. For a custom domain, add it there and set the repository variable `PAGES_BASE_PATH` to `/`.
+`.github/workflows/pages.yml` builds with the right base path and deploys on every push to `main`. One-time setup: **Settings → Pages → Source: GitHub Actions**. For a custom domain, add it there and set repository variables `PAGES_BASE_PATH=/` and `SITE_URL=https://your.domain/`.
 
 ### Container → AKS with Argo CD
 ```mermaid
 flowchart LR
-  push[git push main] --> V[lint · typecheck · test · build]
-  V --> B[docker build → ghcr.io/…:SHA]
+  push[git push main] --> V[lint · typecheck · unit tests · build]
+  V --> E[Playwright e2e + axe]
+  push --> I[helm lint · terraform validate]
+  E & I --> B[docker build → ghcr.io/…:SHA<br/>SBOM · cosign keyless signature · provenance]
   B --> T[Trivy scan]
   T --> U[commit image.tag to values.yaml]
-  U --> A[Argo CD auto-sync] --> K[AKS]
+  U --> A[Argo CD auto-sync] --> K[AKS · Kyverno verifies signature]
 ```
-- **Docker**: multi-stage `node:22-alpine` → `nginx:1.27-alpine`, non-root on :8080, gzip, immutable caching for hashed assets, CSP and security headers, `/healthz`.
-- **Helm** (`deploy/helm/packet-journey`): Deployment (read-only root FS, no capabilities, seccomp, probes), Service, Ingress (AKS app routing or ingress-nginx), HPA, resource limits.
-- **Argo CD**: `kubectl apply -n argocd -f deploy/argocd/application.yaml`.
+- **Docker**: multi-stage `node:22-alpine` → `nginx:1.27-alpine`, non-root on :8080, gzip, immutable caching, strict CSP and security headers, `/healthz`, internal `stub_status`.
+- **Helm** (`deploy/helm/packet-journey`): Deployment (read-only root FS, no capabilities, seccomp, probes), Prometheus exporter sidecar, Service, Ingress, HPA, PodDisruptionBudget, optional ServiceMonitor.
+- **Supply chain**: SPDX SBOM, cosign keyless signing and SBOM attestation via GitHub OIDC, Trivy gate.
+- **Policy** (`deploy/policies/kyverno.yaml`): non-root/read-only, no `:latest`, resource limits, only images signed by this repo's workflow.
+- **Infrastructure** (`infra/terraform`): AKS with Azure CNI Overlay + Cilium, workload identity, managed ingress, Log Analytics, and Argo CD with the app's Application.
+- **Observability** (`deploy/grafana`): dashboard for request rate, connections, CPU and memory.
 
 ---
 
 ## Accuracy notes
 
-- Packet bytes, checksums, CRC-32, DNS messages and header layouts are exact and unit-tested.
-- DNS answers, nameservers, TLD servers and geo-IP are **live**. Geo-IP shows where an IP block is *registered*, which is often wrong for anycast/CDN networks; the app explains this and lets you switch between "edge" and "geo-IP".
-- Cable routes are hand-traced approximations of public maps; the backbone graph is a simplified model, not a live trace. Hop IPs come from documentation ranges.
-- Latency = great-circle distance at the speed of light in fiber plus typical access, Wi-Fi, satellite and server delays. It is a model, not a measurement.
-- Browsers cannot see your LAN, so the private IP and MAC addresses are examples.
+- Packet bytes, checksums, CRC-32, DNS messages, header layouts and pcap parsing are exact and unit-tested.
+- DNS answers, nameservers, TLD servers, geo-IP, BGP origin, RPKI and the optional MTR are **live**. Geo-IP places anycast/CDN addresses where they're *registered*; the app explains this and offers "edge" vs "geo-IP".
+- Cable routes are hand-traced approximations of public maps; the backbone is a simplified graph. Latency is a model (distance at the speed of light in fiber plus typical access delays); the real MTR is there to compare.
+- Browsers can't see your LAN, so private IPs and MAC addresses are examples.
 
 ## Feedback & contributing
 
-This project exists to make networking understandable for everyone, from students to senior engineers. **Corrections, feedback and suggestions are very welcome**:
-
-- Found something technically wrong or oversimplified? Open an issue with the step id (e.g. `#g-dns-auth`) and a source.
-- Ideas for new steps, protocols, cables or visualisations? Open an issue or a pull request. Content lives in `src/content/` and rarely needs 3D changes.
+Built to make networking understandable, from students to senior engineers. **Corrections, feedback and suggestions are very welcome**:
+- Something technically wrong or oversimplified? Open an issue with the step id (e.g. `#g-dns-auth`) and a source.
+- Ideas for new steps, protocols, cables or visualisations? Content lives in `src/content/` and rarely needs 3D changes.
 - If it helped you, a star on the repo is appreciated.
 
 ## Credits
 
-NASA Visible Earth (Blue Marble, Black Marble) imagery · Natural Earth via world-atlas · cable information from public sources such as TeleGeography's Submarine Cable Map · RFCs from the IETF.
+NASA Visible Earth (Blue Marble, Black Marble) · Natural Earth via world-atlas · TeleGeography's Submarine Cable Map (cable routes, approximated) · Globalping, RIPE NCC (RIPEstat) and PeeringDB for open measurement and routing data · the IETF RFCs.
