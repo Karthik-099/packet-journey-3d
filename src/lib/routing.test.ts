@@ -30,3 +30,23 @@ describe('routing', () => {
     expect(leo.oneWayMs).toBeLessThan(25);
   });
 });
+
+describe('incident: cable cut', () => {
+  it('reroutes around a cut cable and gets slower', async () => {
+    const { LINKS } = await import('../content/network');
+    const { linkId } = await import('./routing');
+    const paris: LatLon = [48.86, 2.35];
+    const ok = buildRoute([19.08, 72.88], 'Mumbai', paris, 'Paris', 'fiber');
+    const redSea = LINKS.filter((l) => /AAE-1/.test(l.name)).map(linkId);
+    const cut = buildRoute([19.08, 72.88], 'Mumbai', paris, 'Paris', 'fiber', new Set(redSea));
+    expect(cut.unreachable).toBeFalsy();
+    expect(cut.legs.map((l) => l.name)).not.toContain('AAE-1 / SEA-ME-WE');
+    expect(cut.oneWayMs).toBeGreaterThan(ok.oneWayMs);
+  });
+  it('reports when no path is left', async () => {
+    const { LINKS } = await import('../content/network');
+    const { linkId } = await import('./routing');
+    const all = new Set(LINKS.map(linkId));
+    expect(buildRoute([19.08, 72.88], 'Mumbai', [48.86, 2.35], 'Paris', 'fiber', all).unreachable).toBe(true);
+  });
+});

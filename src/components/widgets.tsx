@@ -9,6 +9,8 @@ import { Seg, Simplified } from './ui';
 import { WorldMap } from './WorldMap';
 import { HeaderDiagram } from './HeaderDiagram';
 import { TripSummary } from './TripSummary';
+import { Incident } from './Incident';
+import { LiveBgp, MeasuredPath } from './Measured';
 import { useReducedMotion } from '../hooks';
 
 const Box = ({ children }: { children: React.ReactNode }) => <div className="rounded-md border border-noc-edge bg-black/30 p-2 text-xs">{children}</div>;
@@ -310,6 +312,8 @@ function Traceroute({ c }: { c: Ctx }) {
   }, [total, reduced, c.route]);
   return (
     <div className="space-y-2">
+      <MeasuredPath c={c} />
+      <Incident c={c} />
       <WorldMap route={c.route} home={c.home} dest={c.destPoint} progress={t / total} />
       <div className="font-mono text-[11px] text-slate-400">
         one-way elapsed: <span className="text-noc-cyan">{t.toFixed(1)} ms</span> / {total.toFixed(1)} ms · {Math.round(c.route.km).toLocaleString('en-US')} km
@@ -384,6 +388,7 @@ function Bgp({ c }: { c: Ctx }) {
         <span className="text-slate-500"> ({c.target.geo?.org || 'destination network'})</span>
       </p>
       <p className="text-[10px] text-slate-500">Example table. Real ISP routers hold ~1,000,000 IPv4 routes.</p>
+      <LiveBgp ip={ip} />
     </Box>
   );
 }

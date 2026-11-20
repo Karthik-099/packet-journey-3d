@@ -31,6 +31,9 @@ export interface Ctx {
   destPoint: LatLon;
   destName: string;
   route: Route;
+  /** route without any cut cables (set only while an incident is active) */
+  baseline?: Route;
+  cut?: string[];
 }
 
 export type Dyn<T> = T | ((c: Ctx) => T);

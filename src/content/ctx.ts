@@ -16,6 +16,8 @@ export interface CtxInput {
   target: Target;
   /** precise browser GPS position, if the visitor allowed it */
   gps?: { lat: number; lon: number; acc: number } | null;
+  /** cable/link ids cut in the incident simulator */
+  cut?: string[];
 }
 
 const valid = (g: Geo | null | undefined): g is Geo => !!g && Number.isFinite(g.lat) && Number.isFinite(g.lon);
@@ -43,7 +45,7 @@ export function buildCtx(i: CtxInput): Ctx {
     destPoint = nearestHub(home).at;
     destName = 'unknown (no geo-IP data)';
   }
-  return { ...i, hi: buildHi(i.message, i.tls), home, homeName, destPoint, destName, route: buildRoute(home, homeName, destPoint, destName, i.access) };
+  return { ...i, hi: buildHi(i.message, i.tls), home, homeName, destPoint, destName, route: buildRoute(home, homeName, destPoint, destName, i.access, new Set(i.cut ?? [])), baseline: i.cut?.length ? buildRoute(home, homeName, destPoint, destName, i.access) : undefined };
 }
 
 export const defaultCtxInput: CtxInput = { message: 'how are you', tls: false, medium: 'copper', access: 'fiber', dest: 'edge', quic: false, me: null, target: DEFAULT_TARGET };

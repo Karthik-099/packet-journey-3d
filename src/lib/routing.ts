@@ -12,6 +12,8 @@ export interface Leg {
   points: LatLon[];
 }
 export interface Route {
+  /** true when cut cables leave no path at all */
+  unreachable?: boolean;
   legs: Leg[];
   points: LatLon[];
   km: number;
@@ -31,10 +33,13 @@ const linkPts = (l: Link, reverse: boolean): LatLon[] => {
 };
 const linkKm = (l: Link) => pathKm(linkPts(l, false)) * (l.kind === 'land' ? LAND_FACTOR : 1.05);
 
+/** Stable id for a link, used to cut it in incident simulations */
+export const linkId = (l: Link) => `${l.a}-${l.b}`;
+
 export const nearestHub = (p: LatLon) => HUBS.reduce((a, b) => (haversineKm(p, b.at) < haversineKm(p, a.at) ? b : a));
 
 /** Dijkstra over the hub graph by fiber km. */
-export function hubPath(from: string, to: string): Link[] {
+export function hubPath(from: string, to: string, cut: ReadonlySet<string> = new Set()): Link[] {
   const dist = new Map<string, number>(HUBS.map((h) => [h.id, Infinity]));
   const prev = new Map<string, Link>();
   dist.set(from, 0);
@@ -45,7 +50,7 @@ export function hubPath(from: string, to: string): Link[] {
     todo.delete(u);
     if (u === to || dist.get(u) === Infinity) break;
     for (const l of LINKS) {
-      if (l.a !== u && l.b !== u) continue;
+      if ((l.a !== u && l.b !== u) || cut.has(linkId(l))) continue;
       const v = l.a === u ? l.b : l.a;
       const d = dist.get(u)! + linkKm(l);
       if (d < dist.get(v)!) {
@@ -88,7 +93,7 @@ export function slantKm(alt: number, elDeg: number) {
 /**
  * Full path: home → (access: fiber, LEO or GEO satellite) → nearest hub → backbone → hub nearest the server → server.
  */
-export function buildRoute(home: LatLon, homeName: string, dest: LatLon, destName: string, access: Access): Route {
+export function buildRoute(home: LatLon, homeName: string, dest: LatLon, destName: string, access: Access, cut: ReadonlySet<string> = new Set()): Route {
   const h0 = nearestHub(home);
   const h1 = nearestHub(dest);
   const legs: Leg[] = [];
@@ -103,7 +108,9 @@ export function buildRoute(home: LatLon, homeName: string, dest: LatLon, destNam
     legs.push({ name: 'Satellite → ground station (gateway)', kind: 'space', from: 'satellite', to: `gateway near ${h0.name}`, km: up, ms: up / C_KM_PER_MS, points: [mid, h0.at] });
   }
   let cur = h0.id;
-  for (const l of h0.id === h1.id ? [] : hubPath(h0.id, h1.id)) {
+  const path = h0.id === h1.id ? [] : hubPath(h0.id, h1.id, cut);
+  const unreachable = h0.id !== h1.id && path.length === 0;
+  for (const l of path) {
     const reverse = l.b === cur;
     const next = reverse ? l.a : l.b;
     legs.push(leg(l.name, l.kind, hubById(cur).name, hubById(next).name, linkPts(l, reverse), linkKm(l)));
@@ -115,5 +122,5 @@ export function buildRoute(home: LatLon, homeName: string, dest: LatLon, destNam
   // Satellite: Starlink adds ~10–20 ms scheduling/processing; GEO modem/hub adds ~30 ms
   const extra = access === 'leo' ? 10 : access === 'geo' ? 30 : 0;
   const oneWayMs = legs.reduce((n, l) => n + l.ms, 0) + ROUTER_MS * (legs.length + 4) + extra;
-  return { legs, points, km, oneWayMs, hubs: [h0.id, ...legs.filter((l) => l.kind === 'subsea' || l.kind === 'land').map((l) => l.to)] };
+  return { unreachable, legs, points, km, oneWayMs, hubs: [h0.id, ...legs.filter((l) => l.kind === 'subsea' || l.kind === 'land').map((l) => l.to)] };
 }

@@ -319,6 +319,13 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
   const travelling = step.id === 'g-core' || step.id === 'g-back';
   const f = step.focus;
   const sat = c.access !== 'fiber';
+  const measured = useStore((s) => s.measured);
+  const measuredPts = useMemo(() => {
+    if (measured.domain !== c.target.domain || !measured.result) return null;
+    const ll = measured.result.hops.filter((h) => h.geo && Number.isFinite(h.geo.lat)).map((h) => [h.geo!.lat, h.geo!.lon] as LatLon);
+    const pts: LatLon[] = [c.home, ...ll, c.destPoint].filter((p, i, a) => i === 0 || haversineKm(p, a[i - 1]!) > 30);
+    return pts.length > 1 ? arc(pts, 0.06) : null;
+  }, [measured, c.home, c.destPoint, c.target.domain]);
   const routeHubs = useMemo(() => new Set(c.route.legs.flatMap((l) => [l.from, l.to])), [c.route]);
   // decluttered: only the object in focus carries a label (plus the destination on the globe overview)
   const label = (t: string, sub: string | undefined, on: boolean, pos: [number, number, number] = [0, 4.2, 0]) => (on ? <Label3D position={pos} title={t} sub={sub} on size={0.3} /> : null);
@@ -329,8 +336,9 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
       <Sun />
       <Stars radius={90} depth={40} count={3500} factor={3} saturation={0} fade speed={0.3} />
       <Earth />
-      <Backbone dim={f !== 'globe'} />
+      <Backbone dim={f !== 'globe'} cut={c.cut} />
       <Line points={L.forward} color="#fbbf24" lineWidth={2.2} transparent opacity={f === 'globe' || f === 'isp' || f === 'google' ? 0.95 : 0.35} />
+      {measuredPts && <Line points={measuredPts} color="#34d399" lineWidth={2.4} dashed dashSize={0.08} gapSize={0.05} />}
 
       {/* your home: laptop + router (+ dish) */}
       <OnGlobe f={L.home}>

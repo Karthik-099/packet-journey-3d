@@ -3,6 +3,15 @@ import { useMemo } from 'react';
 import { JOURNEYS, type Access, type Ctx, type Dest, type JourneyId, type Medium } from './content';
 import { buildCtx } from './content/ctx';
 import { DEFAULT_TARGET, geoIp, normalizeDomain, resolveTarget, type Geo, type Target } from './lib/lookup';
+import { bgpInfo, locateHops, runMtr, type BgpInfo, type MtrResult } from './lib/measure';
+
+export interface Measured {
+  status: 'idle' | 'loading' | 'ok' | 'failed';
+  domain?: string;
+  result?: MtrResult;
+  error?: string;
+}
+const OFFLINE_KEY = 'pj-offline';
 
 export type Mode = 'beginner' | 'expert';
 type Status = 'idle' | 'loading' | 'ok' | 'failed' | 'off';
@@ -31,6 +40,14 @@ interface State {
   conceptsOpen: boolean;
   helpOpen: boolean;
   guideOpen: boolean;
+  cut: string[];
+  /** when true, no request leaves the browser (no DNS, geo-IP or measurements) */
+  offline: boolean;
+  measured: Measured;
+  bgp: Record<string, BgpInfo | 'loading' | 'error'>;
+  measure: () => Promise<void>;
+  fetchBgp: (ip: string) => Promise<void>;
+  setOffline: (v: boolean) => void;
   tip: string | null;
   me: Geo | null;
   meStatus: Status;
@@ -86,6 +103,37 @@ export const useStore = create<State>((set, get) => ({
   conceptsOpen: false,
   helpOpen: false,
   guideOpen: false,
+  cut: [],
+  offline: typeof localStorage !== 'undefined' && localStorage.getItem(OFFLINE_KEY) === '1',
+  measured: { status: 'idle' },
+  bgp: {},
+  setOffline: (v) => {
+    localStorage.setItem(OFFLINE_KEY, v ? '1' : '0');
+    set(v ? { offline: true, meStatus: 'off' } : { offline: false });
+  },
+  measure: async () => {
+    const { target, me, offline } = get();
+    if (offline) return;
+    set({ measured: { status: 'loading', domain: target.domain } });
+    try {
+      const r = await runMtr(target.domain, me?.countryCode || 'IN');
+      set({ measured: { status: 'ok', domain: target.domain, result: r } });
+      const hops = await locateHops(r.hops);
+      if (get().measured.domain === target.domain) set({ measured: { status: 'ok', domain: target.domain, result: { ...r, hops } } });
+    } catch (e) {
+      set({ measured: { status: 'failed', domain: target.domain, error: e instanceof Error ? e.message : 'Measurement failed' } });
+    }
+  },
+  fetchBgp: async (ip) => {
+    if (get().offline || get().bgp[ip]) return;
+    set({ bgp: { ...get().bgp, [ip]: 'loading' } });
+    try {
+      const info = await bgpInfo(ip);
+      set({ bgp: { ...get().bgp, [ip]: info } });
+    } catch {
+      set({ bgp: { ...get().bgp, [ip]: 'error' } });
+    }
+  },
   tip: null,
   me: null,
   meStatus: 'idle',
@@ -105,6 +153,7 @@ export const useStore = create<State>((set, get) => ({
   prev: () => get().go(get().index - 1),
   setJourney: (j, index = 0) => set({ journey: j, index, playing: false, tip: null }),
   detectMe: async () => {
+    if (get().offline) return set({ meStatus: 'off' });
     set({ meStatus: 'loading' });
     const ac = new AbortController();
     const t = setTimeout(() => ac.abort(), 7000);
@@ -150,6 +199,10 @@ export const useStore = create<State>((set, get) => ({
       set({ targetStatus: 'failed', targetError: `"${input}" is not a valid domain name (try example.com)` });
       return;
     }
+    if (get().offline) {
+      set({ targetStatus: 'failed', targetError: 'Live data is off: turn it on to look up new domains. Showing built-in google.com data.' });
+      return;
+    }
     lookupCtl?.abort();
     const ac = (lookupCtl = new AbortController());
     const t = setTimeout(() => ac.abort(), 12000);
@@ -182,5 +235,6 @@ export function useCtx(): Ctx {
   const me = useStore((s) => (s.meStatus === 'ok' ? s.me : null));
   const target = useStore((s) => s.target);
   const gps = useStore((s) => s.gps);
-  return useMemo(() => buildCtx({ message, tls, medium, access, dest, quic, me, target, gps }), [message, tls, medium, access, dest, quic, me, target, gps]);
+  const cut = useStore((s) => s.cut);
+  return useMemo(() => buildCtx({ message, tls, medium, access, dest, quic, me, target, gps, cut }), [message, tls, medium, access, dest, quic, me, target, gps, cut]);
 }

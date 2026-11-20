@@ -5,7 +5,7 @@ const EXAMPLES = ['google.com', 'amazon.com', 'facebook.com', 'wikipedia.org', '
 
 /** "Type any domain" + visitor IP status. Lookups run in the browser (dns.google DoH, ipwho.is geo-IP). */
 export function TargetBar() {
-  const { target, targetStatus, targetError, trace, me, meStatus, gps, gpsStatus, set } = useStore();
+  const { target, targetStatus, targetError, trace, me, meStatus, gps, gpsStatus, set, offline, setOffline } = useStore();
   const [q, setQ] = useState(target.domain);
   useEffect(() => {
     // ?d=example.com comes from the landing page's "Trace my request" box.
@@ -53,6 +53,9 @@ export function TargetBar() {
             {targetStatus === 'loading' ? '…' : 'Go'}
           </button>
         </div>
+        <label className="ml-2 flex cursor-pointer items-center gap-1.5 text-[11px] text-slate-400" title="When off, nothing leaves your browser: no DNS, geo-IP or measurement requests.">
+          <input type="checkbox" checked={!offline} onChange={(e) => setOffline(!e.target.checked)} className="accent-violet-500" /> Live data
+        </label>
         <datalist id="domain-examples">{EXAMPLES.map((d) => <option key={d} value={d} />)}</datalist>
       </form>
       <div className="flex min-w-0 flex-col font-mono text-[10px] leading-tight">

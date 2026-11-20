@@ -73,15 +73,19 @@ export function Earth() {
 }
 
 /** All backbone links: subsea cables (blue) and terrestrial fiber (grey), merged into two draw calls. */
-export function Backbone({ dim }: { dim: boolean }) {
-  const [subsea, land] = useMemo(() => {
-    const pts = (kind: 'subsea' | 'land') => LINKS.filter((l) => l.kind === kind).map((l) => arc([hubById(l.a).at, ...(l.via ?? []), hubById(l.b).at], 0.012));
-    return [segmentsGeometry(pts('subsea')), segmentsGeometry(pts('land'))];
-  }, []);
+export function Backbone({ dim, cut = [] }: { dim: boolean; cut?: string[] }) {
+  const key = cut.join();
+  const [subsea, land, broken] = useMemo(() => {
+    const pts = (f: (l: (typeof LINKS)[number]) => boolean) => LINKS.filter(f).map((l) => arc([hubById(l.a).at, ...(l.via ?? []), hubById(l.b).at], 0.012));
+    const isCut = (l: (typeof LINKS)[number]) => cut.includes(`${l.a}-${l.b}`);
+    return [segmentsGeometry(pts((l) => l.kind === 'subsea' && !isCut(l))), segmentsGeometry(pts((l) => l.kind === 'land' && !isCut(l))), segmentsGeometry(pts(isCut))];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
   useEffect(() => () => {
     subsea.dispose();
     land.dispose();
-  }, [subsea, land]);
+    broken.dispose();
+  }, [subsea, land, broken]);
   return (
     <group {...tipProps('cable')}>
       <lineSegments geometry={subsea}>
@@ -89,6 +93,9 @@ export function Backbone({ dim }: { dim: boolean }) {
       </lineSegments>
       <lineSegments geometry={land}>
         <lineBasicMaterial color="#cbd5e1" transparent opacity={dim ? 0.15 : 0.35} />
+      </lineSegments>
+      <lineSegments geometry={broken}>
+        <lineBasicMaterial color="#f43f5e" toneMapped={false} />
       </lineSegments>
       {!dim && HUBS.map((h) => (
         <mesh key={h.id} position={surf(h.at, 0.015)}>

@@ -4,6 +4,7 @@ import { TCP_FLAGS, TCP_STATES, ICMP_TYPES } from '../content/reference/misc';
 import { HTTP_STATUS, type Status } from '../content/reference/http-status';
 import { PORTS, PORT_RANGES, type Port } from '../content/reference/ports';
 import { PROTOCOLS, type Protocol } from '../content/reference/protocols';
+import { LossLab, CwndChart } from './labs';
 
 export function Transport() {
   return (
@@ -35,6 +36,8 @@ export function Transport() {
           </ul>
         </Card>
       </Grid>
+      <LossLab />
+      <CwndChart />
       <h3>TCP flags</h3>
       <Simple head={['Flag', 'Meaning']} rows={TCP_FLAGS.map(([f, d]) => [<span className="font-mono text-violet-600">{f}</span>, d])} />
       <h3>TCP states (what <code>ss -tan</code> shows)</h3>

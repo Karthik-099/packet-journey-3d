@@ -8,8 +8,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     chunkSizeWarningLimit: 1500,
-    // three pages: landing, the 3D journey, the learning reference
-    rollupOptions: { input: { index: 'index.html', app: 'app.html', learn: 'learn.html' } },
+    // four pages: landing, the 3D journey, the learning reference, the packet lab
+    rollupOptions: { input: { index: 'index.html', app: 'app.html', learn: 'learn.html', lab: 'lab.html' } },
   },
   test: { environment: 'node' },
 });

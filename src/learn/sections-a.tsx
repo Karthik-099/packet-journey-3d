@@ -4,6 +4,7 @@ import { OSI_TABLE, DNS_RECORDS, DNS_RCODES, SUBNETS } from '../content/referenc
 import { buildHi } from '../lib/hi';
 import { toHex } from '../lib/bytes';
 import { cidrInfo, isValidIp } from '../lib/cidr';
+import { BgpHijack } from './labs';
 
 export function BigPicture() {
   return (
@@ -177,6 +178,7 @@ export function Routing() {
         <li><b>RPKI</b>: signed Route Origin Authorizations so routers can reject hijacked or leaked prefixes.</li>
         <li><b>Hot-potato routing</b>: hand traffic to the next network as early as possible, so forward and return paths are often different (asymmetric).</li>
       </ul>
+      <BgpHijack />
       <h3>TTL and traceroute</h3>
       <p>Each router decrements the IP TTL (IPv6: Hop Limit). At 0 the packet is dropped and an ICMP Time Exceeded comes back. Traceroute sends probes with TTL 1, 2, 3… to reveal each hop.<See step="g-core">Traceroute in 3D</See></p>
     </Section>
