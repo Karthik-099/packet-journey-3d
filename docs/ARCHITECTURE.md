@@ -32,8 +32,9 @@ This document explains every part of the code: what it does, how the pieces conn
 | `app.html` | `src/main.tsx` → `App.tsx` | The 3D journey (website visit, message through the layers). |
 | `learn.html` | `src/learn/main.tsx` | Reference with interactive labs. |
 | `lab.html` | `src/lab/main.tsx` | Packet Lab (pcap/pcapng). |
+| `atlas.html` | `src/atlas/main.tsx` | Internet Atlas: sourced facts (`content/reference/atlas.ts`), live per-second counters, provider shares, labelled 3D globe. |
 
-`vite.config.ts` builds all four and reads `BASE_PATH` (GitHub Pages sub-path vs `/` in the container). `VITE_SITE_URL` makes social preview URLs absolute. The landing page passes a domain as `app.html?d=example.com`.
+`vite.config.ts` builds all five and reads `BASE_PATH` (GitHub Pages sub-path vs `/` in the container). `VITE_SITE_URL` makes social preview URLs absolute. The landing page passes a domain as `app.html?d=example.com`.
 
 ---
 

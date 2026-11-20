@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { test, expect } from './fixtures';
 
-for (const path of ['/', '/learn.html', '/lab.html']) {
+for (const path of ['/', '/learn.html', '/lab.html', '/atlas.html']) {
   test(`no serious accessibility violations on ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.waitForLoadState('networkidle');

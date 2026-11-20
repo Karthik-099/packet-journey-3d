@@ -5,7 +5,8 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { Suspense } from 'react';
 import { Earth, Backbone, R, surf } from '../scene/Earth';
-import { hubById } from '../content/network';
+import { HUBS, hubById } from '../content/network';
+import { Label3D } from '../scene/common';
 
 /** Real hub pairs, so the arcs show plausible long-haul flows. */
 const PAIRS: [string, string][] = [
@@ -38,7 +39,7 @@ function Arc({ a, b, color, offset }: { a: string; b: string; color: string; off
   );
 }
 
-function World() {
+function World({ labels }: { labels: boolean }) {
   const g = useRef<THREE.Group>(null);
   useFrame((_, dt) => g.current && (g.current.rotation.y += dt * 0.06));
   return (
@@ -46,12 +47,13 @@ function World() {
       <Earth />
       <Backbone dim={false} />
       {PAIRS.map(([a, b], i) => <Arc key={a + b} a={a} b={b} color={COLORS[i % COLORS.length]!} offset={i / PAIRS.length} />)}
+      {labels && HUBS.map((h) => <Label3D key={h.id} position={surf(h.at, 0.25).toArray()} title={h.name} size={0.13} panel={false} />)}
     </group>
   );
 }
 
 /** Decorative, interactive 3D Earth for the landing hero (lazy-loaded). */
-export default function HeroGlobe() {
+export default function HeroGlobe({ labels = false }: { labels?: boolean }) {
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return (
     <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 14.5], fov: 42 }} gl={{ antialias: true, alpha: true }} frameloop={reduced ? 'demand' : 'always'} role="img" aria-label="Rotating 3D Earth with internet backbone links">
@@ -59,7 +61,7 @@ export default function HeroGlobe() {
       <directionalLight position={[8, 6, 10]} intensity={2.4} color="#e0f2fe" />
       <Stars radius={60} depth={30} count={1500} factor={2.5} saturation={0} fade />
       <Suspense fallback={null}>
-        <World />
+        <World labels={labels} />
       </Suspense>
       <OrbitControls enablePan={false} enableZoom={false} rotateSpeed={0.5} />
       <EffectComposer multisampling={0}>

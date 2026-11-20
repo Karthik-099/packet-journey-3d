@@ -1,24 +1,22 @@
+import { Logo } from './Logo';
 const BASE = import.meta.env.BASE_URL;
 
-export const links = { home: `${BASE}`, app: `${BASE}app.html`, learn: `${BASE}learn.html`, lab: `${BASE}lab.html` };
+export const links = { home: `${BASE}`, app: `${BASE}app.html`, learn: `${BASE}learn.html`, lab: `${BASE}lab.html`, atlas: `${BASE}atlas.html` };
 
 /** Top navigation shared by the landing and learning pages. */
-export function Nav({ active }: { active: 'home' | 'learn' | 'lab' }) {
+export function Nav({ active }: { active: 'home' | 'learn' | 'lab' | 'atlas' }) {
   return (
     <header className="sticky top-0 z-40 border-b border-blue-100/80 bg-white/80 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3" aria-label="Main">
-        <a href={links.home} className="flex items-center gap-2 whitespace-nowrap font-semibold text-ink">
-          <span className="relative flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-60 motion-reduce:hidden" />
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-blue-500" />
-          </span>
-          Packet Journey
+        <a href={links.home} className="whitespace-nowrap" aria-label="Packet Journey home">
+          <Logo />
         </a>
         <div className="ml-auto flex items-center gap-1 text-sm">
           <a href={links.home} className={`hidden rounded-lg px-3 py-1.5 sm:inline ${active === 'home' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Home</a>
           <a href={links.learn} className={`rounded-lg px-3 py-1.5 ${active === 'learn' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Learn</a>
           <a href={links.lab} className={`hidden rounded-lg px-3 py-1.5 sm:inline ${active === 'lab' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Packet Lab</a>
-          <a href={links.app} className="ml-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-2 font-semibold text-white shadow-md shadow-blue-500/30 hover:brightness-110">
+          <a href={links.atlas} className={`hidden rounded-lg px-3 py-1.5 sm:inline ${active === 'atlas' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Internet Atlas</a>
+          <a href={links.app} className="ml-2 whitespace-nowrap rounded-md border border-slate-900 bg-[#04121f] px-4 py-2 font-display font-semibold uppercase tracking-wider text-emerald-300 shadow-md hover:bg-[#0a2233]">
             Start<span className="hidden sm:inline"> the journey</span> →
           </a>
         </div>
@@ -41,6 +39,8 @@ export function Footer() {
             <li><a className="hover:text-ink" href={links.app}>3D journey</a></li>
             <li><a className="hover:text-ink" href={`${links.app}#hi-l7`}>A message through the 7 layers</a></li>
             <li><a className="hover:text-ink" href={links.learn}>Learn networking</a></li>
+            <li><a className="hover:text-ink" href={links.lab}>Packet Lab</a></li>
+            <li><a className="hover:text-ink" href={links.atlas}>Internet Atlas</a></li>
           </ul>
         </div>
         <div>

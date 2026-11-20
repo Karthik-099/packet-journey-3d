@@ -1,3 +1,5 @@
+<p align="center"><img src="public/logo.svg" alt="Packet Journey" width="320"></p>
+
 # Packet Journey
 
 **See how the internet really works.** Type any website and follow your request from the key under your finger, through all seven OSI layers, your router and ISP, across submarine cables or satellites, to a data center and back. It's drawn on a 3D Earth, starts from your real location, and uses real DNS, real packet bytes and real measurements. A complete networking reference and a packet-capture lab come with it.
@@ -34,6 +36,9 @@ How the world is connected (tiers, peering, IXPs, RIRs) · OSI and TCP/IP with l
 ### 4. Packet Lab: `lab.html`
 Drop a Wireshark/tcpdump **.pcap or .pcapng**. It is decoded entirely in the browser: Ethernet, VLAN, Linux cooked, ARP, IPv4/IPv6, ICMP, TCP, UDP, DNS, HTTP and TLS records. You get a packet list, a layer tree with hex, protocol hierarchy, top conversations, DNS lookups, TCP handshake RTTs and retransmissions. A sample capture can be loaded or downloaded to open in Wireshark.
 
+### 5. Internet Atlas: `atlas.html`
+The internet by the numbers, every figure linked to its source and date: people online, submarine cables (systems, total km, longest), international bandwidth, Starlink, data centers and hyperscale sites, IXPs and facilities, routing-table size and number of networks, IPv6 adoption, domains, TLDs, root server instances, websites, live per-second counters (HTTP requests, DNS queries, emails, searches), cloud and web-server market share, the biggest edge networks and Tier-1 carriers.
+
 ### Also
 Wireshark-style inspector · latency budget · video mode (camera follows the packet, subtitles, optional voice) · Beginner/Expert · deep and share links · keyboard shortcuts (`?`) · first-visit guide · per-step RFC sources · 2.5D fallback for phones and browsers without WebGL · reduced-motion support · a **Live data** switch that turns off every outside request.
 
@@ -48,6 +53,7 @@ flowchart TB
     A[app.html<br/>3D journey]
     D[learn.html<br/>Reference]
     P[lab.html<br/>Packet Lab]
+    AT[atlas.html<br/>Internet Atlas]
   end
   subgraph lib["src/lib · pure TypeScript, unit-tested"]
     PK[packets · inspect · hi<br/>IPv4 · TCP · UDP · Ethernet+CRC-32 · DNS]
@@ -87,7 +93,7 @@ The full walkthrough of every module is in **[docs/ARCHITECTURE.md](docs/ARCHITE
 | **Zustand** | Tiny store; components and the 3D tree subscribe to exactly what they need. |
 | **Framer Motion** | Panel and drawer transitions. |
 | **Tailwind CSS v4** | Utility styling with a small theme; no CSS framework runtime. |
-| **Inter + JetBrains Mono (fontsource)** | Bundled fonts: no font CDN. |
+| **Chakra Petch + Inter + JetBrains Mono (fontsource)** | Square display face for headings, Inter for reading, mono for bytes; all bundled, no font CDN. |
 | **topojson-client + world-atlas** | Natural Earth coastlines for the flat map. |
 | **Vitest** | 51 unit tests: checksums, CRC, DNS, routing, cable cuts, satellites, CIDR, lookups, measurements, pcap parsing, simulations, content. |
 | **Playwright + axe-core** | End-to-end tests of every journey step and accessibility checks in CI. |
@@ -101,7 +107,7 @@ The full walkthrough of every module is in **[docs/ARCHITECTURE.md](docs/ARCHITE
 
 ```bash
 npm ci
-npm run dev          # http://localhost:5173  (landing) · /app.html · /learn.html · /lab.html
+npm run dev          # http://localhost:5173  (landing) · /app.html · /learn.html · /lab.html · /atlas.html
 make ci              # lint + typecheck + unit tests + build
 npm run e2e          # Playwright end-to-end + accessibility (after npx playwright install chromium)
 make up              # production container via docker compose → http://localhost:8080

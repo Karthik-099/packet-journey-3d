@@ -2,6 +2,9 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/600.css";
+@import "@fontsource/chakra-petch/500.css";
+@import "@fontsource/chakra-petch/600.css";
+@import "@fontsource/chakra-petch/700.css";
 
 @theme {
   /* app theme: network-operations black with green + cyan accents */
@@ -13,10 +16,13 @@
   --color-noc-amber: #fbbf24;
   --color-noc-rose: #fb7185;
   --font-sans: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+  /* square, technical display face for headings; Inter stays for long reading */
+  --font-display: 'Chakra Petch', 'Inter Variable', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
 
 html, body, #root { height: 100%; }
+h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing: 0.01em; }
 body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11', 'ss01'; }
 .panel { @apply rounded-lg border border-noc-edge bg-noc-panel/90 backdrop-blur; }
 .chip { @apply inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider; }
@@ -71,4 +77,8 @@ input[type=range] { accent-color: var(--color-noc-cyan); }
     radial-gradient(40rem 30rem at 50% 120%, rgba(34, 211, 238, .18), transparent 60%),
     linear-gradient(160deg, #02060c 0%, #04121f 55%, #031018 100%);
 }
-.icon-tile { @apply grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/30; }
+/* technical square tile: dark panel, hairline border, corner ticks, accent icon */
+.icon-tile { @apply relative grid h-12 w-12 place-items-center rounded-md border border-slate-700 bg-[#04121f] text-emerald-300 shadow-[inset_0_0_0_1px_rgba(52,211,153,.08)]; }
+.icon-tile::before, .icon-tile::after { content: ''; position: absolute; width: 8px; height: 8px; border-color: #22d3ee; }
+.icon-tile::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 6px; }
+.icon-tile::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 6px; }

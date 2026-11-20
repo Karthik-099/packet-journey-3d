@@ -11,6 +11,7 @@ import { Concepts } from './components/Concepts';
 import { ObjectTip } from './components/ObjectTip';
 import { TargetBar } from './components/TargetBar';
 import { Seg } from './components/ui';
+import { Logo } from './site/Logo';
 import { TripHud } from './components/TripSummary';
 import { Help } from './components/Help';
 import { LocationPrompt } from './components/LocationPrompt';
@@ -35,8 +36,8 @@ export default function App() {
     <div className="app-bg flex min-h-full flex-col md:h-full">
       <header className="flex flex-wrap items-center gap-3 border-b border-noc-edge bg-noc-bg/80 px-4 py-2.5 backdrop-blur">
         <a href={HOME} className="flex items-center gap-2" aria-label="Packet Journey home">
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-noc-cyan shadow-[0_0_10px] shadow-noc-cyan" />
-          <h1 className="font-mono text-sm font-bold tracking-[0.2em] text-white">PACKET JOURNEY<span className="text-noc-cyan">·3D</span></h1>
+          <h1 className="sr-only">Packet Journey</h1>
+          <Logo dark />
         </a>
         <Seg label="Journey" value={journey} onChange={(j) => setJourney(j)} options={JOURNEY_MENU} />
         {journey === 'google' ? <TargetBar /> : <div className="flex-1" />}
