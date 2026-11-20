@@ -1,0 +1,6 @@
+apiVersion: v2
+name: packet-journey
+description: Packet Journey 3D, an interactive 3D walkthrough of how data crosses the internet
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    image: packet-journey-3d:local
+    ports:
+      - "8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp/nginx
+      - /var/cache/nginx
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    restart: unless-stopped

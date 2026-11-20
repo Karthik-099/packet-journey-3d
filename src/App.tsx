@@ -25,7 +25,7 @@ export default function App() {
   const [loaded3d, setLoaded3d] = useState(view === '3d');
   if (view === '3d' && !loaded3d) setLoaded3d(true);
   return (
-    <div className="flex h-full flex-col bg-noc-bg">
+    <div className="flex min-h-full flex-col bg-noc-bg md:h-full">
       <header className="flex flex-wrap items-center gap-3 border-b border-noc-edge px-3 py-2">
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-noc-cyan shadow-[0_0_10px] shadow-noc-cyan" />
@@ -40,15 +40,15 @@ export default function App() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[200px_1fr_400px]">
+      <div className="grid flex-1 grid-cols-1 md:min-h-0 md:grid-cols-[200px_1fr_400px]">
         <aside className="hidden min-h-0 overflow-auto border-r border-noc-edge md:block">
           <p className="h-label px-3 pt-3">{JOURNEYS[journey].title}</p>
           <StepList />
         </aside>
 
-        <main className="flex min-h-0 flex-col">
+        <main className="flex flex-col md:min-h-0">
           {journey === 'hi' ? <MessageInput /> : <LatencyBar />}
-          <div className="relative min-h-[300px] flex-1 border-y border-noc-edge">
+          <div className="relative h-[52vh] min-h-[300px] border-y border-noc-edge md:h-auto md:flex-1">
             {loaded3d && (
               <div className={view === '3d' ? 'absolute inset-0' : 'hidden'}>
                 <Suspense fallback={<div className="grid h-full place-items-center font-mono text-xs text-slate-500">loading 3D…</div>}>
@@ -69,7 +69,7 @@ export default function App() {
           <Controls />
         </main>
 
-        <aside className="min-h-0 overflow-auto border-l border-noc-edge bg-noc-panel/40" aria-label="Step details">
+        <aside className="border-noc-edge bg-noc-panel/40 md:min-h-0 md:overflow-auto md:border-l" aria-label="Step details">
           <SidePanel />
         </aside>
       </div>
