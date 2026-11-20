@@ -34,7 +34,7 @@ Type anything ("how are you"). Watch it become UTF-8 bytes, optionally a TLS rec
 How the world is connected (tiers, peering, IXPs, RIRs) · OSI and TCP/IP with live encapsulation · addressing, subnets, NAT, IPv6, endpoints · routing (OSPF, IS-IS, BGP, anycast, ECMP, MPLS, RPKI) · DNS · TCP/UDP/QUIC (flags, states, MTU) · TLS & HTTPS · HTTP methods and **every status code** with production causes · **port list** · **protocol directory** (60+) · submarine cable anatomy (repeaters/EDFAs, power feed, branching units, landing stations, repair ships) and satellites (LEO/MEO/GEO) · how Google, Cloudflare, Meta, Netflix, AWS and Akamai run their networks · cloud and Kubernetes networking · security · troubleshooting commands · interview questions · a quiz · glossary.
 
 ### Also
-Wireshark-style packet inspector (tree + hex/binary) · latency budget per step · video mode with camera follow, subtitles and optional voice narration · Beginner/Expert · deep links and share links · keyboard shortcuts (`?`) · click any 3D object for an explanation · 2.5D fallback for phones and browsers without WebGL · `prefers-reduced-motion` respected · thumbs-up counter · "Save as PDF" for the reference.
+Wireshark-style packet inspector (tree + hex/binary) · latency budget per step · video mode with camera follow, subtitles and optional voice narration · Beginner/Expert · deep links and share links · keyboard shortcuts (`?`) · click any 3D object for an explanation · 2.5D fallback for phones and browsers without WebGL · `prefers-reduced-motion` respected · "Save as PDF" for the reference.
 
 ---
 
@@ -61,7 +61,6 @@ flowchart TB
   S[(Zustand store<br/>+ buildCtx)]
   ext1[(dns.google)]
   ext2[(ipwho.is / ipapi.co)]
-  ext3[(Cloudflare Worker<br/>like counter)]
   lib --> content --> S
   K --> ext1 & ext2
   S --> A
@@ -69,7 +68,6 @@ flowchart TB
   A --> W[R3F 3D world<br/>lazy-loaded]
   REF --> D
   lib --> D
-  L & D & A --> ext3
 ```
 
 Full walkthrough of every module: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
@@ -89,10 +87,10 @@ Full walkthrough of every module: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 | **Tailwind CSS v4** | Utility styling with a small custom theme; no CSS framework runtime. |
 | **topojson-client + world-atlas** | Natural Earth coastlines for the flat SVG map. |
 | **@fontsource/jetbrains-mono** | Bundled font for 3D text (troika needs WOFF; no third-party font CDN). |
-| **Vitest** | Unit tests for checksums, CRC, DNS, routing, CIDR, lookup parsing, content and the like counter. |
+| **Vitest** | Unit tests for checksums, CRC, DNS, routing, CIDR, lookup parsing, and content. |
 | **ESLint + typescript-eslint** | Lint gate in CI. |
 
-**Data sources (all requests come from the visitor's browser):** `dns.google` (DNS-over-HTTPS JSON API), `ipwho.is` with `ipapi.co` fallback (geo-IP), NASA Blue Marble / Black Marble imagery (public domain, bundled), Natural Earth (public domain). Nothing is stored server-side except the anonymous like count.
+**Data sources (all requests come from the visitor's browser):** `dns.google` (DNS-over-HTTPS JSON API), `ipwho.is` with `ipapi.co` fallback (geo-IP), NASA Blue Marble / Black Marble imagery (public domain, bundled), Natural Earth (public domain). Nothing is stored server-side: there are no accounts, no cookies and no analytics.
 
 ---
 
@@ -110,9 +108,6 @@ make up            # production image via docker compose → http://localhost:80
 ### GitHub Pages
 `.github/workflows/pages.yml` builds with `BASE_PATH=/<repo>/` and deploys on every push to `main`.
 One-time setup: **Settings → Pages → Source: GitHub Actions**. For a custom domain, add it there and set the repository variable `PAGES_BASE_PATH` to `/`.
-
-### Like counter (optional)
-See [`likes-worker/README.md`](likes-worker/README.md): deploy the Cloudflare Worker (free), then set the repository variable `VITE_LIKES_API`. Without it the button still works per visitor but shows no shared count.
 
 ### Container → AKS with Argo CD
 ```mermaid
@@ -143,7 +138,7 @@ This project exists to make networking understandable for everyone, from student
 
 - Found something technically wrong or oversimplified? Open an issue with the step id (e.g. `#g-dns-auth`) and a source.
 - Ideas for new steps, protocols, cables or visualisations? Open an issue or a pull request. Content lives in `src/content/` and rarely needs 3D changes.
-- If it helped you, a thumbs-up on the site or a star on the repo is appreciated.
+- If it helped you, a star on the repo is appreciated.
 
 ## Credits
 

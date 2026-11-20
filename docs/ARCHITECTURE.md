@@ -120,17 +120,11 @@ Built with **React Three Fiber** (React renderer for Three.js) and **drei** help
 
 ## 8. Landing and Learn pages (`src/landing`, `src/learn`, `src/site`)
 
-Plain React + Tailwind, no 3D. `site/Nav.tsx` holds the shared nav and footer; `site/Like.tsx` is the thumbs-up button. `learn/` is split into four section files. Interactive parts (live encapsulation table, CIDR calculator, searchable port/status/protocol tables, quiz) reuse the same `src/lib` code as the 3D journey, so the reference and the visualisation can never disagree. Reading progress is kept in `localStorage`.
+Plain React + Tailwind, no 3D. `site/Nav.tsx` holds the shared nav and footer. `learn/` is split into four section files. Interactive parts (live encapsulation table, CIDR calculator, searchable port/status/protocol tables, quiz) reuse the same `src/lib` code as the 3D journey, so the reference and the visualisation can never disagree. Reading progress is kept in `localStorage`.
 
 ---
 
-## 9. Like counter (`likes-worker/`)
-
-A Cloudflare Worker with one **Durable Object**, so increments are atomic and strongly consistent (everyone sees the same number immediately). `GET /likes` returns `{count, liked}`; `POST /likes/up` adds one like per visitor. Visitors are de-duplicated by a salted SHA-256 of their IP; raw IPs are never stored. The site reads the URL from `VITE_LIKES_API` at build time.
-
----
-
-## 10. Delivery: CI/CD and runtime
+## 9. Delivery: CI/CD and runtime
 
 - **`.github/workflows/ci.yml`**: lint → typecheck → Vitest → build → Docker build & push to GHCR (tag = git SHA) → Trivy scan (SARIF to the Security tab; fails on fixable CRITICAL) → commits the new tag to `deploy/helm/.../values.yaml` for Argo CD.
 - **`.github/workflows/pages.yml`**: builds with the right base path and deploys to GitHub Pages.
@@ -139,7 +133,7 @@ A Cloudflare Worker with one **Durable Object**, so increments are atomic and st
 
 ---
 
-## 11. How to…
+## 10. How to…
 
 - **Fix a sentence or add a step**: edit `src/content/journey-*.ts`. If the step needs a new panel widget, add a case in `components/widgets.tsx`; for packet movement in 3D, add a case in `motionFor()`.
 - **Add a cable**: append a `Link` with waypoints in `src/content/network.ts`. Routing, the globe and the flat map pick it up automatically.

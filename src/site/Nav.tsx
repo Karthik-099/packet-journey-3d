@@ -44,7 +44,7 @@ export function Footer() {
         </div>
         <div>
           <div className="font-semibold text-white">Privacy</div>
-          <p className="mt-1">No accounts, no tracking. Live lookups run in your browser: DNS via dns.google, IP location via ipwho.is / ipapi.co.</p>
+          <p className="mt-1">No accounts, no cookies, no tracking, nothing stored. Live lookups run in your browser: DNS via dns.google, IP location via ipwho.is / ipapi.co.</p>
         </div>
       </div>
     </footer>

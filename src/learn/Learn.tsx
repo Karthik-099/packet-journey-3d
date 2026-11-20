@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Footer, Nav } from '../site/Nav';
-import { FloatingLike } from '../site/Like';
 import { BigPicture, Osi, Addressing, Routing, Dns } from './sections-a';
 import { Transport, Tls, Http, Ports, Protocols } from './sections-b';
 import { Physical, BigNetworks, Cloud, Security, Toolkit, Glossary } from './sections-c';
@@ -117,7 +116,6 @@ export function Learn() {
         </div>
       </div>
       <Footer />
-      <FloatingLike />
     </div>
   );
 }

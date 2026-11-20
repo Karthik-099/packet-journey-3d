@@ -6,9 +6,6 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-# optional: URL of the like-counter worker (see likes-worker/README.md)
-ARG VITE_LIKES_API=""
-ENV VITE_LIKES_API=$VITE_LIKES_API
 RUN npm run build
 
 # ---------- runtime ----------

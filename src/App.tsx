@@ -12,7 +12,6 @@ import { ObjectTip } from './components/ObjectTip';
 import { TargetBar } from './components/TargetBar';
 import { Seg } from './components/ui';
 import { TripHud } from './components/TripSummary';
-import { Like } from './site/Like';
 import { Help } from './components/Help';
 import { Scene2D } from './scene/Scene2D';
 
@@ -44,7 +43,6 @@ export default function App() {
           <Seg label="View" value={view} onChange={(v) => set({ view: v })} options={[{ v: '3d', l: '3D' }, { v: '2d', l: '2.5D' }]} />
           <button className="btn text-xs" onClick={() => set({ conceptsOpen: true })}>Concepts</button>
           <a className="btn btn-on text-xs" href={DOCS}>Learn</a>
-          <Like compact />
         </div>
       </header>
 

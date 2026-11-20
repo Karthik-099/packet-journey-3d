@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Footer, Nav, links } from '../site/Nav';
-import { FloatingLike } from '../site/Like';
 import { normalizeDomain } from '../lib/lookup';
 
 const HOPS = [
@@ -179,7 +178,6 @@ export function Landing() {
         </section>
       </main>
       <Footer />
-      <FloatingLike />
     </div>
   );
 }
