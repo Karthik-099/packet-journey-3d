@@ -80,7 +80,7 @@ import { Billboard, Text } from '@react-three/drei';
  * Keep 3D text inside the bundled font's Latin + punctuation subset. Any other glyph makes troika
  * download fallback fonts from a CDN (a hidden third-party request that our CSP also blocks).
  */
-export const glyphSafe = (s: string) => s.replace(/→/g, '›').replace(/←/g, '‹').replace(/[^\u0000-\u024F\u2000-\u206F]/g, '?');
+export const glyphSafe = (s: string) => s.replace(/→/g, '›').replace(/←/g, '‹').replace(/[^\n\u0020-\u024F\u2000-\u206F]/g, '?');
 
 /** Real 3D label (no DOM): optional subtitle, panel background, highlight state. */
 export function Label3D({

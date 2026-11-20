@@ -2,10 +2,10 @@ import { test as base } from '@playwright/test';
 
 /** Every test runs offline: external APIs blocked, guide dismissed, location prompt skipped. */
 export const test = base.extend({
-  page: async ({ page }, use) => {
+  page: async ({ page }, provide) => {
     await page.route(/^https:\/\/(?!localhost)/, (r) => r.abort());
     await page.addInitScript(() => localStorage.setItem('pj-guide-seen', '1'));
-    await use(page);
+    await provide(page);
   },
 });
 export { expect } from '@playwright/test';
