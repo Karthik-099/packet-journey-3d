@@ -4,7 +4,7 @@ import type { Geo, Target } from '../lib/lookup';
 import type { Access, Route } from '../lib/routing';
 import type { LatLon } from '../lib/geo';
 
-export type JourneyId = 'hi' | 'google';
+export type JourneyId = 'hi' | 'google' | 'k8s' | 'email';
 export type Pdu = 'Data' | 'Segment' | 'Packet' | 'Frame' | 'Bits';
 export type Medium = 'copper' | 'fiber' | 'wifi';
 /** For CDN/anycast targets: the nearby edge (realistic) or the geo-IP registered location */
@@ -102,14 +102,33 @@ export interface Step {
   hosts?: Dyn<Host[]>;
   /** Contribution to the running latency budget, in ms */
   latencyMs?: (c: Ctx) => number;
+  /** Graph journeys: node ids the packet travels through in this step */
+  path?: string[];
   /** Minimum time on screen while playing (e.g. to let an animation finish) */
   minPlayMs?: (c: Ctx) => number;
+}
+
+/** Data-driven 3D layout for journeys drawn as a graph (Kubernetes, email…). */
+export interface GraphNode {
+  id: string;
+  label: string;
+  sub?: string;
+  kind: 'user' | 'dns' | 'lb' | 'node' | 'pod' | 'service' | 'policy' | 'server';
+  /** [x, z] on the floor */
+  pos: [number, number];
+  group?: string;
+}
+export interface Graph {
+  nodes: GraphNode[];
+  edges: [string, string][];
+  groups?: { id: string; label: string; from: [number, number]; to: [number, number] }[];
 }
 
 export interface Journey {
   id: JourneyId;
   title: Dyn<string>;
   subtitle: Dyn<string>;
+  graph?: Graph;
   steps: Step[];
 }
 

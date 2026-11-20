@@ -86,7 +86,10 @@ export function useShortcuts() {
       else if (e.key === 'Home') s.go(0);
       else if (e.key === 'End') s.go(1e9);
       else if (e.key.toLowerCase() === 'e') s.set({ mode: s.mode === 'expert' ? 'beginner' : 'expert' });
-      else if (e.key.toLowerCase() === 'j') s.setJourney(s.journey === 'google' ? 'hi' : 'google');
+      else if (e.key.toLowerCase() === 'j') {
+        const order = Object.keys(JOURNEYS) as (keyof typeof JOURNEYS)[];
+        s.setJourney(order[(order.indexOf(s.journey) + 1) % order.length]!);
+      }
       else return;
     };
     window.addEventListener('keydown', onKey);

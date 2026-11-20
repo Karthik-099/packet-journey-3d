@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { JOURNEYS, resolve } from './content';
+import { JOURNEYS, JOURNEY_MENU, resolve } from './content';
 import { useCtx, useStep, useStore } from './store';
 import { useDeepLink, usePlayback, useShortcuts } from './hooks';
 import { Controls } from './components/Controls';
@@ -38,7 +38,7 @@ export default function App() {
           <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-noc-cyan shadow-[0_0_10px] shadow-noc-cyan" />
           <h1 className="font-mono text-sm font-bold tracking-[0.2em] text-white">PACKET JOURNEY<span className="text-noc-cyan">·3D</span></h1>
         </a>
-        <Seg label="Journey" value={journey} onChange={(j) => setJourney(j)} options={[{ v: 'google', l: 'Visit a website' }, { v: 'hi', l: 'Message → 7 layers' }]} />
+        <Seg label="Journey" value={journey} onChange={(j) => setJourney(j)} options={JOURNEY_MENU} />
         {journey === 'google' ? <TargetBar /> : <div className="flex-1" />}
         <div className="flex flex-wrap items-center gap-2">
           <Seg label="Detail level" value={mode} onChange={(m) => set({ mode: m })} options={[{ v: 'beginner', l: 'Beginner' }, { v: 'expert', l: 'Expert' }]} />
@@ -56,7 +56,7 @@ export default function App() {
         </aside>
 
         <main className="flex flex-col md:min-h-0">
-          {journey === 'hi' ? <MessageInput /> : <LatencyBar />}
+          {journey === 'hi' ? <MessageInput /> : journey === 'google' ? <LatencyBar /> : <p className="px-4 py-3 text-sm leading-6 text-slate-300">{resolve(JOURNEYS[journey].subtitle, c)}</p>}
           <div className="relative h-[52vh] min-h-[300px] border-y border-noc-edge md:h-auto md:flex-1">
             {loaded3d && (
               <div className={view === '3d' ? 'absolute inset-0' : 'hidden'}>

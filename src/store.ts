@@ -209,7 +209,7 @@ export const useStore = create<State>((set, get) => ({
     set({ targetStatus: 'loading', targetError: null });
     try {
       const target = await resolveTarget(domain, ac.signal);
-      if (lookupCtl === ac) set({ target, targetStatus: 'ok', journey: 'google' });
+      if (lookupCtl === ac) set({ target, targetStatus: 'ok' });
     } catch (e) {
       if (lookupCtl === ac) set({ targetStatus: 'failed', targetError: ac.signal.aborted ? 'Lookup timed out' : e instanceof Error ? e.message : 'Lookup failed' });
     } finally {

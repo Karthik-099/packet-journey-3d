@@ -1,8 +1,18 @@
 import { journeyHi } from './journey-hi';
 import { journeyGoogle } from './journey-google';
+import { journeyK8s } from './journey-k8s';
+import { journeyEmail } from './journey-email';
 import type { Journey, JourneyId } from './types';
 
-export const JOURNEYS: Record<JourneyId, Journey> = { hi: journeyHi, google: journeyGoogle };
+export const JOURNEYS: Record<JourneyId, Journey> = { google: journeyGoogle, hi: journeyHi, k8s: journeyK8s, email: journeyEmail };
+
+/** Menu order and short names */
+export const JOURNEY_MENU: { v: JourneyId; l: string }[] = [
+  { v: 'google', l: 'Visit a website' },
+  { v: 'hi', l: 'Message → 7 layers' },
+  { v: 'k8s', l: 'Kubernetes request' },
+  { v: 'email', l: 'Email delivery' },
+];
 
 export const OSI = [
   { n: 7, name: 'Application', tcpip: 'Application' },
