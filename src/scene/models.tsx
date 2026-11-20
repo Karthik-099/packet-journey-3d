@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import fontRegular from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff?url';
-import { tipProps } from './common';
+import { glyphSafe, tipProps } from './common';
 
 /** Small low-poly models, built around their own origin with Y up (placed on the globe by <OnGlobe>). */
 
@@ -23,16 +23,16 @@ export function Laptop({ stepId }: { stepId: string }) {
   });
   return (
     <group {...tipProps('laptop')}>
-      <RoundedBox args={[2.6, 0.1, 1.7]} radius={0.04}>{body('#3b3363')}</RoundedBox>
+      <RoundedBox args={[2.6, 0.1, 1.7]} radius={0.04}>{body('#334155')}</RoundedBox>
       {/* keyboard deck and trackpad as clean inset plates */}
-      <RoundedBox args={[2.25, 0.03, 0.85]} radius={0.02} position={[0, 0.06, -0.12]}>{body('#1a1538')}</RoundedBox>
-      <RoundedBox args={[0.8, 0.02, 0.45]} radius={0.02} position={[0, 0.06, 0.55]}>{body('#2a2350')}</RoundedBox>
+      <RoundedBox args={[2.25, 0.03, 0.85]} radius={0.02} position={[0, 0.06, -0.12]}>{body('#0f172a')}</RoundedBox>
+      <RoundedBox args={[0.8, 0.02, 0.45]} radius={0.02} position={[0, 0.06, 0.55]}>{body('#1e293b')}</RoundedBox>
       <mesh ref={enter} position={[1.2, 0.08, -0.1]} {...tipProps('keyboard')}>
         <boxGeometry args={[0.2, 0.05, 0.35]} />
         {glow(stepId === 'g-key' ? '#fbbf24' : '#334155', stepId === 'g-key' ? 1.5 : 0.2)}
       </mesh>
       <group position={[0, 0.85, -0.85]} rotation={[-0.2, 0, 0]} {...tipProps('browser')}>
-        <RoundedBox args={[2.6, 1.6, 0.06]} radius={0.03}>{body('#3b3363')}</RoundedBox>
+        <RoundedBox args={[2.6, 1.6, 0.06]} radius={0.03}>{body('#334155')}</RoundedBox>
         <mesh position={[0, 0, 0.035]}>
           <planeGeometry args={[2.4, 1.4]} />
           <meshStandardMaterial ref={screen} color="#020617" emissive="#0ea5e9" emissiveIntensity={0.45} />
@@ -46,7 +46,7 @@ export function ScreenText({ text, dark }: { text: string; dark: boolean }) {
   return (
     <group position={[0, 0.85, -0.85]} rotation={[-0.2, 0, 0]}>
       <Text font={fontRegular} position={[0, 0, 0.05]} fontSize={0.14} maxWidth={2.2} textAlign="center" anchorX="center" anchorY="middle" color={dark ? '#0f172a' : '#e0f2fe'}>
-        {text}
+        {glyphSafe(text)}
       </Text>
     </group>
   );
@@ -139,7 +139,7 @@ export function ServerPair({ id, on }: { id: string; on: boolean }) {
           {[0, 1, 2, 3, 4].map((i) => (
             <mesh key={i} position={[0, -0.6 + i * 0.3, 0.41]}>
               <planeGeometry args={[0.6, 0.05]} />
-              {glow(on ? '#c4b5fd' : '#6d28d9', on ? 1.5 : 0.5)}
+              {glow(on ? '#67e8f9' : '#0e7490', on ? 1.5 : 0.5)}
             </mesh>
           ))}
         </group>

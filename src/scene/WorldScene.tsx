@@ -183,7 +183,7 @@ function Packet({ m, reduced, follow }: { m: Motion; reduced: boolean; follow: R
     <group ref={ref}>
       <mesh>
         <icosahedronGeometry args={[0.02, 1]} />
-        <meshStandardMaterial color="#fdba74" emissive="#fb923c" emissiveIntensity={1.6} toneMapped={false} />
+        <meshStandardMaterial color="#6ee7b7" emissive="#10b981" emissiveIntensity={1.6} toneMapped={false} />
       </mesh>
       <pointLight color="#fde68a" intensity={0.6} distance={0.8} />
     </group>
@@ -348,7 +348,7 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
           <Router />
         </group>
         <group position={[1.5, 0.8, -0.3]}>
-          <Rings color="#a78bfa" on={['g-arp', 'g-wifi', 'g-dns-stub'].includes(step.id)} scale={0.6} />
+          <Rings color="#22d3ee" on={['g-arp', 'g-wifi', 'g-dns-stub'].includes(step.id)} scale={0.6} />
         </group>
         {sat && (
           <group position={[-2.4, 0, -0.5]}>

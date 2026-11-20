@@ -5,7 +5,7 @@ import { PacketInspector } from '../components/PacketInspector';
 import { dissect, readCapture, stats, writePcap, type Dissected } from '../lib/pcap';
 import { sampleFrames } from '../lib/sample-capture';
 
-const PROTO_COLOR: Record<string, string> = { ARP: 'bg-amber-100 text-amber-800', DNS: 'bg-sky-100 text-sky-800', TCP: 'bg-violet-100 text-violet-800', HTTP: 'bg-emerald-100 text-emerald-800', TLS: 'bg-fuchsia-100 text-fuchsia-800', ICMP: 'bg-orange-100 text-orange-800', ICMPv6: 'bg-orange-100 text-orange-800', UDP: 'bg-slate-100 text-slate-700', QUIC: 'bg-rose-100 text-rose-800' };
+const PROTO_COLOR: Record<string, string> = { ARP: 'bg-amber-100 text-amber-800', DNS: 'bg-sky-100 text-sky-800', TCP: 'bg-blue-100 text-blue-800', HTTP: 'bg-emerald-100 text-emerald-800', TLS: 'bg-sky-100 text-sky-800', ICMP: 'bg-cyan-100 text-cyan-800', ICMPv6: 'bg-cyan-100 text-cyan-800', UDP: 'bg-slate-100 text-slate-700', QUIC: 'bg-rose-100 text-rose-800' };
 const MAX_BYTES = 50 * 1024 * 1024;
 
 export function Lab() {
@@ -54,7 +54,7 @@ export function Lab() {
       <Nav active="lab" />
       <main className="mx-auto max-w-7xl px-5 pb-10">
         <header className="pb-8 pt-14">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Packet Lab</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-600">Packet Lab</p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
             Open a real capture. <span className="grad-text">See every layer.</span>
           </h1>
@@ -74,7 +74,7 @@ export function Lab() {
             setDrag(false);
             void openFile(e.dataTransfer.files[0]);
           }}
-          className={`glass flex flex-col items-center gap-4 border-2 border-dashed p-8 text-center transition ${drag ? 'border-violet-500 bg-violet-50' : 'border-violet-200'}`}
+          className={`glass flex flex-col items-center gap-4 border-2 border-dashed p-8 text-center transition ${drag ? 'border-blue-500 bg-blue-50' : 'border-blue-200'}`}
         >
           <span className="icon-tile"><Icon name="upload" /></span>
           <p className="text-ink">
@@ -97,15 +97,15 @@ export function Lab() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <h2 className="text-xl font-semibold text-ink">{name}</h2>
               <span className="text-sm text-slate-500">{packets.length} packets · {st.duration.toFixed(3)} s</span>
-              <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter: dns, tcp, 10.0.0.5, GET…" aria-label="Filter packets" className="ml-auto w-72 rounded-xl border border-violet-200 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-violet-500" />
+              <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter: dns, tcp, 10.0.0.5, GET…" aria-label="Filter packets" className="ml-auto w-72 rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-blue-500" />
             </div>
             <div className="mt-4 grid gap-5 lg:grid-cols-[1.2fr_1fr]">
-              <div className="glass max-h-[560px] overflow-auto">
+              <div className="glass max-h-[560px] overflow-auto" tabIndex={0} role="region" aria-label="Packet list">
                 <table className="tbl text-xs">
                   <thead className="sticky top-0"><tr><th>No.</th><th>Time</th><th>Source</th><th>Destination</th><th>Protocol</th><th>Info</th></tr></thead>
                   <tbody>
                     {shown.map((p) => (
-                      <tr key={p.no} onClick={() => setSel(p.no - 1)} className={`cursor-pointer ${sel === p.no - 1 ? '[&>td]:!bg-violet-100' : ''}`} aria-selected={sel === p.no - 1}>
+                      <tr key={p.no} onClick={() => setSel(p.no - 1)} className={`cursor-pointer ${sel === p.no - 1 ? '[&>td]:!bg-blue-100' : ''}`} aria-selected={sel === p.no - 1}>
                         <td className="font-mono">{p.no}</td>
                         <td className="font-mono">{(p.ts - t0).toFixed(4)}</td>
                         <td className="font-mono">{p.src}</td>
@@ -124,11 +124,11 @@ export function Lab() {
                       {cur.layers.map((l, i) => (
                         <span key={i} className="flex items-center gap-1.5">
                           {i > 0 && <span className="text-slate-400">›</span>}
-                          <span className="rounded-lg bg-gradient-to-r from-violet-600 to-orange-500 px-2.5 py-1 text-xs font-semibold text-white">{l}</span>
+                          <span className="rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 px-2.5 py-1 text-xs font-semibold text-white">{l}</span>
                         </span>
                       ))}
                     </div>
-                    <div className="rounded-2xl bg-[#140f2e] p-2 shadow-xl shadow-violet-900/20">
+                    <div className="rounded-2xl bg-[#08141b] p-2 shadow-xl shadow-blue-900/20">
                       <PacketInspector key={cur.no} data={cur.inspection} />
                     </div>
                   </>
@@ -143,7 +143,7 @@ export function Lab() {
                   {st.protocols.map(([p, n]) => (
                     <li key={p} className="text-sm">
                       <div className="flex justify-between text-slate-600"><span>{p}</span><span className="font-mono">{n}</span></div>
-                      <div className="mt-1 h-1.5 rounded-full bg-violet-100"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-orange-400" style={{ width: `${(n / packets.length) * 100}%` }} /></div>
+                      <div className="mt-1 h-1.5 rounded-full bg-blue-100"><div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" style={{ width: `${(n / packets.length) * 100}%` }} /></div>
                     </li>
                   ))}
                 </ul>
@@ -159,7 +159,7 @@ export function Lab() {
                 <div>
                   <h3 className="font-semibold text-ink">TCP handshakes</h3>
                   {st.handshakes.length ? (
-                    <ul className="mt-2 space-y-1 text-xs text-slate-600">{st.handshakes.slice(0, 8).map((h, i) => <li key={i} className="flex justify-between gap-2"><span className="truncate font-mono">{h.conv}</span><b className="text-violet-700">{h.rttMs.toFixed(1)} ms</b></li>)}</ul>
+                    <ul className="mt-2 space-y-1 text-xs text-slate-600">{st.handshakes.slice(0, 8).map((h, i) => <li key={i} className="flex justify-between gap-2"><span className="truncate font-mono">{h.conv}</span><b className="text-blue-700">{h.rttMs.toFixed(1)} ms</b></li>)}</ul>
                   ) : <p className="mt-1 text-xs text-slate-500">No SYN/SYN-ACK pairs found.</p>}
                   <p className="mt-2 text-[11px] text-slate-500">Time from SYN to SYN-ACK = one network round trip, as seen by the capture point.</p>
                 </div>

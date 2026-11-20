@@ -54,7 +54,7 @@ const COMPARE = [
 function Heading({ kicker, title, sub }: { kicker: string; title: ReactNode; sub?: string }) {
   return (
     <div className="mx-auto max-w-3xl text-center">
-      <div className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-600">{kicker}</div>
+      <div className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-600">{kicker}</div>
       <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
       {sub && <p className="mt-4 text-lg leading-8 text-slate-600">{sub}</p>}
     </div>
@@ -80,13 +80,13 @@ export function Landing() {
         <section className="hero-dark relative overflow-hidden">
           <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 pb-24 pt-14 lg:grid-cols-[1.05fr_1fr] lg:pt-20">
             <div className="relative z-10">
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-violet-100 backdrop-blur">
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-blue-100 backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Free · open source · runs in your browser
               </p>
               <h1 className="mt-6 text-5xl font-extrabold leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
-                See how the internet <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-orange-300 bg-clip-text text-transparent">really works.</span>
+                See how the internet <span className="bg-gradient-to-r from-blue-300 via-sky-300 to-cyan-300 bg-clip-text text-transparent">really works.</span>
               </h1>
-              <p className="mt-6 max-w-xl text-lg leading-8 text-violet-100/90">
+              <p className="mt-6 max-w-xl text-lg leading-8 text-blue-100/90">
                 Packet Journey is an interactive 3D guide to networking. Type any website and follow your request from your keyboard, through every OSI layer, your router and ISP, across submarine cables or satellites, to a data center and back. It uses real DNS, your real location and real packet bytes.
               </p>
               <form
@@ -97,7 +97,7 @@ export function Landing() {
                 }}
               >
                 <label htmlFor="hero-domain" className="sr-only">Website to trace</label>
-                <div className="flex flex-1 items-center rounded-xl bg-white px-4 shadow-xl shadow-black/20 ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-orange-300">
+                <div className="flex flex-1 items-center rounded-xl bg-white px-4 shadow-xl shadow-black/20 ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-cyan-300">
                   <span className="font-mono text-sm text-slate-400">https://</span>
                   <input
                     id="hero-domain"
@@ -117,7 +117,7 @@ export function Landing() {
               {err && <p className="mt-2 text-sm text-rose-300" role="alert">{err}</p>}
               <div className="mt-4 flex flex-wrap gap-2 text-xs">
                 {EXAMPLES.map((d) => (
-                  <a key={d} href={`${links.app}?d=${d}#g-key`} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 font-mono text-violet-100 backdrop-blur transition hover:bg-white/15">
+                  <a key={d} href={`${links.app}?d=${d}#g-key`} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 font-mono text-blue-100 backdrop-blur transition hover:bg-white/15">
                     {d}
                   </a>
                 ))}
@@ -128,15 +128,15 @@ export function Landing() {
               </div>
             </div>
             <div className="relative h-[420px] sm:h-[520px] lg:h-[620px]">
-              <div className="pointer-events-none absolute inset-10 rounded-full bg-violet-500/25 blur-3xl" />
+              <div className="pointer-events-none absolute inset-10 rounded-full bg-blue-500/25 blur-3xl" />
               {wide ? (
-                <Suspense fallback={<div className="absolute inset-16 animate-pulse rounded-full bg-gradient-to-br from-violet-500/40 to-orange-400/30" />}>
+                <Suspense fallback={<div className="absolute inset-16 animate-pulse rounded-full bg-gradient-to-br from-blue-500/40 to-cyan-400/30" />}>
                   <HeroGlobe />
                 </Suspense>
               ) : (
-                <div className="absolute inset-12 rounded-full bg-gradient-to-br from-violet-500/50 via-fuchsia-500/30 to-orange-400/40 shadow-[0_0_120px_rgba(167,139,250,.5)]" />
+                <div className="absolute inset-12 rounded-full bg-gradient-to-br from-blue-500/50 via-sky-500/30 to-cyan-400/40 shadow-[0_0_120px_rgba(167,139,250,.5)]" />
               )}
-              <p className="absolute bottom-2 right-2 text-[11px] text-violet-200/70">Drag to spin · NASA Blue Marble imagery</p>
+              <p className="absolute bottom-2 right-2 text-[11px] text-blue-200/70">Drag to spin · NASA Blue Marble imagery</p>
             </div>
           </div>
         </section>
@@ -161,7 +161,7 @@ export function Landing() {
               ['3', 'Go deeper', 'Open the packet inspector, switch fiber for a satellite, compare HTTP/2 and HTTP/3, cut a cable, then read the full reference.'],
             ].map(([n, t, d]) => (
               <Tilt key={n} className="glass p-7">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-violet-600 to-orange-500 text-xl font-bold text-white shadow-lg shadow-violet-500/30">{n}</div>
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 text-xl font-bold text-white shadow-lg shadow-blue-500/30">{n}</div>
                 <h3 className="mt-5 text-xl font-semibold text-ink">{t}</h3>
                 <p className="mt-2 leading-7 text-slate-600">{d}</p>
               </Tilt>
@@ -172,13 +172,13 @@ export function Landing() {
         {/* ---------- the path ---------- */}
         <section className="mx-auto mt-24 max-w-6xl px-5" aria-label="The path of a request">
           <Heading kicker="The path" title="Seven stops between your keyboard and the server" />
-          <div className="glass mt-10 overflow-x-auto p-7">
+          <div className="glass mt-10 overflow-x-auto p-7" tabIndex={0} role="region" aria-label="The path of a request">
             <ol className="relative flex min-w-[760px] justify-between">
-              <span aria-hidden className="absolute left-6 right-6 top-6 h-0.5 rounded bg-gradient-to-r from-violet-400 via-fuchsia-400 to-orange-400" />
-              <span aria-hidden className="absolute top-[18px] h-3.5 w-3.5 rounded-full bg-orange-400 shadow-[0_0_18px] shadow-orange-400 motion-safe:animate-[travel_7s_linear_infinite]" style={{ offsetPath: 'path("M 24 0 H 712")' }} />
+              <span aria-hidden className="absolute left-6 right-6 top-6 h-0.5 rounded bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-400" />
+              <span aria-hidden className="absolute top-[18px] h-3.5 w-3.5 rounded-full bg-cyan-400 shadow-[0_0_18px] shadow-cyan-400 motion-safe:animate-[travel_7s_linear_infinite]" style={{ offsetPath: 'path("M 24 0 H 712")' }} />
               {HOPS.map((h, i) => (
                 <li key={h.k} className="relative z-10 flex w-28 flex-col items-center text-center">
-                  <span className="grid h-12 w-12 place-items-center rounded-full border-2 border-violet-200 bg-white font-mono text-sm font-semibold text-violet-700 shadow-md">{i + 1}</span>
+                  <span className="grid h-12 w-12 place-items-center rounded-full border-2 border-blue-200 bg-white font-mono text-sm font-semibold text-blue-700 shadow-md">{i + 1}</span>
                   <span className="mt-3 text-sm font-semibold text-ink">{h.k}</span>
                   <span className="mt-1 text-xs leading-5 text-slate-500">{h.d}</span>
                 </li>
@@ -205,15 +205,15 @@ export function Landing() {
         <section className="mx-auto mt-28 grid max-w-6xl gap-5 px-5 md:grid-cols-3">
           {(
             [
-              { href: links.app, k: 'Interactive', t: 'The packet journey', d: '23 steps for a website visit, 16 for a message through the OSI stack, plus Kubernetes and email journeys. Play it like a video.', i: 'globe' },
+              { href: links.app, k: 'Interactive', t: 'The packet journey', d: '23 steps for a website visit, 16 for a message through the OSI stack. Play it like a video.', i: 'globe' },
               { href: links.learn, k: 'Reference', t: 'Learn networking', d: 'How the world is connected, every major protocol in depth, ports, status codes, cloud, Kubernetes and more.', i: 'cap' },
               { href: links.lab, k: 'Tool', t: 'Packet Lab', d: 'Open your own Wireshark capture (.pcap) and explore it layer by layer, privately in your browser.', i: 'flask' },
             ] as const
           ).map((c) => (
             <a key={c.t} href={c.href} className="group block">
-              <Tilt className="glass h-full p-8 group-hover:border-violet-300">
+              <Tilt className="glass h-full p-8 group-hover:border-blue-300">
                 <div className="icon-tile"><Icon name={c.i} /></div>
-                <div className="mt-5 text-xs font-semibold uppercase tracking-widest text-orange-600">{c.k}</div>
+                <div className="mt-5 text-xs font-semibold uppercase tracking-widest text-cyan-600">{c.k}</div>
                 <h3 className="mt-1 text-2xl font-bold text-ink">{c.t} <span className="inline-block transition group-hover:translate-x-1">→</span></h3>
                 <p className="mt-2 leading-7 text-slate-600">{c.d}</p>
               </Tilt>
@@ -240,14 +240,14 @@ export function Landing() {
         {/* ---------- comparison ---------- */}
         <section className="mx-auto mt-28 max-w-6xl px-5">
           <Heading kicker="Why another tool?" title="How it compares" sub="Great tools exist; each shows one slice. Packet Journey connects bytes, layers, geography and timing for a request you choose." />
-          <div className="glass mt-10 overflow-x-auto">
+          <div className="glass mt-10 overflow-x-auto" tabIndex={0} role="region" aria-label="Comparison table">
             <table className="tbl">
               <thead><tr><th>Tool</th><th>What it does well / what it doesn't show</th></tr></thead>
               <tbody>
                 {COMPARE.map(([t, d]) => (
                   <tr key={t}><td className="whitespace-nowrap font-medium text-ink">{t}</td><td>{d}</td></tr>
                 ))}
-                <tr><td className="whitespace-nowrap font-bold text-violet-700">Packet Journey</td><td className="font-medium text-ink">Live DNS for any domain, your real location, real packet bytes at every layer, routed over real cable corridors or satellites on a 3D Earth, with a latency budget, incident simulations, a packet lab and a full reference.</td></tr>
+                <tr><td className="whitespace-nowrap font-bold text-blue-700">Packet Journey</td><td className="font-medium text-ink">Live DNS for any domain, your real location, real packet bytes at every layer, routed over real cable corridors or satellites on a 3D Earth, with a latency budget, incident simulations, a packet lab and a full reference.</td></tr>
               </tbody>
             </table>
           </div>
@@ -255,9 +255,9 @@ export function Landing() {
 
         {/* ---------- final CTA ---------- */}
         <section className="mx-auto mt-28 max-w-6xl px-5">
-          <div className="hero-dark overflow-hidden rounded-3xl px-8 py-16 text-center shadow-2xl shadow-violet-900/30">
+          <div className="hero-dark overflow-hidden rounded-3xl px-8 py-16 text-center shadow-2xl shadow-blue-900/30">
             <h2 className="text-4xl font-extrabold tracking-tight text-white">Ready? Press Enter.</h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-violet-100/90">Works in any modern browser. On phones and older computers it switches to a lighter 2.5D view automatically.</p>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-blue-100/90">Works in any modern browser. On phones and older computers it switches to a lighter 2.5D view automatically.</p>
             <a href={links.app} className="cta mt-8">Start the journey →</a>
           </div>
         </section>

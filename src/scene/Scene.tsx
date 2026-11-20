@@ -6,13 +6,12 @@ import { useState } from 'react';
 import { useStore } from '../store';
 import { HiScene } from './HiScene';
 import { WorldScene } from './WorldScene';
-import { GraphScene } from './GraphScene';
 import { useReducedMotion } from '../hooks';
 
 /** Reads the journey inside the R3F tree so swaps happen in R3F's own reconciler, not the DOM commit. */
 function SceneSwitch({ reduced }: { reduced: boolean }) {
   const journey = useStore((s) => s.journey);
-  return journey === 'hi' ? <HiScene reduced={reduced} /> : journey === 'google' ? <WorldScene reduced={reduced} /> : <GraphScene reduced={reduced} />;
+  return journey === 'hi' ? <HiScene reduced={reduced} /> : <WorldScene reduced={reduced} />;
 }
 
 /** Stays mounted once loaded so toggling 2.5D ⇄ 3D is instant; paused (frameloop never) while hidden. */
@@ -27,6 +26,7 @@ export default function Scene({ active }: { active: boolean }) {
       camera={{ position: [0, 6, 16], fov: 45, near: 0.02, far: 300 }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       onPointerMissed={() => set({ tip: null })}
+      role="img"
       aria-label="3D visualisation of the current step"
     >
       <color attach="background" args={['#03050b']} />

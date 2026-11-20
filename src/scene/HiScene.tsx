@@ -4,7 +4,7 @@ import { Edges, RoundedBox, Grid, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { OSI, type Step } from '../content';
 import { useCtx, useStep, useStore } from '../store';
-import { CameraRig, LAYER_COLORS, Label3D, tipProps, type V3 } from './common';
+import { CameraRig, LAYER_COLORS, Label3D, glyphSafe, tipProps, type V3 } from './common';
 import fontBold from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff?url';
 
 const SX = -4.5;
@@ -21,7 +21,7 @@ function Stack({ x, side, active, tcpip }: { x: number; side: 'sender' | 'receiv
           <RoundedBox key={l.n} args={[3, 0.62, 1.7]} radius={0.08} position={[0, ly(l.n), 0]} {...tipProps(`${side}-${l.n}`)}>
             <meshStandardMaterial color={LAYER_COLORS[l.n]} emissive={LAYER_COLORS[l.n]} emissiveIntensity={on ? 1.6 : 0.12} transparent opacity={on ? 0.95 : 0.55} roughness={0.35} metalness={0.2} />
             <Text font={fontBold} position={[0, 0, 0.86]} fontSize={0.22} color={on ? '#ffffff' : '#e2e8f0'} fillOpacity={on ? 1 : 0.75} anchorX="center" anchorY="middle">
-              {`L${l.n}  ${l.name}`}
+              {glyphSafe(`L${l.n}  ${l.name}`)}
             </Text>
           </RoundedBox>
         );
@@ -57,7 +57,7 @@ const cablePts = [new THREE.Vector3(SX, ly(1) - 0.4, 0.3), new THREE.Vector3(SX 
 const curve = new THREE.CatmullRomCurve3(cablePts);
 
 function Cable({ medium, live, bits }: { medium: string; live: boolean; bits: number[] }) {
-  const color = medium === 'copper' ? '#fbbf24' : medium === 'fiber' ? '#22d3ee' : '#a78bfa';
+  const color = medium === 'copper' ? '#fbbf24' : medium === 'fiber' ? '#22d3ee' : '#22d3ee';
   const N = 40;
   const pulses = useRef<THREE.InstancedMesh>(null);
   const rings = useRef<THREE.Group>(null);
@@ -141,7 +141,7 @@ function Packet({ step, msgLen, cipher, wireBytes }: { step: Step; msgLen: numbe
       s.scale.lerp(new THREE.Vector3(want, want, want), 1 - Math.exp(-dt * 5));
     });
   });
-  const coreColor = cipher ? '#a78bfa' : '#fde68a';
+  const coreColor = cipher ? '#22d3ee' : '#fde68a';
   return (
     <group ref={g} position={target} {...tipProps('packet')}>
       <group ref={spin}>

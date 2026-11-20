@@ -12,7 +12,7 @@ const PAIRS: [string, string][] = [
   ['mumbai', 'marseille'], ['chennai', 'singapore'], ['singapore', 'tokyo'], ['tokyo', 'losangeles'], ['london', 'newyork'],
   ['frankfurt', 'mumbai'], ['saopaulo', 'lisbon'], ['sydney', 'singapore'], ['ashburn', 'amsterdam'], ['hongkong', 'sanjose'], ['capetown', 'london'], ['delhi', 'fujairah'],
 ];
-const COLORS = ['#a78bfa', '#fb923c', '#f472b6', '#c4b5fd', '#fdba74'];
+const COLORS = ['#22d3ee', '#34d399', '#60a5fa', '#a7f3d0', '#7dd3fc'];
 
 function Arc({ a, b, color, offset }: { a: string; b: string; color: string; offset: number }) {
   const curve = useMemo(() => {
@@ -32,7 +32,7 @@ function Arc({ a, b, color, offset }: { a: string; b: string; color: string; off
       </mesh>
       <mesh ref={dot}>
         <sphereGeometry args={[0.05, 12, 12]} />
-        <meshBasicMaterial color="#fff7ed" toneMapped={false} />
+        <meshBasicMaterial color="#ecfeff" toneMapped={false} />
       </mesh>
     </group>
   );
@@ -54,9 +54,9 @@ function World() {
 export default function HeroGlobe() {
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return (
-    <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 14.5], fov: 42 }} gl={{ antialias: true, alpha: true }} frameloop={reduced ? 'demand' : 'always'} aria-label="Rotating 3D Earth with internet backbone links">
+    <Canvas dpr={[1, 1.75]} camera={{ position: [0, 1.5, 14.5], fov: 42 }} gl={{ antialias: true, alpha: true }} frameloop={reduced ? 'demand' : 'always'} role="img" aria-label="Rotating 3D Earth with internet backbone links">
       <ambientLight intensity={0.5} />
-      <directionalLight position={[8, 6, 10]} intensity={2.4} color="#fff3e0" />
+      <directionalLight position={[8, 6, 10]} intensity={2.4} color="#e0f2fe" />
       <Stars radius={60} depth={30} count={1500} factor={2.5} saturation={0} fade />
       <Suspense fallback={null}>
         <World />

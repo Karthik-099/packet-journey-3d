@@ -56,7 +56,7 @@ export default function App() {
         </aside>
 
         <main className="flex flex-col md:min-h-0">
-          {journey === 'hi' ? <MessageInput /> : journey === 'google' ? <LatencyBar /> : <p className="px-4 py-3 text-sm leading-6 text-slate-300">{resolve(JOURNEYS[journey].subtitle, c)}</p>}
+          {journey === 'hi' ? <MessageInput /> : <LatencyBar />}
           <div className="relative h-[52vh] min-h-[300px] border-y border-noc-edge md:h-auto md:flex-1">
             {loaded3d && (
               <div className={view === '3d' ? 'absolute inset-0' : 'hidden'}>

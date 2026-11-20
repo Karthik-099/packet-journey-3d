@@ -17,13 +17,12 @@ const QA: [string, string][] = [
   ['How does BGP choose a path?', 'Highest local-preference (policy: customer > peer > transit), shortest AS-path, lowest origin type, lowest MED, eBGP over iBGP, lowest IGP cost to the next hop, then tie-breakers such as router ID.'],
   ['What is MTU, and how do you debug MTU problems?', 'The largest packet a link carries (1500 on Ethernet). Tunnels reduce it. Symptoms: small requests work but large ones hang. Test with ping -M do -s 1472, and fix with MSS clamping or allowing ICMP "fragmentation needed".'],
   ['Security group vs NACL (AWS)?', 'Security groups are stateful allow-lists attached to network interfaces (return traffic is automatic). NACLs are stateless, ordered allow/deny rules on a subnet (you must allow return/ephemeral ports).'],
-  ['How do Kubernetes Services route to pods?', 'A Service gets a virtual ClusterIP; kube-proxy (iptables/IPVS) or an eBPF CNI rewrites traffic to a ready pod endpoint. CoreDNS resolves the service name. Ingress or the Gateway API adds L7 routing from outside.'],
   ['Where would you start when "the website is slow"?', 'Break it down by layer and time: curl -w for DNS, connect, TLS and TTFB; check RTT/loss with mtr; check server time and saturation (CPU, DB, queueing); then look at CDN cache hit ratio and page weight.'],
 ];
 
 export function Interview() {
   return (
-    <Section id="interview" kicker="Career" title="Interview questions (DevOps / SRE / network)">
+    <Section id="interview" kicker="Career" title="Interview questions (networking)">
       <div className="space-y-2">
         {QA.map(([q, a]) => (
           <details key={q} className="glass p-4">
@@ -52,7 +51,6 @@ export const QUIZ: Q[] = [
   { q: 'What do submarine cable repeaters do?', options: ['Route packets by IP', 'Optically amplify the light every 60–80 km', 'Encrypt the traffic', 'Store a cache of websites'], answer: 1, why: 'EDFA amplifiers boost all wavelengths optically; they don\'t look at packets.' },
   { q: 'Typical round-trip time over a GEO satellite?', options: ['~5 ms', '~40 ms', '~150 ms', '~600 ms'], answer: 3, why: '35,786 km up and down, twice per round trip ≈ 480 ms of light-time plus processing.' },
   { q: 'Which protocol carries routes between autonomous systems?', options: ['OSPF', 'BGP', 'ARP', 'RIP'], answer: 1, why: 'BGP is the inter-domain routing protocol of the internet (TCP 179).' },
-  { q: 'Which port does the Kubernetes API server listen on by default?', options: ['443', '6443', '8080', '10250'], answer: 1, why: '6443; 10250 is the kubelet.' },
   { q: 'What does TTL in an IP header prevent?', options: ['Replay attacks', 'Packets looping forever', 'Fragmentation', 'Slow DNS'], answer: 1, why: 'Each router decrements it; at 0 the packet is dropped (and traceroute uses that).' },
   { q: 'HTTP/3 runs on top of…', options: ['TCP', 'QUIC over UDP', 'SCTP', 'Raw IP'], answer: 1, why: 'HTTP/3 maps requests onto QUIC streams, and QUIC runs over UDP.' },
 ];
@@ -72,7 +70,7 @@ export function Quiz() {
           'Pick an answer to see the explanation.'
         )}
         {done > 0 && (
-          <button onClick={() => setPicked({})} className="ml-3 text-sm text-violet-600 underline">
+          <button onClick={() => setPicked({})} className="ml-3 text-sm text-blue-600 underline">
             reset
           </button>
         )}
@@ -89,7 +87,7 @@ export function Quiz() {
                 {q.options.map((o, j) => {
                   const state = p === undefined ? '' : j === q.answer ? 'border-emerald-400/60 bg-emerald-500/10 text-emerald-700' : j === p ? 'border-rose-400/60 bg-rose-400/10 text-rose-700' : 'opacity-60';
                   return (
-                    <button key={o} role="radio" aria-checked={p === j} disabled={p !== undefined} onClick={() => setPicked({ ...picked, [i]: j })} className={`rounded-lg border border-violet-200/70 px-3 py-2 text-left text-sm text-slate-700 transition enabled:hover:border-violet-400 ${state}`}>
+                    <button key={o} role="radio" aria-checked={p === j} disabled={p !== undefined} onClick={() => setPicked({ ...picked, [i]: j })} className={`rounded-lg border border-blue-200/70 px-3 py-2 text-left text-sm text-slate-700 transition enabled:hover:border-blue-400 ${state}`}>
                       {o}
                     </button>
                   );

@@ -4,6 +4,7 @@ import { useCtx, useStep, useStore } from '../store';
 import { PacketInspector } from './PacketInspector';
 import { StepWidget } from './widgets';
 import { Section, Simplified } from './ui';
+import { REFS } from '../content/refs';
 
 export function SidePanel() {
   const step = useStep();
@@ -79,6 +80,17 @@ export function SidePanel() {
               <PacketInspector key={step.id + c.message + c.tls} data={inspection} />
             </div>
           </details>
+        )}
+        {REFS[step.id] && (
+          <Section title="Sources">
+            <ul className="space-y-1 text-[12px]">
+              {REFS[step.id]!.map(([t, u]) => (
+                <li key={u}>
+                  <a href={u} target="_blank" rel="noreferrer noopener" className="text-noc-cyan underline decoration-noc-cyan/40 underline-offset-2 hover:text-white">{t}</a>
+                </li>
+              ))}
+            </ul>
+          </Section>
         )}
       </motion.article>
     </AnimatePresence>

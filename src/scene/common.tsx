@@ -76,6 +76,12 @@ import fontRegular from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-4
 import fontBold from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff?url';
 import { Billboard, Text } from '@react-three/drei';
 
+/**
+ * Keep 3D text inside the bundled font's Latin + punctuation subset. Any other glyph makes troika
+ * download fallback fonts from a CDN (a hidden third-party request that our CSP also blocks).
+ */
+export const glyphSafe = (s: string) => s.replace(/→/g, '›').replace(/←/g, '‹').replace(/[^\u0000-\u024F\u2000-\u206F]/g, '?');
+
 /** Real 3D label (no DOM): optional subtitle, panel background, highlight state. */
 export function Label3D({
   title,
@@ -112,11 +118,11 @@ export function Label3D({
         </>
       )}
       <Text font={fontBold} fontSize={size} color={on ? '#ffffff' : '#cbd5e1'} anchorX="center" anchorY="middle" position={[0, sub ? size * 0.55 : 0, 0]}>
-        {title}
+        {glyphSafe(title)}
       </Text>
       {sub && (
         <Text font={fontRegular} fontSize={size * 0.7} color={on ? '#a5f3fc' : '#94a3b8'} anchorX="center" anchorY="middle" position={[0, -size * 0.65, 0]}>
-          {sub}
+          {glyphSafe(sub)}
         </Text>
       )}
     </Billboard>

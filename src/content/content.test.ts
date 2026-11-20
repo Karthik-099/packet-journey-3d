@@ -66,3 +66,14 @@ describe('location', () => {
     expect(c.homeName).toMatch(/GPS/);
   });
 });
+
+describe('sources', () => {
+  it('every reference points at a step that exists and uses https', async () => {
+    const { REFS } = await import('./refs');
+    const ids = new Set(Object.values(JOURNEYS).flatMap((j) => j.steps.map((s) => s.id)));
+    for (const [id, refs] of Object.entries(REFS)) {
+      expect(ids.has(id), id).toBe(true);
+      refs.forEach(([, u]) => expect(u).toMatch(/^https:\/\//));
+    }
+  });
+});

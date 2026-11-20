@@ -11,5 +11,5 @@ export default defineConfig({
     // four pages: landing, the 3D journey, the learning reference, the packet lab
     rollupOptions: { input: { index: 'index.html', app: 'app.html', learn: 'learn.html', lab: 'lab.html' } },
   },
-  test: { environment: 'node' },
+  test: { environment: 'node', include: ['src/**/*.test.ts'] },
 });

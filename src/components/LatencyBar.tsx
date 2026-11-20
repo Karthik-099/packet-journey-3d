@@ -2,7 +2,7 @@ import { JOURNEYS } from '../content';
 import { useCtx, useStore } from '../store';
 import { Seg, Switch } from './ui';
 
-const COLORS = ['#22d3ee', '#a78bfa', '#34d399', '#fbbf24', '#fb7185', '#60a5fa', '#f472b6'];
+const COLORS = ['#22d3ee', '#34d399', '#60a5fa', '#fbbf24', '#2dd4bf', '#38bdf8', '#a3e635'];
 
 export function LatencyBar() {
   const { index, access, dest, quic, set, go } = useStore();

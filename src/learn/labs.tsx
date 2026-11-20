@@ -3,8 +3,8 @@ import { cwndTrace, simulateHol } from '../lib/sim';
 
 const Slider = ({ label, value, min, max, step, onChange, fmt }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; fmt: (v: number) => string }) => (
   <label className="flex flex-col gap-1 text-sm text-slate-600">
-    <span className="flex justify-between"><span>{label}</span><b className="font-mono text-violet-700">{fmt(value)}</b></span>
-    <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} className="accent-violet-600" />
+    <span className="flex justify-between"><span>{label}</span><b className="font-mono text-blue-700">{fmt(value)}</b></span>
+    <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} className="accent-blue-600" />
   </label>
 );
 const Tag = () => <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">simplified model</span>;
@@ -37,8 +37,8 @@ export function LossLab() {
               {(['tcp', 'quic'] as const).map((k) => (
                 <div key={k} className="flex items-center gap-2">
                   <span className="w-28 text-slate-500">{k === 'tcp' ? 'HTTP/2 over TCP' : 'HTTP/3 over QUIC'}</span>
-                  <div className="h-3 flex-1 rounded-full bg-violet-100">
-                    <div className={`h-full rounded-full ${k === 'tcp' ? 'bg-gradient-to-r from-rose-400 to-orange-400' : 'bg-gradient-to-r from-violet-500 to-fuchsia-500'}`} style={{ width: `${(r[k][i]! / max) * 100}%` }} />
+                  <div className="h-3 flex-1 rounded-full bg-blue-100">
+                    <div className={`h-full rounded-full ${k === 'tcp' ? 'bg-gradient-to-r from-rose-400 to-cyan-400' : 'bg-gradient-to-r from-blue-500 to-sky-500'}`} style={{ width: `${(r[k][i]! / max) * 100}%` }} />
                   </div>
                   <span className="w-16 text-right font-mono text-slate-600">{r[k][i]!.toFixed(0)} ms</span>
                 </div>
@@ -75,8 +75,8 @@ export function CwndChart() {
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-4 w-full" role="img" aria-label="Congestion window chart">
         <defs>
           <linearGradient id="cw" x1="0" x2="1">
-            <stop offset="0" stopColor="#7c3aed" />
-            <stop offset="1" stopColor="#f97316" />
+            <stop offset="0" stopColor="#2563eb" />
+            <stop offset="1" stopColor="#06b6d4" />
           </linearGradient>
         </defs>
         <polyline points={pts} fill="none" stroke="url(#cw)" strokeWidth={2.5} />

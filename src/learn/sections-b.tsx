@@ -39,7 +39,7 @@ export function Transport() {
       <LossLab />
       <CwndChart />
       <h3>TCP flags</h3>
-      <Simple head={['Flag', 'Meaning']} rows={TCP_FLAGS.map(([f, d]) => [<span className="font-mono text-violet-600">{f}</span>, d])} />
+      <Simple head={['Flag', 'Meaning']} rows={TCP_FLAGS.map(([f, d]) => [<span className="font-mono text-blue-600">{f}</span>, d])} />
       <h3>TCP states (what <code>ss -tan</code> shows)</h3>
       <Simple head={['State', 'Meaning']} rows={TCP_STATES.map(([f, d]) => [<span className="font-mono text-ink">{f}</span>, d])} />
       <h3>ICMP messages</h3>
@@ -82,7 +82,7 @@ export function Tls() {
   );
 }
 
-const STATUS_CLASS: Record<string, string> = { '1': 'text-sky-600', '2': 'text-emerald-600', '3': 'text-violet-600', '4': 'text-amber-600', '5': 'text-rose-600' };
+const STATUS_CLASS: Record<string, string> = { '1': 'text-sky-600', '2': 'text-emerald-600', '3': 'text-blue-600', '4': 'text-amber-600', '5': 'text-rose-600' };
 
 export function Http() {
   const [cls, setCls] = useState('all');
@@ -109,7 +109,7 @@ export function Http() {
       <p>The first digit is the class: 1xx informational, 2xx success, 3xx redirection, 4xx client error, 5xx server error. The "In production" column shows the usual real-world causes.</p>
       <div className="flex flex-wrap gap-2">
         {[['all', 'All'], ['1', '1xx'], ['2', '2xx'], ['3', '3xx'], ['4', '4xx'], ['5', '5xx'], ['vendor', 'nginx / Cloudflare']].map(([v, l]) => (
-          <button key={v} onClick={() => setCls(v!)} className={`rounded-lg border px-3 py-1 text-sm ${cls === v ? 'border-violet-600 bg-violet-600 text-white' : 'border-violet-200/70 text-slate-500 hover:text-ink'}`}>{l}</button>
+          <button key={v} onClick={() => setCls(v!)} className={`rounded-lg border px-3 py-1 text-sm ${cls === v ? 'border-blue-600 bg-blue-600 text-white' : 'border-blue-200/70 text-slate-500 hover:text-ink'}`}>{l}</button>
         ))}
       </div>
       <FilterTable<Status>
@@ -119,7 +119,7 @@ export function Http() {
         text={(s) => `${s.code} ${s.name} ${s.meaning} ${s.ops ?? ''} ${s.nonStandard ?? ''}`}
         cols={[
           { h: 'Code', cell: (s) => <span className={`font-mono font-bold ${STATUS_CLASS[String(s.code)[0]!]}`}>{s.code}</span> },
-          { h: 'Name', cell: (s) => <span className="text-ink">{s.name}{s.nonStandard && <span className="ml-1 rounded bg-violet-100 px-1 text-[10px] text-slate-500">{s.nonStandard}</span>}</span> },
+          { h: 'Name', cell: (s) => <span className="text-ink">{s.name}{s.nonStandard && <span className="ml-1 rounded bg-blue-100 px-1 text-[10px] text-slate-500">{s.nonStandard}</span>}</span> },
           { h: 'Meaning', cell: (s) => s.meaning },
           { h: 'In production', cell: (s) => <span className="text-slate-500">{s.ops ?? ''}</span> },
         ]}
@@ -140,13 +140,13 @@ export function Http() {
 export function Ports() {
   return (
     <Section id="ports" kicker="L4" title="Ports you should know">
-      <Simple head={['Range', 'Name', 'Notes']} rows={PORT_RANGES.map((r) => [<span className="font-mono text-violet-600">{r.range}</span>, <span className="text-ink">{r.name}</span>, r.note])} />
+      <Simple head={['Range', 'Name', 'Notes']} rows={PORT_RANGES.map((r) => [<span className="font-mono text-blue-600">{r.range}</span>, <span className="text-ink">{r.name}</span>, r.note])} />
       <FilterTable<Port>
         rows={[...PORTS].sort((a, b) => parseInt(a.port) - parseInt(b.port))}
         placeholder="Search ports, e.g. 443, ssh, kubernetes, database"
         text={(p) => `${p.port} ${p.proto} ${p.service} ${p.use}`}
         cols={[
-          { h: 'Port', cell: (p) => <span className="font-mono font-bold text-violet-600">{p.port}</span>, cls: 'whitespace-nowrap' },
+          { h: 'Port', cell: (p) => <span className="font-mono font-bold text-blue-600">{p.port}</span>, cls: 'whitespace-nowrap' },
           { h: 'Proto', cell: (p) => <span className="font-mono text-xs">{p.proto}</span> },
           { h: 'Service', cell: (p) => <span className="text-ink">{p.service}</span> },
           { h: 'Used for', cell: (p) => p.use },
@@ -166,7 +166,7 @@ export function Protocols() {
         text={(p) => `${p.name} ${p.full} ${p.layer} ${p.transport} ${p.what} ${p.rfc ?? ''}`}
         cols={[
           { h: 'Protocol', cell: (p) => <div><div className="font-semibold text-ink">{p.name}</div><div className="text-xs text-slate-500">{p.full}</div></div> },
-          { h: 'Layer', cell: (p) => <span className="font-mono text-xs text-violet-600">{p.layer}</span>, cls: 'whitespace-nowrap' },
+          { h: 'Layer', cell: (p) => <span className="font-mono text-xs text-blue-600">{p.layer}</span>, cls: 'whitespace-nowrap' },
           { h: 'Runs over', cell: (p) => <span className="font-mono text-xs">{p.transport}</span> },
           { h: 'What it does', cell: (p) => p.what },
           { h: 'Spec', cell: (p) => <span className="text-xs text-slate-500">{p.rfc ?? ''}</span> },

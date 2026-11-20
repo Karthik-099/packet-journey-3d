@@ -105,7 +105,7 @@ export function BigNetworks() {
 
 export function Cloud() {
   return (
-    <Section id="cloud" kicker="DevOps" title="Cloud and Kubernetes networking">
+    <Section id="cloud" kicker="Cloud" title="Cloud networking">
       <Grid>
         <Card title="VPC / VNet building blocks">
           <ul>
@@ -116,16 +116,8 @@ export function Cloud() {
             <li><b>Private endpoints / PrivateLink</b>: reach PaaS services on a private IP; <b>peering</b> and <b>Transit Gateway / Virtual WAN</b> connect many VPCs; VPN or Direct Connect / ExpressRoute to on-prem.</li>
           </ul>
         </Card>
-        <Card title="Kubernetes" tone="violet">
-          <ul>
-            <li>Every pod gets its own IP from the pod CIDR; the <b>CNI</b> plugin (Azure CNI, Calico, Cilium, Flannel) wires it up, via routing or VXLAN/eBPF.</li>
-            <li><b>Services</b>: a stable virtual IP (ClusterIP) load-balanced by kube-proxy (iptables/IPVS) or eBPF. NodePort and LoadBalancer expose it outside.</li>
-            <li><b>Ingress / Gateway API</b>: an L7 proxy (nginx, AGIC, Envoy) routes by host/path and terminates TLS.</li>
-            <li><b>CoreDNS</b> resolves service names; <b>NetworkPolicy</b> is the pod-level firewall; service meshes add mTLS and retries.</li>
-          </ul>
-        </Card>
       </Grid>
-      <Flow steps={['User', 'DNS (Azure DNS / Route 53)', 'CDN / WAF / Front Door', 'Public LB or Application Gateway', 'Ingress controller', 'Service (ClusterIP)', 'Pod']} />
+      <Flow steps={['User', 'DNS (Azure DNS / Route 53)', 'CDN / WAF / Front Door', 'Public load balancer', 'Private subnet', 'VM or service']} />
     </Section>
   );
 }
@@ -173,7 +165,7 @@ export function Glossary() {
             </summary>
             <div className="mt-2 space-y-2 text-sm text-slate-600">
               {c.body.map((b, i) => <p key={i}>{b}</p>)}
-              {c.example && <p className="font-mono text-xs text-violet-600">{c.example}</p>}
+              {c.example && <p className="font-mono text-xs text-blue-600">{c.example}</p>}
             </div>
           </details>
         ))}

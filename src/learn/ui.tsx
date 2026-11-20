@@ -3,8 +3,8 @@ import { links } from '../site/Nav';
 
 export function Section({ id, kicker, title, children }: { id: string; kicker: string; title: string; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-24 border-b border-violet-100 py-14">
-      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">{kicker}</div>
+    <section id={id} className="scroll-mt-24 border-b border-blue-100 py-14">
+      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">{kicker}</div>
       <h2 className="mt-2 text-3xl font-bold text-ink">{title}</h2>
       <div className="prose-net mt-6">{children}</div>
     </section>
@@ -12,7 +12,7 @@ export function Section({ id, kicker, title, children }: { id: string; kicker: s
 }
 
 export const Card = ({ title, children, tone = 'cyan' }: { title: string; children: ReactNode; tone?: 'cyan' | 'violet' | 'emerald' | 'amber' }) => {
-  const c = { cyan: 'text-violet-600', violet: 'text-orange-600', emerald: 'text-emerald-600', amber: 'text-amber-600' }[tone];
+  const c = { cyan: 'text-blue-600', violet: 'text-cyan-600', emerald: 'text-emerald-600', amber: 'text-amber-600' }[tone];
   return (
     <div className="glass p-5">
       <h4 className={`mb-2 font-semibold ${c}`}>{title}</h4>
@@ -25,7 +25,7 @@ export const Grid = ({ children, cols = 2 }: { children: ReactNode; cols?: 2 | 3
 
 /** "See it in 3D" deep link into the journey */
 export const See = ({ step, children }: { step: string; children: ReactNode }) => (
-  <a href={`${links.app}#${step}`} className="ml-1 inline-flex items-center gap-1 rounded-md border border-violet-300 bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 no-underline hover:bg-violet-100">
+  <a href={`${links.app}#${step}`} className="ml-1 inline-flex items-center gap-1 rounded-md border border-blue-300 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 no-underline hover:bg-blue-100">
     {children} →
   </a>
 );
@@ -36,12 +36,12 @@ export function FilterTable<T>({ rows, cols, placeholder, text }: { rows: T[]; c
   const shown = useMemo(() => rows.filter((r) => text(r).toLowerCase().includes(q.toLowerCase())), [rows, q, text]);
   return (
     <div className="glass my-4 overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-violet-200/70 px-3 py-2">
+      <div className="flex items-center gap-2 border-b border-blue-200/70 px-3 py-2">
         
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={placeholder} aria-label={placeholder} className="w-full bg-transparent py-1 text-sm text-ink outline-none placeholder:text-slate-400" />
         <span className="whitespace-nowrap text-xs text-slate-500">{shown.length} / {rows.length}</span>
       </div>
-      <div className="max-h-[32rem] overflow-auto">
+      <div className="max-h-[32rem] overflow-auto" tabIndex={0} role="region" aria-label={placeholder}>
         <table className="tbl">
           <thead className="sticky top-0 bg-white">
             <tr>{cols.map((c) => <th key={c.h}>{c.h}</th>)}</tr>
@@ -58,7 +58,7 @@ export function FilterTable<T>({ rows, cols, placeholder, text }: { rows: T[]; c
 }
 
 export const Simple = ({ head, rows }: { head: string[]; rows: ReactNode[][] }) => (
-  <div className="glass my-4 overflow-x-auto">
+  <div className="glass my-4 overflow-x-auto" tabIndex={0} role="region" aria-label={head.join(', ')}>
     <table className="tbl">
       <thead><tr>{head.map((h) => <th key={h}>{h}</th>)}</tr></thead>
       <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
@@ -72,7 +72,7 @@ export const Flow = ({ steps }: { steps: string[] }) => (
     {steps.map((s, i) => (
       <span key={i} className="flex items-center gap-2">
         {i > 0 && <span className="text-slate-500">→</span>}
-        <span className="rounded-lg border border-violet-200/70 bg-violet-50 px-3 py-1.5 text-sm text-slate-700">{s}</span>
+        <span className="rounded-lg border border-blue-200/70 bg-blue-50 px-3 py-1.5 text-sm text-slate-700">{s}</span>
       </span>
     ))}
   </div>

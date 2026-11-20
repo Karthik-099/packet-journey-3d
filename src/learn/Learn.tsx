@@ -20,7 +20,7 @@ const TOC = [
   ['deep', 'Protocols in depth'],
   ['physical', 'Cables & satellites'],
   ['big-networks', 'How the giants run networks'],
-  ['cloud', 'Cloud & Kubernetes'],
+  ['cloud', 'Cloud networking'],
   ['security', 'Security'],
   ['toolkit', 'Troubleshooting'],
   ['interview', 'Interview questions'],
@@ -67,7 +67,7 @@ export function Learn() {
       <Nav active="learn" />
       <div className="mx-auto max-w-6xl px-5">
         <header className="pb-6 pt-16">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Learn networking</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-600">Learn networking</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-ink sm:text-5xl">
             How the internet <span className="grad-text">actually</span> connects the world
           </h1>
@@ -77,8 +77,8 @@ export function Learn() {
             <span className="text-sm text-slate-500">
               {read.size} of {TOC.length} sections read
             </span>
-            <span className="h-1.5 w-40 overflow-hidden rounded-full bg-violet-100" aria-hidden>
-              <span className="block h-full bg-gradient-to-r from-violet-500 to-orange-400" style={{ width: `${pct}%` }} />
+            <span className="h-1.5 w-40 overflow-hidden rounded-full bg-blue-100" aria-hidden>
+              <span className="block h-full bg-gradient-to-r from-blue-500 to-cyan-400" style={{ width: `${pct}%` }} />
             </span>
           </div>
         </header>
@@ -87,7 +87,7 @@ export function Learn() {
             <ol className="space-y-0.5 text-sm">
               {TOC.map(([id, t], i) => (
                 <li key={id}>
-                  <a href={`#${id}`} className={`flex items-center gap-2 rounded-lg px-3 py-1.5 transition ${active === id ? 'bg-violet-100 text-ink' : 'text-slate-500 hover:text-ink'}`}>
+                  <a href={`#${id}`} className={`flex items-center gap-2 rounded-lg px-3 py-1.5 transition ${active === id ? 'bg-blue-100 text-ink' : 'text-slate-500 hover:text-ink'}`}>
                     <span className={`font-mono text-[10px] ${read.has(id) ? 'text-emerald-600' : 'text-slate-600'}`}>{String(i + 1).padStart(2, '0')}</span>
                     {t}
                   </a>

@@ -40,7 +40,7 @@ function Utf8({ c }: { c: Ctx }) {
         <button className={`btn text-xs ${tls ? 'btn-on' : ''}`} onClick={() => set({ tls: !tls })}>
           {tls ? 'TLS on (encrypted)' : 'Encrypt with TLS'}
         </button>
-        {tls && <span className="break-all font-mono text-[10px] text-violet-300">{Array.from(c.hi.l6.slice(5, 21), hex).join(' ')}…</span>}
+        {tls && <span className="break-all font-mono text-[10px] text-emerald-300">{Array.from(c.hi.l6.slice(5, 21), hex).join(' ')}…</span>}
       </div>
     </Box>
   );
@@ -285,7 +285,7 @@ function Nat({ c }: { c: Ctx }) {
         <thead className="text-slate-500"><tr><th className="text-left">proto</th><th className="text-left">inside</th><th className="text-left">outside</th><th className="text-left">remote</th></tr></thead>
         <tbody>{natTable(c).map((r, i) => <tr key={i}><td>{r.proto}</td><td>{r.inside}</td><td className="text-noc-cyan">{r.outside}</td><td>{r.remote}</td></tr>)}</tbody>
       </table>
-      {c.me?.ip.includes(':') && <p className="mt-1 text-violet-300">You reached our IP lookup over IPv6 ({c.me.ip}). With IPv6 there is normally no NAT: every device has its own global address, and the router only firewalls. The IPv4 path with NAT is shown using an example address.</p>}
+      {c.me?.ip.includes(':') && <p className="mt-1 text-emerald-300">You reached our IP lookup over IPv6 ({c.me.ip}). With IPv6 there is normally no NAT: every device has its own global address, and the router only firewalls. The IPv4 path with NAT is shown using an example address.</p>}
       {c.me && !c.me.ip.includes(':') && <p className="mt-1 text-slate-500">Your real public IP is {c.me.ip}. If your ISP uses CGNAT, your router's WAN is actually a 100.64.x.x address and this IP belongs to the ISP's NAT.</p>}
     </Box>
   );
@@ -348,7 +348,7 @@ function RouteLegs({ c }: { c: Ctx }) {
         {c.route.legs.map((l, i) => (
           <tr key={i} className="border-t border-noc-edge/60 align-top">
             <td className="pr-2"><span className="text-slate-200">{l.from} → {l.to}</span><br /><span className="text-slate-500">{l.name}</span></td>
-            <td className={`pr-2 ${l.kind === 'subsea' ? 'text-sky-300' : l.kind === 'space' ? 'text-violet-300' : 'text-slate-400'}`}>{l.kind === 'space' ? 'radio (c)' : l.kind === 'subsea' ? 'subsea fiber' : 'land fiber'}</td>
+            <td className={`pr-2 ${l.kind === 'subsea' ? 'text-sky-300' : l.kind === 'space' ? 'text-emerald-300' : 'text-slate-400'}`}>{l.kind === 'space' ? 'radio (c)' : l.kind === 'subsea' ? 'subsea fiber' : 'land fiber'}</td>
             <td className="pr-2 text-right">{Math.round(l.km).toLocaleString('en-US')}</td>
             <td className="text-right text-noc-cyan">{l.ms.toFixed(1)}</td>
           </tr>
@@ -405,7 +405,7 @@ function Tls({ c }: { c: Ctx }) {
   ] as const;
   return (
     <Box>
-      {c.quic && <p className="mb-1 text-violet-300">QUIC: these same TLS 1.3 messages travel inside QUIC CRYPTO frames over UDP 443, and transport setup happens in the same round trip.</p>}
+      {c.quic && <p className="mb-1 text-emerald-300">QUIC: these same TLS 1.3 messages travel inside QUIC CRYPTO frames over UDP 443, and transport setup happens in the same round trip.</p>}
       <ul className="space-y-0.5 font-mono text-[11px]">
         {flow.map(([d, n, x, enc], i) => (
           <li key={i} className="flex gap-2"><span className="text-noc-cyan">{d}</span><b className="w-40 shrink-0 text-slate-200">{n}{enc ? ' · enc' : ''}</b><span className="text-slate-500">{x}</span></li>

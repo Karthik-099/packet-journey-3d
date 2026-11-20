@@ -54,7 +54,7 @@ export function TargetBar() {
           </button>
         </div>
         <label className="ml-2 flex cursor-pointer items-center gap-1.5 text-[11px] text-slate-400" title="When off, nothing leaves your browser: no DNS, geo-IP or measurement requests.">
-          <input type="checkbox" checked={!offline} onChange={(e) => setOffline(!e.target.checked)} className="accent-violet-500" /> Live data
+          <input type="checkbox" checked={!offline} onChange={(e) => setOffline(!e.target.checked)} className="accent-emerald-500" /> Live data
         </label>
         <datalist id="domain-examples">{EXAMPLES.map((d) => <option key={d} value={d} />)}</datalist>
       </form>

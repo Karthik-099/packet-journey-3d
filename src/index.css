@@ -4,13 +4,13 @@
 @import "@fontsource/jetbrains-mono/600.css";
 
 @theme {
-  /* app theme: deep violet night with violet + orange accents */
-  --color-noc-bg: #0d0a1f;
-  --color-noc-panel: #161131;
-  --color-noc-edge: #2d2656;
-  --color-noc-cyan: #a78bfa;
+  /* app theme: network-operations black with green + cyan accents */
+  --color-noc-bg: #03080c;
+  --color-noc-panel: #08141b;
+  --color-noc-edge: #143039;
+  --color-noc-cyan: #22d3ee;
   --color-noc-green: #34d399;
-  --color-noc-amber: #fb923c;
+  --color-noc-amber: #fbbf24;
   --color-noc-rose: #fb7185;
   --font-sans: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
@@ -21,38 +21,37 @@ body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; font-
 .panel { @apply rounded-lg border border-noc-edge bg-noc-panel/90 backdrop-blur; }
 .chip { @apply inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider; }
 .btn { @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-noc-edge bg-noc-panel px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-noc-cyan/70 hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-noc-cyan disabled:opacity-40; }
-.btn-on { @apply border-transparent bg-gradient-to-r from-violet-500 to-orange-400 text-white shadow-lg shadow-violet-900/40 hover:brightness-110; }
-.btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-400 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-fuchsia-900/30 transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40; }
+.btn-on { @apply border-transparent bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-900/40 hover:brightness-110; }
+.btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-900/30 transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40; }
 .h-label { @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400; }
-.scanlines { background-image: radial-gradient(40rem 25rem at 20% 0%, rgba(139,92,246,.18), transparent 60%), radial-gradient(40rem 25rem at 100% 100%, rgba(251,146,60,.12), transparent 60%); }
-.app-bg { background: radial-gradient(70rem 40rem at 0% 0%, rgba(124,58,237,.22), transparent 60%), radial-gradient(60rem 35rem at 100% 0%, rgba(249,115,22,.12), transparent 55%), #0d0a1f; }
+.scanlines { background-image: radial-gradient(40rem 25rem at 20% 0%, rgba(16,185,129,.14), transparent 60%), radial-gradient(40rem 25rem at 100% 100%, rgba(34,211,238,.10), transparent 60%); }
+.app-bg { background: radial-gradient(70rem 40rem at 0% 0%, rgba(16,185,129,.12), transparent 60%), radial-gradient(60rem 35rem at 100% 0%, rgba(34,211,238,.10), transparent 55%), #03080c; }
 input[type=range] { accent-color: var(--color-noc-cyan); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
 
-/* ---------- marketing / learning pages: light theme, violet → orange ---------- */
-@theme { --color-ink: #1a1238; }
+/* ---------- marketing / learning pages: light theme, white + blue ---------- */
+@theme { --color-ink: #0b1b2e; }
 .site-bg {
   color: #3f3a5a;
   background:
-    radial-gradient(55rem 32rem at 0% -5%, rgba(167, 139, 250, 0.35), transparent 60%),
-    radial-gradient(45rem 30rem at 100% 0%, rgba(251, 146, 60, 0.28), transparent 60%),
-    radial-gradient(50rem 35rem at 50% 100%, rgba(236, 72, 153, 0.12), transparent 60%),
-    linear-gradient(180deg, #fbfaff 0%, #ffffff 40%, #fdf8ff 100%);
+    radial-gradient(55rem 32rem at 0% -5%, rgba(59, 130, 246, 0.16), transparent 60%),
+    radial-gradient(45rem 30rem at 100% 0%, rgba(34, 211, 238, 0.14), transparent 60%),
+    linear-gradient(180deg, #f8fbff 0%, #ffffff 45%, #f6faff 100%);
   background-attachment: fixed;
   min-height: 100%;
 }
-.glass { @apply rounded-2xl border border-violet-200/70 bg-white/80 shadow-[0_1px_2px_rgba(26,18,56,.04),0_8px_24px_-12px_rgba(91,33,182,.18)] backdrop-blur-md; }
-.grad-text { @apply bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-500 bg-clip-text text-transparent; }
-.cta { @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-fuchsia-500/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-fuchsia-500/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500; }
-.cta-ghost { @apply inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-white px-5 py-3 text-base font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-violet-400 hover:shadow-md focus-visible:outline-2 focus-visible:outline-violet-500; }
+.glass { @apply rounded-2xl border border-slate-200 bg-white/90 shadow-[0_1px_2px_rgba(11,27,46,.04),0_10px_28px_-14px_rgba(30,64,175,.22)] backdrop-blur-md; }
+.grad-text { @apply bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-500 bg-clip-text text-transparent; }
+.cta { @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500; }
+.cta-ghost { @apply inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-base font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md focus-visible:outline-2 focus-visible:outline-blue-500; }
 .prose-net p { @apply mb-3 text-[15.5px] leading-7 text-slate-600; }
 .prose-net h3 { @apply mb-3 mt-8 text-xl font-semibold tracking-tight text-ink; }
 .prose-net ul { @apply mb-3 list-disc space-y-1.5 pl-5 text-[15.5px] leading-7 text-slate-600; }
-.prose-net code, .kbd { @apply rounded-md bg-violet-100 px-1.5 py-0.5 font-mono text-[0.85em] text-violet-800; }
+.prose-net code, .kbd { @apply rounded-md bg-blue-50 px-1.5 py-0.5 font-mono text-[0.85em] text-blue-800; }
 .tbl { @apply w-full border-collapse text-sm; }
-.tbl th { @apply border-b border-violet-100 bg-violet-50/70 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
-.tbl td { @apply border-b border-violet-100/70 px-3 py-2.5 align-top text-slate-600; }
-.tbl tr:hover td { @apply bg-violet-50/60; }
+.tbl th { @apply border-b border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
+.tbl td { @apply border-b border-slate-100 px-3 py-2.5 align-top text-slate-600; }
+.tbl tr:hover td { @apply bg-blue-50/50; }
 @keyframes travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 
 @media print {
@@ -63,13 +62,13 @@ input[type=range] { accent-color: var(--color-noc-cyan); }
   header.sticky { position: static; }
 }
 .tilt::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .2s;
-  background: radial-gradient(22rem circle at var(--gx, 50%) var(--gy, 50%), rgba(167, 139, 250, .18), transparent 60%); }
+  background: radial-gradient(22rem circle at var(--gx, 50%) var(--gy, 50%), rgba(59, 130, 246, .12), transparent 60%); }
 .tilt:hover::before { opacity: 1; }
 .hero-dark {
   background:
-    radial-gradient(50rem 30rem at 85% 40%, rgba(124, 58, 237, .45), transparent 60%),
-    radial-gradient(40rem 28rem at 10% 10%, rgba(249, 115, 22, .28), transparent 60%),
-    radial-gradient(40rem 30rem at 50% 120%, rgba(236, 72, 153, .25), transparent 60%),
-    linear-gradient(160deg, #120a2e 0%, #1d0f45 50%, #2a0f3a 100%);
+    radial-gradient(50rem 30rem at 85% 40%, rgba(37, 99, 235, .35), transparent 60%),
+    radial-gradient(40rem 28rem at 8% 10%, rgba(16, 185, 129, .22), transparent 60%),
+    radial-gradient(40rem 30rem at 50% 120%, rgba(34, 211, 238, .18), transparent 60%),
+    linear-gradient(160deg, #02060c 0%, #04121f 55%, #031018 100%);
 }
-.icon-tile { @apply grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-orange-500 text-white shadow-lg shadow-violet-500/30; }
+.icon-tile { @apply grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/30; }

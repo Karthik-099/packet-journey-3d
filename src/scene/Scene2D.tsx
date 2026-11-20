@@ -1,4 +1,4 @@
-import { JOURNEYS, OSI } from '../content';
+import { OSI } from '../content';
 import { useCtx, useStep, useStore } from '../store';
 import { LAYER_COLORS } from './colors';
 import { WorldMap } from '../components/WorldMap';
@@ -12,20 +12,6 @@ export function Scene2D() {
   const c = useCtx();
   const journey = useStore((s) => s.journey);
   const set = useStore((s) => s.set);
-  const graph = JOURNEYS[journey].graph;
-  if (graph) {
-    const active = new Set(step.path ?? [step.focus]);
-    return (
-      <div className="scanlines flex h-full flex-wrap content-center items-center justify-center gap-3 p-4">
-        {graph.nodes.map((n) => (
-          <button key={n.id} onClick={() => set({ tip: n.id })} className={`w-36 rounded-xl border p-2 text-left transition ${n.id === step.focus ? 'border-noc-amber bg-noc-amber/15 shadow-[0_0_18px] shadow-orange-500/40' : active.has(n.id) ? 'border-noc-cyan/70 bg-noc-cyan/10' : 'border-noc-edge bg-noc-panel opacity-60'}`}>
-            <div className="text-xs font-semibold text-white">{n.label}</div>
-            <div className="text-[10px] text-slate-400">{n.sub}</div>
-          </button>
-        ))}
-      </div>
-    );
-  }
   if (journey === 'hi') {
     const d = DEPTH[step.pdu ?? 'Data'] ?? 0;
     const stack = (side: 'sender' | 'receiver') => (
