@@ -56,7 +56,7 @@ const proto = (c: Ctx) => (c.tls ? 'HTTPS (TLS on port 443)' : 'HTTP (port 80)')
 
 export const journeyHi: Journey = {
   id: 'hi',
-  title: 'Send "hi" through the 7 OSI layers',
+  title: (c) => `Send "${c.message}" through the 7 OSI layers`,
   subtitle: 'Two computers on the same LAN, one cable. Watch headers wrap and unwrap.',
   steps: [
     {
@@ -143,6 +143,7 @@ export const journeyHi: Journey = {
       side: 'sender',
       pdu: 'Segment',
       focus: 'sender-4',
+      widget: 'fields',
       what: (c) =>
         `TCP puts a 20-byte header in front of the data: which app it is for (port ${dstPort(c.tls)}), which app sent it (port ${HI.srcPort}), and a sequence number so the receiver can put pieces back in order and confirm it got them. Data + TCP header = a segment.`,
       under: (c) => [
@@ -194,6 +195,7 @@ export const journeyHi: Journey = {
       side: 'sender',
       pdu: 'Frame',
       focus: 'sender-2',
+      widget: 'fields',
       what: (c) =>
         `The network card wraps the packet in an Ethernet frame: the receiver's MAC, its own MAC, a type field (0x0800 = "IPv4 inside"), and a 4-byte error check (FCS) at the end.${c.hi.padding ? ` The packet is too small, so ${c.hi.padding} zero bytes of padding are added to reach Ethernet's 64-byte minimum.` : ''}`,
       under: (c) => [

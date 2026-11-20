@@ -2,7 +2,7 @@ import { OSI } from '../content';
 import { useCtx, useStep, useStore } from '../store';
 import { LAYER_COLORS } from './colors';
 import { WorldMap } from '../components/WorldMap';
-import { NET, wanIp } from '../content/journey-google';
+import { NET, serverIp, wanIp } from '../content/journey-google';
 
 const DEPTH: Record<string, number> = { Data: 0, Segment: 1, Packet: 2, Frame: 3, Bits: 4 };
 
@@ -54,8 +54,8 @@ export function Scene2D() {
     ['router', 'Router/NAT', wanIp(c)],
     ['dns-resolver', 'DNS', '8.8.8.8'],
     ['isp', 'ISP', c.me?.asn ?? 'BGP'],
-    ['globe', 'Core', c.path === 'edge' ? 'IXP' : 'subsea'],
-    ['google', 'Google', c.path === 'edge' ? NET.google : NET.googleEu],
+    ['globe', 'Core', c.route.legs.some((l) => l.kind === 'subsea') ? 'subsea' : 'land'],
+    ['google', c.target.domain, serverIp(c)],
   ] as const;
   const at = stations.findIndex(([k]) => step.focus === k || (k === 'laptop' && ['keyboard', 'browser', 'screen'].includes(step.focus)) || (k === 'dns-resolver' && step.focus.startsWith('dns')) || (k === 'router' && step.focus === 'wifi'));
   return (
@@ -69,7 +69,7 @@ export function Scene2D() {
           </li>
         ))}
       </ol>
-      {(step.focus === 'globe' || step.id === 'g-gfe') && <WorldMap path={c.path} highlight={c.path === 'long' ? 'aae1' : undefined} />}
+      {['globe', 'google', 'isp'].includes(step.focus) && <WorldMap route={c.route} home={c.home} dest={c.destPoint} progress={1} />}
     </div>
   );
 }

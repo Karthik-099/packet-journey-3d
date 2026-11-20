@@ -5,3 +5,4 @@ dist
 deploy
 *.md
 coverage
+likes-worker

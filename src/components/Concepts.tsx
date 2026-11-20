@@ -65,7 +65,7 @@ export function Concepts() {
           <div className="flex items-center gap-2 border-b border-noc-edge p-3">
             <h2 className="font-semibold text-white">Concepts</h2>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="search: subnet, BGP, endpoint…" className="flex-1 rounded border border-noc-edge bg-black/40 px-2 py-1 text-sm" aria-label="Search concepts" autoFocus />
-            <button className="btn" onClick={() => set({ conceptsOpen: false })} aria-label="Close concepts">✕</button>
+            <button className="btn" onClick={() => set({ conceptsOpen: false })} aria-label="Close concepts">×</button>
           </div>
           <div className="flex-1 space-y-3 overflow-auto p-3">
             <CidrCalc />

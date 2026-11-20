@@ -205,5 +205,6 @@ export const OBJECT_TIPS: Record<string, { title: string; body: string }> = {
   'receiver-6': { title: 'Receiver L6 Presentation', body: 'Encoding (UTF-8) and encryption (TLS).' },
   'sender-7': { title: 'Sender L7 Application', body: 'Protocols apps speak: HTTP, DNS, SMTP.' },
   'receiver-7': { title: 'Receiver L7 Application', body: 'Protocols apps speak: HTTP, DNS, SMTP.' },
+  satellite: { title: 'Satellite', body: 'LEO (~550 km, Starlink-style) or GEO (35,786 km). Radio up to the satellite and down to a ground station; LEO adds ~5–20 ms, GEO ~250 ms each way.' },
   screen: { title: 'Screen', body: 'The compositor\'s frame is shown at the next vsync.' },
 };

@@ -1,11 +1,15 @@
 import type { HiPackets } from '../lib/hi';
 import type { Inspection } from '../lib/inspect';
-import type { Me } from '../lib/whoami';
+import type { Geo, Target } from '../lib/lookup';
+import type { Access, Route } from '../lib/routing';
+import type { LatLon } from '../lib/geo';
 
 export type JourneyId = 'hi' | 'google';
 export type Pdu = 'Data' | 'Segment' | 'Packet' | 'Frame' | 'Bits';
 export type Medium = 'copper' | 'fiber' | 'wifi';
-export type CorePath = 'edge' | 'long';
+/** For CDN/anycast targets: the nearby edge (realistic) or the geo-IP registered location */
+export type Dest = 'edge' | 'origin';
+export type { Access };
 export type OsiLayer = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 /** Everything a step's text/inspector may depend on (user toggles + live packets). */
@@ -13,11 +17,19 @@ export interface Ctx {
   message: string;
   tls: boolean;
   medium: Medium;
-  path: CorePath;
+  access: Access;
+  dest: Dest;
   quic: boolean;
   hi: HiPackets;
   /** Visitor's detected public IP/location/ISP, or null (examples used) */
-  me: Me | null;
+  me: Geo | null;
+  /** The domain being visited, with live DNS + geo data */
+  target: Target;
+  home: LatLon;
+  homeName: string;
+  destPoint: LatLon;
+  destName: string;
+  route: Route;
 }
 
 export type Dyn<T> = T | ((c: Ctx) => T);
@@ -38,6 +50,10 @@ export type Widget =
   | 'dns'
   | 'nat'
   | 'traceroute'
+  | 'route'
+  | 'bgp'
+  | 'fields'
+  | 'summary'
   | 'tls'
   | 'http'
   | 'render';
@@ -82,12 +98,14 @@ export interface Step {
   hosts?: Dyn<Host[]>;
   /** Contribution to the running latency budget, in ms */
   latencyMs?: (c: Ctx) => number;
+  /** Minimum time on screen while playing (e.g. to let an animation finish) */
+  minPlayMs?: (c: Ctx) => number;
 }
 
 export interface Journey {
   id: JourneyId;
-  title: string;
-  subtitle: string;
+  title: Dyn<string>;
+  subtitle: Dyn<string>;
   steps: Step[];
 }
 

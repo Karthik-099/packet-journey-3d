@@ -21,3 +21,35 @@ body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
 .scanlines { background-image: repeating-linear-gradient(0deg, rgba(34,211,238,.03) 0 1px, transparent 1px 3px); }
 input[type=range] { accent-color: var(--color-noc-cyan); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+
+/* ---------- marketing / learning pages ---------- */
+.site-bg {
+  background:
+    radial-gradient(60rem 40rem at 10% -10%, rgba(99, 102, 241, 0.35), transparent 60%),
+    radial-gradient(50rem 35rem at 95% 0%, rgba(34, 211, 238, 0.22), transparent 60%),
+    radial-gradient(60rem 40rem at 50% 110%, rgba(168, 85, 247, 0.18), transparent 60%),
+    linear-gradient(180deg, #070a1a 0%, #0a0f24 45%, #060816 100%);
+  background-attachment: fixed;
+  min-height: 100%;
+}
+.glass { @apply rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md; }
+.grad-text { @apply bg-gradient-to-r from-cyan-300 via-sky-300 to-violet-300 bg-clip-text text-transparent; }
+.cta { @apply inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-500 px-5 py-3 font-semibold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300; }
+.cta-ghost { @apply inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 font-semibold text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-cyan-300; }
+.prose-net p { @apply mb-3 leading-relaxed text-slate-300; }
+.prose-net h3 { @apply mb-2 mt-6 text-lg font-semibold text-white; }
+.prose-net ul { @apply mb-3 list-disc space-y-1 pl-5 text-slate-300; }
+.prose-net code, .kbd { @apply rounded bg-white/10 px-1 py-0.5 font-mono text-[0.85em] text-cyan-200; }
+.tbl { @apply w-full border-collapse text-sm; }
+.tbl th { @apply border-b border-white/10 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-400; }
+.tbl td { @apply border-b border-white/5 px-3 py-2 align-top text-slate-300; }
+.tbl tr:hover td { @apply bg-white/[0.03]; }
+@keyframes travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+
+@media print {
+  .site-bg { background: #fff !important; }
+  .site-bg * { color: #111 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; }
+  .glass, .tbl td, .tbl th { border-color: #ccc !important; }
+  details > *:not(summary) { display: block !important; }
+  header.sticky { position: static; }
+}

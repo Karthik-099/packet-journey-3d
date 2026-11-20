@@ -2,15 +2,23 @@ import { useMemo } from 'react';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import land110 from 'world-atlas/land-110m.json';
-import { CABLES, SITES, LONG_ROUTE } from '../content/cables';
+import { HUBS, LINKS, hubById } from '../content/network';
 import type { LatLon } from '../lib/geo';
+import type { Route } from '../lib/routing';
 
-// Crop: South Asia → Europe
-const [LON0, LON1, LAT0, LAT1] = [-12, 108, -8, 58];
-const W = 600;
-const H = (W * (LAT1 - LAT0)) / (LON1 - LON0);
-const px = ([lat, lon]: LatLon) => [((lon - LON0) / (LON1 - LON0)) * W, ((LAT1 - lat) / (LAT1 - LAT0)) * H] as const;
-const line = (pts: LatLon[]) => pts.map((p, i) => `${i ? 'L' : 'M'}${px(p).map((n) => n.toFixed(1)).join(',')}`).join('');
+const W = 720;
+const H = 360;
+const px = ([lat, lon]: LatLon) => [((lon + 180) / 360) * W, ((90 - lat) / 180) * H] as const;
+/** Split at the antimeridian so lines don't streak across the map */
+function line(pts: LatLon[]) {
+  let d = '';
+  pts.forEach((p, i) => {
+    const [x, y] = px(p);
+    const jump = i > 0 && Math.abs(p[1] - pts[i - 1]![1]) > 180;
+    d += `${i === 0 || jump ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  return d;
+}
 
 let landPath: string | null = null;
 function getLand() {
@@ -18,70 +26,59 @@ function getLand() {
   const topo = land110 as unknown as Topology<{ land: GeometryCollection }>;
   const fc = feature(topo, topo.objects.land) as unknown as { features: { geometry: { type: string; coordinates: number[][][][] | number[][][] } }[] };
   const polys = fc.features.flatMap((f) => (f.geometry.type === 'Polygon' ? [f.geometry.coordinates as number[][][]] : (f.geometry.coordinates as number[][][][])));
-  landPath = polys
-    .flatMap((poly) => poly.map((ring) => line(ring.map(([lon, lat]) => [lat ?? 0, lon ?? 0] as LatLon)) + 'Z'))
-    .join('');
+  landPath = polys.flatMap((poly) => poly.map((ring) => line(ring.map(([lon, lat]) => [lat ?? 0, lon ?? 0] as LatLon)) + 'Z')).join('');
   return landPath;
 }
 
-/** 2D map of India's submarine cables. `progress` (0..1) moves the packet along the long route. */
-export function WorldMap({ highlight, progress, path }: { highlight?: string; progress?: number; path: 'edge' | 'long' }) {
+/** Flat world map: backbone graph, your route, moving packet (progress 0..1). */
+export function WorldMap({ route, progress, home, dest }: { route: Route; progress?: number; home: LatLon; dest: LatLon }) {
   const land = useMemo(getLand, []);
   const dot = useMemo(() => {
     if (progress === undefined) return null;
-    if (path === 'edge') return px(SITES[0]!.at);
-    const segs = LONG_ROUTE.slice(1).map((p, i) => [px(LONG_ROUTE[i]!), px(p)] as const);
-    const lens = segs.map(([a, b]) => Math.hypot(b[0] - a[0], b[1] - a[1]));
+    const pts = route.points;
+    const seg = pts.slice(1).map((p, i) => [px(pts[i]!), px(p), Math.abs(p[1] - pts[i]![1]) > 180] as const);
+    const lens = seg.map(([a, b, jump]) => (jump ? 0 : Math.hypot(b[0] - a[0], b[1] - a[1])));
     let d = lens.reduce((a, b) => a + b, 0) * progress;
-    for (let i = 0; i < segs.length; i++) {
+    for (let i = 0; i < seg.length; i++) {
       const l = lens[i]!;
-      if (d <= l) {
-        const [a, b] = segs[i]!;
-        const t = l ? d / l : 0;
-        return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t] as const;
+      if (d <= l && l > 0) {
+        const [a, b] = seg[i]!;
+        return [a[0] + ((b[0] - a[0]) * d) / l, a[1] + ((b[1] - a[1]) * d) / l] as const;
       }
       d -= l;
     }
-    return px(LONG_ROUTE.at(-1)!);
-  }, [progress, path]);
+    return px(pts.at(-1)!);
+  }, [progress, route]);
   return (
-    <svg viewBox={`0 0 ${W} ${H.toFixed(0)}`} className="w-full rounded-md border border-noc-edge bg-[#060b18]" role="img" aria-label="Map of submarine cables between India, Europe and Southeast Asia">
-      <path d={land} fill="#0f1a33" stroke="#1e3a5f" strokeWidth={0.5} />
-      {CABLES.map((c) => (
-        <path key={c.id} d={line(c.route)} fill="none" stroke={c.color} strokeWidth={highlight === c.id ? 2.2 : 1} strokeOpacity={highlight && highlight !== c.id ? 0.35 : 0.9}>
-          <title>{`${c.name} (${c.rfs}): ${c.lands}`}</title>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-md border border-noc-edge bg-gradient-to-b from-[#06122a] to-[#040a18]" role="img" aria-label="World map of backbone cables and your packet's route">
+      <path d={land} fill="#10203d" stroke="#1e3a5f" strokeWidth={0.4} />
+      {LINKS.map((l, i) => (
+        <path key={i} d={line([hubById(l.a).at, ...(l.via ?? []), hubById(l.b).at])} fill="none" stroke={l.kind === 'subsea' ? '#38bdf8' : '#64748b'} strokeWidth={0.7} strokeOpacity={0.45} strokeDasharray={l.kind === 'land' ? '2 2' : undefined}>
+          <title>{l.name}</title>
         </path>
       ))}
-      {path === 'long' && <path d={line(LONG_ROUTE)} fill="none" stroke="#fff" strokeWidth={1.2} strokeDasharray="3 3" opacity={0.8} />}
-      {SITES.map((s) => {
-        const [x, y] = px(s.at);
+      <path d={line(route.points)} fill="none" stroke="#fbbf24" strokeWidth={2} />
+      {HUBS.map((h) => {
+        const [x, y] = px(h.at);
         return (
-          <g key={s.id}>
-            <circle cx={x} cy={y} r={3} fill={s.kind === 'dc' ? '#34d399' : s.kind === 'ixp' ? '#fbbf24' : '#22d3ee'}>
-              <title>{`${s.name}: ${s.detail}`}</title>
-            </circle>
-            <text x={x + 5} y={y - 4} fontSize={9} fill="#94a3b8">
-              {s.name}
-            </text>
+          <circle key={h.id} cx={x} cy={y} r={2} fill="#22d3ee">
+            <title>{`${h.name}: ${h.ixp}`}</title>
+          </circle>
+        );
+      })}
+      {[
+        [home, 'YOU', '#fb7185'],
+        [dest, 'SERVER', '#34d399'],
+      ].map(([p, t, c]) => {
+        const [x, y] = px(p as LatLon);
+        return (
+          <g key={t as string}>
+            <circle cx={x} cy={y} r={4} fill={c as string} />
+            <text x={x + 6} y={y - 5} fontSize={10} fontWeight={700} fill={c as string}>{t as string}</text>
           </g>
         );
       })}
-      {dot && <circle cx={dot[0]} cy={dot[1]} r={4.5} fill="#fff" stroke="#22d3ee" strokeWidth={2} />}
+      {dot && <circle cx={dot[0]} cy={dot[1]} r={4.5} fill="#fff" stroke="#fbbf24" strokeWidth={2} />}
     </svg>
-  );
-}
-
-export function CableLegend() {
-  return (
-    <ul className="grid grid-cols-1 gap-1 text-[11px] sm:grid-cols-2">
-      {CABLES.map((c) => (
-        <li key={c.id} className="flex items-start gap-2">
-          <span className="mt-1.5 h-0.5 w-4 shrink-0" style={{ background: c.color }} />
-          <span>
-            <span className="text-slate-200">{c.name}</span> <span className="text-slate-500">({c.rfs}) {c.lands}</span>
-          </span>
-        </li>
-      ))}
-    </ul>
   );
 }

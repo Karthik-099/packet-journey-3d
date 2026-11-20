@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cidrInfo, classify, sameSubnet, isValidIp } from './cidr';
-import { LONG_PATH } from './geo';
+import { fiberMs, haversineKm, PLACES } from './geo';
 
 describe('cidr', () => {
   it('computes a /24', () => {
@@ -27,8 +27,8 @@ describe('cidr', () => {
 });
 
 describe('geo', () => {
-  it('long path propagation is realistic (Mumbai→Belgium ~45–60 ms one way)', () => {
-    expect(LONG_PATH.oneWayMs).toBeGreaterThan(40);
-    expect(LONG_PATH.oneWayMs).toBeLessThan(60);
+  it('light in fiber: ~4.9 µs per km', () => {
+    expect(fiberMs(1000)).toBeCloseTo(4.9, 1);
+    expect(haversineKm(PLACES.mumbai, PLACES.chennai)).toBeGreaterThan(1000);
   });
 });

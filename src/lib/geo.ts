@@ -21,36 +21,7 @@ export const PLACES = {
   chennai: [13.08, 80.27] as LatLon,
   bengaluru: [12.97, 77.59] as LatLon,
   marseille: [43.3, 5.37] as LatLon,
-  stGhislain: [50.47, 3.82] as LatLon, // Google data center, Belgium
 };
-
-/**
- * Approximate route of a Mumbai → Europe system (e.g. SEA-ME-WE / AAE-1 style) via the
- * Arabian Sea, Gulf of Aden, Red Sea, Suez and the Mediterranean, then overland to Belgium.
- */
-export const SUBSEA_ROUTE: LatLon[] = [
-  PLACES.mumbai,
-  [17.0, 66.0],
-  [13.5, 54.0],
-  [12.2, 45.5],
-  [13.0, 43.0],
-  [20.0, 38.5],
-  [27.5, 34.0],
-  [29.9, 32.55],
-  [31.3, 32.3],
-  [33.0, 28.0],
-  [35.5, 18.0],
-  [38.5, 9.0],
-  PLACES.marseille,
-];
-export const OVERLAND_ROUTE: LatLon[] = [PLACES.marseille, [45.76, 4.84], [48.86, 2.35], PLACES.stGhislain];
-
-export const LONG_PATH = (() => {
-  const subseaKm = pathKm(SUBSEA_ROUTE);
-  const landKm = pathKm(OVERLAND_ROUTE) * 1.2; // terrestrial fiber follows roads/rail, not great circles
-  const km = subseaKm + landKm;
-  return { subseaKm, landKm, km, oneWayMs: fiberMs(km) };
-})();
 
 /** lat/lon → point on a sphere of radius r (three.js Y-up) */
 export function toXYZ([lat, lon]: LatLon, r: number): [number, number, number] {
