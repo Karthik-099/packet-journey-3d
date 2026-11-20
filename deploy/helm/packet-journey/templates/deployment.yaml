@@ -16,6 +16,11 @@ spec:
   template:
     metadata:
       labels: {{- include "pj.selector" . | nindent 8 }}
+      {{- if .Values.metrics.enabled }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.metrics.port }}"
+      {{- end }}
     spec:
       automountServiceAccountToken: false
       {{- with .Values.imagePullSecrets }}
@@ -43,6 +48,16 @@ spec:
           volumeMounts:
             - { name: tmp, mountPath: /tmp/nginx }
             - { name: cache, mountPath: /var/cache/nginx }
+        {{- if .Values.metrics.enabled }}
+        - name: metrics
+          image: {{ .Values.metrics.image }}
+          args: ["--nginx.scrape-uri=http://127.0.0.1:8081/stub_status"]
+          securityContext: {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+          resources: {{- toYaml .Values.metrics.resources | nindent 12 }}
+        {{- end }}
       volumes:
         - { name: tmp, emptyDir: {} }
         - { name: cache, emptyDir: {} }

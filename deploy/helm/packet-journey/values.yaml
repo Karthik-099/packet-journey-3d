@@ -51,6 +51,18 @@ securityContext:
   capabilities:
     drop: [ALL]
 
+# Prometheus metrics from nginx (requests, connections) via the official exporter sidecar
+metrics:
+  enabled: true
+  image: nginx/nginx-prometheus-exporter:1.4.2
+  port: 9113
+  resources:
+    requests: { cpu: 10m, memory: 16Mi }
+    limits: { cpu: 100m, memory: 32Mi }
+  serviceMonitor:
+    enabled: false # set true if the Prometheus Operator (kube-prometheus-stack) is installed
+    interval: 30s
+
 nodeSelector: {}
 tolerations: []
 affinity: {}

@@ -1,0 +1,102 @@
+# Kyverno admission policies for the packet-journey namespace.
+# Install Kyverno first: helm install kyverno kyverno/kyverno -n kyverno --create-namespace
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pj-require-non-root
+  annotations:
+    policies.kyverno.io/description: Containers must run as non-root with a read-only root filesystem and no privilege escalation.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: non-root-readonly
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [packet-journey]
+      validate:
+        message: "Run as non-root, read-only root filesystem, no privilege escalation."
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pj-disallow-latest-tag
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: pinned-tag
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [packet-journey]
+      validate:
+        message: "Use an immutable tag (the git SHA), not :latest."
+        pattern:
+          spec:
+            containers:
+              - image: "!*:latest"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pj-require-resources
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: requests-and-limits
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [packet-journey]
+      validate:
+        message: "CPU/memory requests and memory limits are required."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    cpu: "?*"
+                    memory: "?*"
+                  limits:
+                    memory: "?*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: pj-verify-image-signature
+  annotations:
+    policies.kyverno.io/description: Only images signed by this repository's GitHub Actions workflow (cosign keyless) may run.
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: cosign-keyless
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [packet-journey]
+      verifyImages:
+        - imageReferences: ["ghcr.io/karthik-099/packet-journey-3d*"]
+          mutateDigest: true
+          attestors:
+            - entries:
+                - keyless:
+                    issuer: https://token.actions.githubusercontent.com
+                    subject: "https://github.com/Karthik-099/packet-journey-3d/.github/workflows/ci.yml@refs/heads/main"
+                    rekor:
+                      url: https://rekor.sigstore.dev
