@@ -31,11 +31,11 @@ export function SidePanel() {
             {step.pdu && <span className="chip border-noc-green/50 text-noc-green">PDU: {step.pdu}</span>}
             {step.simplified && <Simplified note={step.simplified} />}
           </div>
-          <h2 className="text-lg font-semibold leading-tight text-white">{step.title}</h2>
+          <h2 className="text-xl font-bold leading-tight tracking-tight text-white">{step.title}</h2>
         </header>
 
         <Section title="What's happening">
-          <p className="text-sm leading-relaxed text-slate-200">{resolve(step.what, c)}</p>
+          <p className="text-[15px] leading-7 text-slate-200">{resolve(step.what, c)}</p>
         </Section>
 
         {step.widget && <StepWidget step={step} c={c} />}
@@ -65,7 +65,7 @@ export function SidePanel() {
           </summary>
           <div className="mt-2 space-y-2 border-l border-noc-cyan/30 pl-3">
             {resolve(step.under, c).map((p, i) => (
-              <p key={i} className="text-[13px] leading-relaxed text-slate-300">{p}</p>
+              <p key={i} className="text-[14px] leading-6 text-slate-300">{p}</p>
             ))}
           </div>
         </details>

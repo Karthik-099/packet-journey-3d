@@ -23,6 +23,7 @@ export interface Ctx {
   hi: HiPackets;
   /** Visitor's detected public IP/location/ISP, or null (examples used) */
   me: Geo | null;
+  gps?: { lat: number; lon: number; acc: number } | null;
   /** The domain being visited, with live DNS + geo data */
   target: Target;
   home: LatLon;

@@ -53,14 +53,14 @@ function LiveEncap() {
   return (
     <div className="glass my-4 p-4">
       <label className="flex items-center gap-2 text-sm">
-        <span className="text-slate-400">Your message:</span>
-        <input value={msg} maxLength={64} onChange={(e) => setMsg(e.target.value)} className="flex-1 rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 font-mono text-amber-200 outline-none focus:border-cyan-300" />
+        <span className="text-slate-500">Your message:</span>
+        <input value={msg} maxLength={64} onChange={(e) => setMsg(e.target.value)} className="flex-1 rounded-lg border border-violet-200/70 bg-white px-3 py-1.5 font-mono text-orange-700 outline-none focus:border-violet-500" />
       </label>
       <table className="tbl mt-3">
         <thead><tr><th>Layer</th><th>PDU</th><th>Bytes</th><th>What was added</th></tr></thead>
         <tbody>
           {rows.map(([l, n, b, d]) => (
-            <tr key={l}><td className="font-mono text-cyan-300">{l}</td><td>{n}</td><td className="font-mono text-white">{b}</td><td className="font-mono text-xs">{d}</td></tr>
+            <tr key={l}><td className="font-mono text-violet-600">{l}</td><td>{n}</td><td className="font-mono text-ink">{b}</td><td className="font-mono text-xs">{d}</td></tr>
           ))}
         </tbody>
       </table>
@@ -78,7 +78,7 @@ export function Osi() {
       </p>
       <Simple
         head={['#', 'Layer', 'PDU', 'Job', 'Protocols', 'Devices', 'Address']}
-        rows={OSI_TABLE.map((l) => [<span className="font-mono text-cyan-300">L{l.n}</span>, <b className="text-white">{l.name}</b>, l.pdu, l.job, l.protocols, l.devices, l.address])}
+        rows={OSI_TABLE.map((l) => [<span className="font-mono text-violet-600">L{l.n}</span>, <b className="text-ink">{l.name}</b>, l.pdu, l.job, l.protocols, l.devices, l.address])}
       />
       <h3>OSI ↔ TCP/IP</h3>
       <Simple head={['TCP/IP layer', 'OSI layers', 'Examples']} rows={[['Application', 'L7 + L6 + L5', 'HTTP, DNS, TLS, SSH'], ['Transport', 'L4', 'TCP, UDP, QUIC'], ['Internet', 'L3', 'IP, ICMP'], ['Link', 'L2 + L1', 'Ethernet, Wi-Fi, fiber']]} />
@@ -96,22 +96,22 @@ function Calc() {
   return (
     <div className="glass my-4 p-4 text-sm">
       <div className="flex flex-wrap items-center gap-2 font-mono">
-        <input aria-label="IPv4 address" value={ip} onChange={(e) => setIp(e.target.value.trim())} className="w-40 rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-white outline-none focus:border-cyan-300" />
-        <span className="text-slate-400">/</span>
-        <input aria-label="Prefix length" type="number" min={0} max={32} value={p} onChange={(e) => setP(Math.max(0, Math.min(32, +e.target.value || 0)))} className="w-20 rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-white outline-none focus:border-cyan-300" />
+        <input aria-label="IPv4 address" value={ip} onChange={(e) => setIp(e.target.value.trim())} className="w-40 rounded-lg border border-violet-200/70 bg-white px-3 py-1.5 text-ink outline-none focus:border-violet-500" />
+        <span className="text-slate-500">/</span>
+        <input aria-label="Prefix length" type="number" min={0} max={32} value={p} onChange={(e) => setP(Math.max(0, Math.min(32, +e.target.value || 0)))} className="w-20 rounded-lg border border-violet-200/70 bg-white px-3 py-1.5 text-ink outline-none focus:border-violet-500" />
       </div>
       {i ? (
         <div className="mt-3 grid gap-x-6 gap-y-1 font-mono text-xs sm:grid-cols-2">
-          <div>network <b className="text-white">{i.network}</b></div>
-          <div>mask <b className="text-white">{i.mask}</b></div>
-          <div>usable hosts <b className="text-white">{i.first} – {i.last}</b></div>
-          <div>count <b className="text-white">{i.usable.toLocaleString()}</b></div>
-          <div>broadcast <b className="text-white">{i.broadcast}</b></div>
-          <div>type <b className="text-white">{i.kind}</b></div>
-          <div className="sm:col-span-2 break-all">bits <span className="text-cyan-300">{i.ipBits.slice(0, p)}</span><span className="text-amber-300">{i.ipBits.slice(p)}</span></div>
+          <div>network <b className="text-ink">{i.network}</b></div>
+          <div>mask <b className="text-ink">{i.mask}</b></div>
+          <div>usable hosts <b className="text-ink">{i.first} – {i.last}</b></div>
+          <div>count <b className="text-ink">{i.usable.toLocaleString()}</b></div>
+          <div>broadcast <b className="text-ink">{i.broadcast}</b></div>
+          <div>type <b className="text-ink">{i.kind}</b></div>
+          <div className="sm:col-span-2 break-all">bits <span className="text-violet-600">{i.ipBits.slice(0, p)}</span><span className="text-amber-600">{i.ipBits.slice(p)}</span></div>
         </div>
       ) : (
-        <p className="mt-2 text-rose-300">Enter a valid IPv4 address.</p>
+        <p className="mt-2 text-rose-600">Enter a valid IPv4 address.</p>
       )}
     </div>
   );
@@ -128,7 +128,7 @@ export function Addressing() {
           <p>IPv4: 32 bits (<code>192.168.1.10</code>). IPv6: 128 bits (<code>2404:6800:4009::200e</code>). Split into a network part and a host part by the prefix length. Stays the same end to end (except where NAT rewrites it).</p>
         </Card>
         <Card title="Port (L4)" tone="emerald">
-          <p>16-bit number choosing the process on a host: 443 = HTTPS server, 53 = DNS. Clients use random ephemeral ports. See the <a className="text-cyan-300 underline" href="#ports">port list</a>.</p>
+          <p>16-bit number choosing the process on a host: 443 = HTTPS server, 53 = DNS. Clients use random ephemeral ports. See the <a className="text-violet-600 underline" href="#ports">port list</a>.</p>
         </Card>
         <Card title="Endpoint, socket, 5-tuple" tone="amber">
           <p>An endpoint is IP + port (<code>142.250.183.14:443</code>). A connection is identified by its 5-tuple: protocol, src IP, src port, dst IP, dst port. Firewalls, NAT, conntrack and load balancers all key on it. In APIs, "endpoint" also means a URL such as <code>https://api.example.com/v1/users</code>.</p>
@@ -140,7 +140,7 @@ export function Addressing() {
         <b>longest matching prefix</b>.<See step="hi-l3">Routing decision</See>
       </p>
       <Calc />
-      <Simple head={['Prefix', 'Mask', 'Usable hosts']} rows={SUBNETS.map((r) => r.map((c, i) => (i === 0 ? <span className="font-mono text-cyan-300">{c}</span> : <span className="font-mono">{c}</span>)))} />
+      <Simple head={['Prefix', 'Mask', 'Usable hosts']} rows={SUBNETS.map((r) => r.map((c, i) => (i === 0 ? <span className="font-mono text-violet-600">{c}</span> : <span className="font-mono">{c}</span>)))} />
       <h3>Public vs private, NAT, IPv6</h3>
       <ul>
         <li><b>Private (RFC 1918)</b>: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, reused in every home and VPC, never routed on the internet. <b>CGNAT</b>: 100.64.0.0/10 inside ISPs. Loopback 127.0.0.0/8, link-local 169.254.0.0/16.</li>
@@ -206,9 +206,9 @@ export function Dns() {
         </Card>
       </Grid>
       <h3>Record types</h3>
-      <Simple head={['Type', 'Meaning']} rows={DNS_RECORDS.map(([t, d]) => [<span className="font-mono text-cyan-300">{t}</span>, d])} />
+      <Simple head={['Type', 'Meaning']} rows={DNS_RECORDS.map(([t, d]) => [<span className="font-mono text-violet-600">{t}</span>, d])} />
       <h3>Response codes</h3>
-      <Simple head={['RCODE', 'Name', 'Meaning']} rows={DNS_RCODES.map(([n, t, d]) => [n, <span className="font-mono text-white">{t}</span>, d])} />
+      <Simple head={['RCODE', 'Name', 'Meaning']} rows={DNS_RCODES.map(([n, t, d]) => [n, <span className="font-mono text-ink">{t}</span>, d])} />
     </Section>
   );
 }

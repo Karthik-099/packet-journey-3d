@@ -27,8 +27,8 @@ export function Interview() {
       <div className="space-y-2">
         {QA.map(([q, a]) => (
           <details key={q} className="glass p-4">
-            <summary className="cursor-pointer font-medium text-white">{q}</summary>
-            <p className="mt-2 text-sm leading-relaxed text-slate-300">{a}</p>
+            <summary className="cursor-pointer font-medium text-ink">{q}</summary>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">{a}</p>
           </details>
         ))}
       </div>
@@ -66,13 +66,13 @@ export function Quiz() {
       <p>
         {done ? (
           <>
-            Score: <b className="text-white">{score}</b> / {done} answered ({QUIZ.length} total).
+            Score: <b className="text-ink">{score}</b> / {done} answered ({QUIZ.length} total).
           </>
         ) : (
           'Pick an answer to see the explanation.'
         )}
         {done > 0 && (
-          <button onClick={() => setPicked({})} className="ml-3 text-sm text-cyan-300 underline">
+          <button onClick={() => setPicked({})} className="ml-3 text-sm text-violet-600 underline">
             reset
           </button>
         )}
@@ -82,20 +82,20 @@ export function Quiz() {
           const p = picked[i];
           return (
             <li key={i} className="glass p-4">
-              <p className="font-medium text-white">
+              <p className="font-medium text-ink">
                 {i + 1}. {q.q}
               </p>
               <div className="mt-3 grid gap-2" role="radiogroup" aria-label={q.q}>
                 {q.options.map((o, j) => {
-                  const state = p === undefined ? '' : j === q.answer ? 'border-emerald-400/60 bg-emerald-400/10 text-emerald-200' : j === p ? 'border-rose-400/60 bg-rose-400/10 text-rose-200' : 'opacity-60';
+                  const state = p === undefined ? '' : j === q.answer ? 'border-emerald-400/60 bg-emerald-500/10 text-emerald-700' : j === p ? 'border-rose-400/60 bg-rose-400/10 text-rose-700' : 'opacity-60';
                   return (
-                    <button key={o} role="radio" aria-checked={p === j} disabled={p !== undefined} onClick={() => setPicked({ ...picked, [i]: j })} className={`rounded-lg border border-white/10 px-3 py-2 text-left text-sm text-slate-200 transition enabled:hover:border-cyan-300/50 ${state}`}>
+                    <button key={o} role="radio" aria-checked={p === j} disabled={p !== undefined} onClick={() => setPicked({ ...picked, [i]: j })} className={`rounded-lg border border-violet-200/70 px-3 py-2 text-left text-sm text-slate-700 transition enabled:hover:border-violet-400 ${state}`}>
                       {o}
                     </button>
                   );
                 })}
               </div>
-              {p !== undefined && <p className="mt-2 text-sm text-slate-400">{p === q.answer ? 'Correct. ' : 'Not quite. '}{q.why}</p>}
+              {p !== undefined && <p className="mt-2 text-sm text-slate-500">{p === q.answer ? 'Correct. ' : 'Not quite. '}{q.why}</p>}
             </li>
           );
         })}

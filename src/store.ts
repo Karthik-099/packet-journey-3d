@@ -6,6 +6,12 @@ import { DEFAULT_TARGET, geoIp, normalizeDomain, resolveTarget, type Geo, type T
 
 export type Mode = 'beginner' | 'expert';
 type Status = 'idle' | 'loading' | 'ok' | 'failed' | 'off';
+export interface Gps {
+  lat: number;
+  lon: number;
+  acc: number; // metres
+}
+type GpsStatus = 'idle' | 'asking' | 'granted' | 'denied' | 'approx' | 'skipped';
 
 interface State {
   journey: JourneyId;
@@ -24,9 +30,14 @@ interface State {
   narrate: boolean;
   conceptsOpen: boolean;
   helpOpen: boolean;
+  guideOpen: boolean;
   tip: string | null;
   me: Geo | null;
   meStatus: Status;
+  gps: Gps | null;
+  gpsStatus: GpsStatus;
+  /** domain waiting for the location decision before it is looked up */
+  pending: string | null;
   target: Target;
   targetStatus: Status;
   targetError: string | null;
@@ -37,6 +48,9 @@ interface State {
   setJourney: (j: JourneyId, index?: number) => void;
   detectMe: () => Promise<void>;
   lookup: (input: string) => Promise<void>;
+  /** Ask about location first (once per visit), then trace `input`. */
+  trace: (input: string) => void;
+  chooseLocation: (choice: 'gps' | 'approx' | 'skip') => void;
 }
 
 const lowPower = () => {
@@ -71,9 +85,13 @@ export const useStore = create<State>((set, get) => ({
   narrate: false,
   conceptsOpen: false,
   helpOpen: false,
+  guideOpen: false,
   tip: null,
   me: null,
   meStatus: 'idle',
+  gps: null,
+  gpsStatus: 'idle',
+  pending: null,
   target: DEFAULT_TARGET,
   targetStatus: 'idle',
   targetError: null,
@@ -93,6 +111,38 @@ export const useStore = create<State>((set, get) => ({
     const me = await geoIp('', ac.signal);
     clearTimeout(t);
     set(me ? { me, meStatus: 'ok' } : { meStatus: 'failed' });
+  },
+  trace: (input) => {
+    if (get().gpsStatus === 'idle') set({ gpsStatus: 'asking', pending: input });
+    else void get().lookup(input);
+  },
+  chooseLocation: (choice) => {
+    const done = () => {
+      const p = get().pending;
+      set({ pending: null });
+      if (p) void get().lookup(p);
+    };
+    if (choice === 'skip') {
+      set({ gpsStatus: 'skipped', meStatus: 'off' });
+      return done();
+    }
+    void get().detectMe(); // ISP name + ASN come from the public IP either way
+    if (choice === 'approx' || !('geolocation' in navigator)) {
+      set({ gpsStatus: 'approx' });
+      return done();
+    }
+    // the browser shows its own permission prompt here; coordinates never leave the page
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        set({ gps: { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: Math.round(pos.coords.accuracy) }, gpsStatus: 'granted' });
+        done();
+      },
+      () => {
+        set({ gpsStatus: 'denied' });
+        done();
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 600000 },
+    );
   },
   lookup: async (input) => {
     const domain = normalizeDomain(input);
@@ -131,5 +181,6 @@ export function useCtx(): Ctx {
   const quic = useStore((s) => s.quic);
   const me = useStore((s) => (s.meStatus === 'ok' ? s.me : null));
   const target = useStore((s) => s.target);
-  return useMemo(() => buildCtx({ message, tls, medium, access, dest, quic, me, target }), [message, tls, medium, access, dest, quic, me, target]);
+  const gps = useStore((s) => s.gps);
+  return useMemo(() => buildCtx({ message, tls, medium, access, dest, quic, me, target, gps }), [message, tls, medium, access, dest, quic, me, target, gps]);
 }

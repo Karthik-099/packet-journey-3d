@@ -13,6 +13,8 @@ import { TargetBar } from './components/TargetBar';
 import { Seg } from './components/ui';
 import { TripHud } from './components/TripSummary';
 import { Help } from './components/Help';
+import { LocationPrompt } from './components/LocationPrompt';
+import { Onboarding } from './components/Onboarding';
 import { Scene2D } from './scene/Scene2D';
 
 const Scene3D = lazy(() => import('./scene/Scene'));
@@ -30,8 +32,8 @@ export default function App() {
   const [loaded3d, setLoaded3d] = useState(view === '3d');
   if (view === '3d' && !loaded3d) setLoaded3d(true);
   return (
-    <div className="flex min-h-full flex-col bg-noc-bg md:h-full">
-      <header className="flex flex-wrap items-center gap-3 border-b border-noc-edge px-3 py-2">
+    <div className="app-bg flex min-h-full flex-col md:h-full">
+      <header className="flex flex-wrap items-center gap-3 border-b border-noc-edge bg-noc-bg/80 px-4 py-2.5 backdrop-blur">
         <a href={HOME} className="flex items-center gap-2" aria-label="Packet Journey home">
           <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-noc-cyan shadow-[0_0_10px] shadow-noc-cyan" />
           <h1 className="font-mono text-sm font-bold tracking-[0.2em] text-white">PACKET JOURNEY<span className="text-noc-cyan">·3D</span></h1>
@@ -41,8 +43,9 @@ export default function App() {
         <div className="flex flex-wrap items-center gap-2">
           <Seg label="Detail level" value={mode} onChange={(m) => set({ mode: m })} options={[{ v: 'beginner', l: 'Beginner' }, { v: 'expert', l: 'Expert' }]} />
           <Seg label="View" value={view} onChange={(v) => set({ view: v })} options={[{ v: '3d', l: '3D' }, { v: '2d', l: '2.5D' }]} />
-          <button className="btn text-xs" onClick={() => set({ conceptsOpen: true })}>Concepts</button>
-          <a className="btn btn-on text-xs" href={DOCS}>Learn</a>
+          <button className="btn" onClick={() => set({ guideOpen: true })}>Guide</button>
+          <button className="btn" onClick={() => set({ conceptsOpen: true })}>Concepts</button>
+          <a className="btn btn-on" href={DOCS}>Learn</a>
         </div>
       </header>
 
@@ -85,6 +88,8 @@ export default function App() {
       </div>
       <Concepts />
       <Help />
+      <LocationPrompt />
+      <Onboarding />
       <p className="sr-only">Keyboard: left and right arrows change step, space plays or pauses.</p>
     </div>
   );

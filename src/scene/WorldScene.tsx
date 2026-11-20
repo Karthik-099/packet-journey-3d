@@ -183,7 +183,7 @@ function Packet({ m, reduced, follow }: { m: Motion; reduced: boolean; follow: R
     <group ref={ref}>
       <mesh>
         <icosahedronGeometry args={[0.02, 1]} />
-        <meshStandardMaterial color="#fde68a" emissive="#fde68a" emissiveIntensity={3} toneMapped={false} />
+        <meshStandardMaterial color="#fdba74" emissive="#fb923c" emissiveIntensity={1.6} toneMapped={false} />
       </mesh>
       <pointLight color="#fde68a" intensity={0.6} distance={0.8} />
     </group>
@@ -320,7 +320,8 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
   const f = step.focus;
   const sat = c.access !== 'fiber';
   const routeHubs = useMemo(() => new Set(c.route.legs.flatMap((l) => [l.from, l.to])), [c.route]);
-  const label = (t: string, sub: string | undefined, on: boolean, pos: [number, number, number] = [0, 4.2, 0]) => <Label3D position={pos} title={t} sub={sub} on={on} size={0.3} />;
+  // decluttered: only the object in focus carries a label (plus the destination on the globe overview)
+  const label = (t: string, sub: string | undefined, on: boolean, pos: [number, number, number] = [0, 4.2, 0]) => (on ? <Label3D position={pos} title={t} sub={sub} on size={0.3} /> : null);
   return (
     <>
       <WorldRig shot={shot} instant={reduced} follow={follow} following={playing && travelling && !reduced} />

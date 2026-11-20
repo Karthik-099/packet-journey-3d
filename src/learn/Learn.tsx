@@ -4,6 +4,7 @@ import { BigPicture, Osi, Addressing, Routing, Dns } from './sections-a';
 import { Transport, Tls, Http, Ports, Protocols } from './sections-b';
 import { Physical, BigNetworks, Cloud, Security, Toolkit, Glossary } from './sections-c';
 import { Interview, Quiz } from './sections-d';
+import { DeepDives } from './sections-e';
 
 const TOC = [
   ['big-picture', 'How the world is connected'],
@@ -16,6 +17,7 @@ const TOC = [
   ['http', 'HTTP & status codes'],
   ['ports', 'Port list'],
   ['protocols', 'Protocol directory'],
+  ['deep', 'Protocols in depth'],
   ['physical', 'Cables & satellites'],
   ['big-networks', 'How the giants run networks'],
   ['cloud', 'Cloud & Kubernetes'],
@@ -65,18 +67,18 @@ export function Learn() {
       <Nav active="learn" />
       <div className="mx-auto max-w-6xl px-5">
         <header className="pb-6 pt-16">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-300">Learn networking</p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Learn networking</p>
+          <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-ink sm:text-5xl">
             How the internet <span className="grad-text">actually</span> connects the world
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-slate-300">From a single bit on a wire to Google's global backbone. Every section links to the matching moment in the 3D journey so you can see it happen.</p>
+          <p className="mt-4 max-w-2xl text-lg text-slate-600">From a single bit on a wire to Google's global backbone. Every section links to the matching moment in the 3D journey so you can see it happen.</p>
           <div className="mt-6 flex flex-wrap items-center gap-3 print:hidden">
             <button className="cta-ghost text-sm" onClick={() => window.print()}>Save as PDF</button>
-            <span className="text-sm text-slate-400">
+            <span className="text-sm text-slate-500">
               {read.size} of {TOC.length} sections read
             </span>
-            <span className="h-1.5 w-40 overflow-hidden rounded-full bg-white/10" aria-hidden>
-              <span className="block h-full bg-gradient-to-r from-cyan-400 to-violet-400" style={{ width: `${pct}%` }} />
+            <span className="h-1.5 w-40 overflow-hidden rounded-full bg-violet-100" aria-hidden>
+              <span className="block h-full bg-gradient-to-r from-violet-500 to-orange-400" style={{ width: `${pct}%` }} />
             </span>
           </div>
         </header>
@@ -85,8 +87,8 @@ export function Learn() {
             <ol className="space-y-0.5 text-sm">
               {TOC.map(([id, t], i) => (
                 <li key={id}>
-                  <a href={`#${id}`} className={`flex items-center gap-2 rounded-lg px-3 py-1.5 transition ${active === id ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white'}`}>
-                    <span className={`font-mono text-[10px] ${read.has(id) ? 'text-emerald-300' : 'text-slate-600'}`}>{String(i + 1).padStart(2, '0')}</span>
+                  <a href={`#${id}`} className={`flex items-center gap-2 rounded-lg px-3 py-1.5 transition ${active === id ? 'bg-violet-100 text-ink' : 'text-slate-500 hover:text-ink'}`}>
+                    <span className={`font-mono text-[10px] ${read.has(id) ? 'text-emerald-600' : 'text-slate-600'}`}>{String(i + 1).padStart(2, '0')}</span>
                     {t}
                   </a>
                 </li>
@@ -104,6 +106,7 @@ export function Learn() {
             <Http />
             <Ports />
             <Protocols />
+            <DeepDives />
             <Physical />
             <BigNetworks />
             <Cloud />

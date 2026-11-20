@@ -14,6 +14,8 @@ export interface CtxInput {
   quic: boolean;
   me: Geo | null;
   target: Target;
+  /** precise browser GPS position, if the visitor allowed it */
+  gps?: { lat: number; lon: number; acc: number } | null;
 }
 
 const valid = (g: Geo | null | undefined): g is Geo => !!g && Number.isFinite(g.lat) && Number.isFinite(g.lon);
@@ -21,8 +23,12 @@ const place = (g: Geo) => [g.city, g.country].filter(Boolean).join(', ') || g.co
 
 /** Derive everything content needs from user toggles + live data. */
 export function buildCtx(i: CtxInput): Ctx {
-  const home: LatLon = valid(i.me) ? [i.me.lat, i.me.lon] : PLACES.mumbai;
-  const homeName = valid(i.me) ? place(i.me) : 'Mumbai (example)';
+  const home: LatLon = i.gps ? [i.gps.lat, i.gps.lon] : valid(i.me) ? [i.me.lat, i.me.lon] : PLACES.mumbai;
+  const homeName = i.gps
+    ? `your GPS position${valid(i.me) && i.me.city ? ` near ${i.me.city}` : ''} (±${i.gps.acc < 1000 ? `${i.gps.acc} m` : `${(i.gps.acc / 1000).toFixed(1)} km`})`
+    : valid(i.me)
+      ? `${place(i.me)} (approx., from IP)`
+      : 'Mumbai (example)';
   const g = i.target.geo;
   let destPoint: LatLon;
   let destName: string;

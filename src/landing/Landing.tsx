@@ -1,40 +1,67 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { Footer, Nav, links } from '../site/Nav';
+import { Tilt } from '../site/Tilt';
+import { Icon, type IconName } from '../site/Icon';
 import { normalizeDomain } from '../lib/lookup';
 
+const HeroGlobe = lazy(() => import('./HeroGlobe'));
+
+const EXAMPLES = ['google.com', 'amazon.com', 'facebook.com', 'wikipedia.org', 'github.com', 'netflix.com', 'bbc.co.uk', 'naver.com'];
+
 const HOPS = [
-  { k: 'Keyboard', d: 'Key matrix → USB HID report → OS → browser' },
-  { k: 'DNS', d: 'Resolver → root → TLD → authoritative: name becomes an IP' },
-  { k: 'Your router', d: 'ARP, Wi-Fi, NAT: private IP becomes public' },
-  { k: 'ISP & BGP', d: 'Fiber or satellite to the ISP, BGP picks the path' },
-  { k: 'Backbone', d: 'IXPs, terrestrial fiber, submarine cables' },
+  { k: 'Keyboard', d: 'Key matrix → USB HID → OS → browser' },
+  { k: 'DNS', d: 'Resolver → root → TLD → authoritative' },
+  { k: 'Your router', d: 'ARP, Wi-Fi, NAT to a public IP' },
+  { k: 'ISP & BGP', d: 'Fiber or satellite; BGP picks the path' },
+  { k: 'Backbone', d: 'IXPs, land fiber, submarine cables' },
   { k: 'Data center', d: 'Load balancer, TLS, HTTP, backend' },
-  { k: 'Back to you', d: 'Same way home, then DOM → layout → pixels' },
+  { k: 'Back to you', d: 'Same way home, then pixels' },
 ];
 
-const FEATURES = [
-  { t: 'Any website, real data', d: 'Type a domain. We resolve it live with DNS-over-HTTPS, find its nameservers and TLD, and geolocate the server and your own connection.' },
-  { t: 'A 3D Earth you can follow', d: 'Your home, ISP, DNS servers and the destination data center stand where they really are. Watch the packet ride real submarine-cable corridors, or a satellite.' },
-  { t: 'Every OSI layer, every byte', d: 'Send any message and see UTF-8 bytes, TCP, IP and Ethernet headers wrap it, with real checksums, CRC-32 and RFC header diagrams.' },
-  { t: 'Wireshark-style inspector', d: 'Expand header trees, click a field, see its exact bytes in hex or binary. DNS, TCP SYN, TLS ClientHello, HTTP/2 frames.' },
-  { t: 'Latency you can see', d: 'Each step adds its milliseconds: Wi-Fi, ISP, light in glass, handshakes. Compare fiber vs Starlink-style LEO vs GEO satellites.' },
-  { t: 'Video mode with narration', d: 'Press play: the camera follows your packet around the planet with subtitles and an optional voice that explains each step.' },
+const FEATURES: { i: IconName; t: string; d: string }[] = [
+  { i: 'search', t: 'Any website, real data', d: 'Live DNS-over-HTTPS resolves the domain, its nameservers and TLD; your GPS (with permission) or IP places you on the map.' },
+  { i: 'globe', t: 'A 3D Earth you can follow', d: 'Your home, ISP, DNS servers and the data center stand where they really are. The packet rides real submarine-cable corridors.' },
+  { i: 'layers', t: 'Every OSI layer, every byte', d: 'Watch any message become UTF-8, TCP, IP and Ethernet with real checksums, CRC-32 and RFC-style header diagrams.' },
+  { i: 'terminal', t: 'Wireshark-style inspector', d: 'Expand header trees and click a field to highlight its exact bytes in hex or binary: DNS, TCP SYN, TLS ClientHello, HTTP/2.' },
+  { i: 'satellite', t: 'Fiber vs Starlink vs GEO', d: 'Switch your access network and see the physics: ~5 ms per 1,000 km of glass, ~250 ms to a geostationary satellite.' },
+  { i: 'gauge', t: 'Latency you can see', d: 'Every step adds its milliseconds. A trip summary shows how far your request travelled there and back.' },
+  { i: 'play', t: 'Video mode with narration', d: 'Press play: the camera follows your packet around the planet with subtitles and an optional voice.' },
+  { i: 'cap', t: 'A complete reference', d: '25 protocol deep dives, 120+ ports, every HTTP status code, routing, cloud & Kubernetes networking, interview prep.' },
 ];
 
 const STATS = [
   ['~99%', 'of intercontinental traffic rides submarine cables'],
-  ['550+', 'submarine cable systems in service or planned'],
-  ['~75,000', 'autonomous networks glued together by BGP'],
+  ['550+', 'submarine cable systems worldwide'],
+  ['~75,000', 'independent networks glued together by BGP'],
   ['1,900+', 'anycast instances behind 13 DNS root names'],
 ];
 
-const COMPARE = [
-  ['Cisco Packet Tracer', 'Simulates your own lab topology (CCNA). Great for configuring devices; does not show the real internet, real DNS or geography.'],
-  ['Cloudflare Learning Center', 'Excellent articles on DNS, TLS, DDoS. Static text and diagrams; no live data, no packet-level view.'],
-  ['Submarine Cable Map', 'The definitive cable map. Shows cables, not how your request uses them.'],
-  ['Wireshark', 'Real packet capture, expert tool. Shows bytes, but not where they physically go or why.'],
-  ['"What happens when…" (GitHub)', 'Famous text walkthrough of typing google.com. One fixed example, no visuals, no live data.'],
+const AUDIENCE: { i: IconName; t: string; d: string }[] = [
+  { i: 'cap', t: 'Students', d: 'See the OSI model happen instead of memorising it.' },
+  { i: 'zap', t: 'DevOps & SRE', d: 'Understand the path behind every 502, timeout and slow page.' },
+  { i: 'route', t: 'Network engineers', d: 'Routing, BGP, anycast and cables on a real map, with real lookups.' },
+  { i: 'shield', t: 'Interview prep', d: 'The classic "what happens when you type google.com", answered completely.' },
 ];
+
+const COMPARE = [
+  ['Cisco Packet Tracer', "Simulates your own lab topology (CCNA). Doesn't show the real internet, real DNS or geography."],
+  ['Cloudflare Learning Center', 'Excellent articles. Static text and diagrams; no live data or packet-level view.'],
+  ['Submarine Cable Map', 'The definitive cable map. Shows cables, not how your request uses them.'],
+  ['Wireshark', 'Real packet capture for experts. Shows bytes, not where they go or why.'],
+  ['"What happens when…" (GitHub)', 'The famous text answer. One fixed example, no visuals, no live data.'],
+];
+
+function Heading({ kicker, title, sub }: { kicker: string; title: ReactNode; sub?: string }) {
+  return (
+    <div className="mx-auto max-w-3xl text-center">
+      <div className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-600">{kicker}</div>
+      <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
+      {sub && <p className="mt-4 text-lg leading-8 text-slate-600">{sub}</p>}
+    </div>
+  );
+}
+
+const ghostDark = 'inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur transition hover:bg-white/20';
 
 export function Landing() {
   const [q, setQ] = useState('');
@@ -44,137 +71,195 @@ export function Landing() {
     if (!d) return setErr('Enter a domain like example.com');
     location.href = `${links.app}?d=${encodeURIComponent(d)}#g-key`;
   };
+  const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
   return (
     <div className="site-bg">
       <Nav active="home" />
       <main>
-        {/* hero */}
-        <section className="mx-auto max-w-6xl px-5 pb-16 pt-20 text-center sm:pt-28">
-          <p className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Free · open source · runs in your browser
-          </p>
-          <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
-            See how the internet <span className="grad-text">really</span> works.
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
-            Type any website and follow your request from the key under your finger, through every OSI layer, your router, your ISP, undersea cables or satellites, to a data center and back. In 3D, with real DNS and real distances.
-          </p>
-          <form
-            className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row"
-            onSubmit={(e) => {
-              e.preventDefault();
-              go();
-            }}
-          >
-            <label htmlFor="hero-domain" className="sr-only">Website to trace</label>
-            <div className="glass flex flex-1 items-center px-4">
-              <span className="font-mono text-sm text-slate-500">https://</span>
-              <input
-                id="hero-domain"
-                value={q}
-                onChange={(e) => {
-                  setQ(e.target.value);
-                  setErr('');
+        {/* ---------- hero (dark, 3D) ---------- */}
+        <section className="hero-dark relative overflow-hidden">
+          <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 pb-24 pt-14 lg:grid-cols-[1.05fr_1fr] lg:pt-20">
+            <div className="relative z-10">
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-violet-100 backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Free · open source · runs in your browser
+              </p>
+              <h1 className="mt-6 text-5xl font-extrabold leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
+                See how the internet <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-orange-300 bg-clip-text text-transparent">really works.</span>
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-8 text-violet-100/90">
+                Packet Journey is an interactive 3D guide to networking. Type any website and follow your request from your keyboard, through every OSI layer, your router and ISP, across submarine cables or satellites, to a data center and back. It uses real DNS, your real location and real packet bytes.
+              </p>
+              <form
+                className="mt-8 flex max-w-xl flex-col gap-3 sm:flex-row"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  go();
                 }}
-                placeholder="google.com"
-                spellCheck={false}
-                autoCapitalize="none"
-                className="w-full bg-transparent py-3 pl-1 font-mono text-white outline-none placeholder:text-slate-500"
-              />
+              >
+                <label htmlFor="hero-domain" className="sr-only">Website to trace</label>
+                <div className="flex flex-1 items-center rounded-xl bg-white px-4 shadow-xl shadow-black/20 ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-orange-300">
+                  <span className="font-mono text-sm text-slate-400">https://</span>
+                  <input
+                    id="hero-domain"
+                    value={q}
+                    onChange={(e) => {
+                      setQ(e.target.value);
+                      setErr('');
+                    }}
+                    placeholder="google.com"
+                    spellCheck={false}
+                    autoCapitalize="none"
+                    className="w-full bg-transparent py-3.5 pl-1 font-mono text-ink outline-none placeholder:text-slate-400"
+                  />
+                </div>
+                <button className="cta justify-center">Trace my request →</button>
+              </form>
+              {err && <p className="mt-2 text-sm text-rose-300" role="alert">{err}</p>}
+              <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                {EXAMPLES.map((d) => (
+                  <a key={d} href={`${links.app}?d=${d}#g-key`} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 font-mono text-violet-100 backdrop-blur transition hover:bg-white/15">
+                    {d}
+                  </a>
+                ))}
+              </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a className={ghostDark} href={`${links.app}#hi-l7`}><Icon name="layers" /> Send a message through the 7 layers</a>
+                <a className={ghostDark} href={links.learn}><Icon name="cap" /> Learn networking</a>
+              </div>
             </div>
-            <button className="cta justify-center">Trace my request →</button>
-          </form>
-          {err && <p className="mt-2 text-sm text-rose-300" role="alert">{err}</p>}
-          <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs">
-            <span className="py-1 text-slate-500">Try:</span>
-            {['google.com', 'amazon.com', 'facebook.com', 'wikipedia.org', 'github.com', 'netflix.com', 'bbc.co.uk', 'naver.com'].map((d) => (
-              <a key={d} href={`${links.app}?d=${d}#g-key`} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-slate-300 hover:border-cyan-300/40 hover:text-white">
-                {d}
-              </a>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm">
-            <a className="cta-ghost" href={`${links.app}#hi-l7`}>Send a message through the 7 layers</a>
-            <a className="cta-ghost" href={links.learn}>Learn networking</a>
+            <div className="relative h-[420px] sm:h-[520px] lg:h-[620px]">
+              <div className="pointer-events-none absolute inset-10 rounded-full bg-violet-500/25 blur-3xl" />
+              {wide ? (
+                <Suspense fallback={<div className="absolute inset-16 animate-pulse rounded-full bg-gradient-to-br from-violet-500/40 to-orange-400/30" />}>
+                  <HeroGlobe />
+                </Suspense>
+              ) : (
+                <div className="absolute inset-12 rounded-full bg-gradient-to-br from-violet-500/50 via-fuchsia-500/30 to-orange-400/40 shadow-[0_0_120px_rgba(167,139,250,.5)]" />
+              )}
+              <p className="absolute bottom-2 right-2 text-[11px] text-violet-200/70">Drag to spin · NASA Blue Marble imagery</p>
+            </div>
           </div>
         </section>
 
-        {/* animated path (CSS only, no images) */}
-        <section className="mx-auto max-w-6xl px-5" aria-label="The path of a request">
-          <div className="glass overflow-x-auto p-6">
+        {/* ---------- stats ---------- */}
+        <section className="relative z-10 mx-auto -mt-12 grid max-w-6xl grid-cols-2 gap-4 px-5 md:grid-cols-4">
+          {STATS.map(([n, t]) => (
+            <div key={t} className="glass p-6">
+              <div className="grad-text text-4xl font-extrabold tracking-tight">{n}</div>
+              <div className="mt-1 text-sm text-slate-600">{t}</div>
+            </div>
+          ))}
+        </section>
+
+        {/* ---------- how ---------- */}
+        <section className="mx-auto mt-28 max-w-6xl px-5">
+          <Heading kicker="How it works" title="Three steps to understand the internet" sub="No installs, no sign-up. Everything runs in your browser." />
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {[
+              ['1', 'Type a website', 'Any domain. We look it up live: the IP address, its nameservers, where the server is. Allow GPS and we start from exactly where you are.'],
+              ['2', 'Watch the journey', 'Press Play and follow the packet in 3D across 23 steps, or step through with the arrow keys. Every step explains what happens in plain English and in expert detail.'],
+              ['3', 'Go deeper', 'Open the packet inspector, switch fiber for a satellite, compare HTTP/2 and HTTP/3, cut a cable, then read the full reference.'],
+            ].map(([n, t, d]) => (
+              <Tilt key={n} className="glass p-7">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-violet-600 to-orange-500 text-xl font-bold text-white shadow-lg shadow-violet-500/30">{n}</div>
+                <h3 className="mt-5 text-xl font-semibold text-ink">{t}</h3>
+                <p className="mt-2 leading-7 text-slate-600">{d}</p>
+              </Tilt>
+            ))}
+          </div>
+        </section>
+
+        {/* ---------- the path ---------- */}
+        <section className="mx-auto mt-24 max-w-6xl px-5" aria-label="The path of a request">
+          <Heading kicker="The path" title="Seven stops between your keyboard and the server" />
+          <div className="glass mt-10 overflow-x-auto p-7">
             <ol className="relative flex min-w-[760px] justify-between">
-              <span aria-hidden className="absolute left-6 right-6 top-5 h-px bg-gradient-to-r from-cyan-400/60 via-violet-400/60 to-emerald-400/60" />
-              <span aria-hidden className="absolute top-[14px] h-3 w-3 rounded-full bg-amber-300 shadow-[0_0_16px] shadow-amber-300 motion-safe:animate-[travel_7s_linear_infinite]" style={{ offsetPath: 'path("M 24 0 H 712")' }} />
+              <span aria-hidden className="absolute left-6 right-6 top-6 h-0.5 rounded bg-gradient-to-r from-violet-400 via-fuchsia-400 to-orange-400" />
+              <span aria-hidden className="absolute top-[18px] h-3.5 w-3.5 rounded-full bg-orange-400 shadow-[0_0_18px] shadow-orange-400 motion-safe:animate-[travel_7s_linear_infinite]" style={{ offsetPath: 'path("M 24 0 H 712")' }} />
               {HOPS.map((h, i) => (
                 <li key={h.k} className="relative z-10 flex w-28 flex-col items-center text-center">
-                  <span className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#0b1028] font-mono text-sm text-cyan-300">{i + 1}</span>
-                  <span className="mt-2 text-sm font-semibold text-white">{h.k}</span>
-                  <span className="mt-1 text-xs text-slate-400">{h.d}</span>
+                  <span className="grid h-12 w-12 place-items-center rounded-full border-2 border-violet-200 bg-white font-mono text-sm font-semibold text-violet-700 shadow-md">{i + 1}</span>
+                  <span className="mt-3 text-sm font-semibold text-ink">{h.k}</span>
+                  <span className="mt-1 text-xs leading-5 text-slate-500">{h.d}</span>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        {/* stats */}
-        <section className="mx-auto mt-16 grid max-w-6xl grid-cols-2 gap-4 px-5 md:grid-cols-4">
-          {STATS.map(([n, t]) => (
-            <div key={t} className="glass p-5">
-              <div className="grad-text text-3xl font-bold">{n}</div>
-              <div className="mt-1 text-sm text-slate-400">{t}</div>
-            </div>
+        {/* ---------- features ---------- */}
+        <section className="mx-auto mt-28 max-w-6xl px-5">
+          <Heading kicker="Features" title={<>Everything between your keyboard <span className="grad-text">and the server</span></>} sub='Technically accurate throughout. Anything simplified for teaching carries a "simplified" tag.' />
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((f) => (
+              <Tilt key={f.t} className="glass p-6">
+                <div className="icon-tile"><Icon name={f.i} /></div>
+                <h3 className="mt-4 font-semibold text-ink">{f.t}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{f.d}</p>
+              </Tilt>
+            ))}
+          </div>
+        </section>
+
+        {/* ---------- entry points ---------- */}
+        <section className="mx-auto mt-28 grid max-w-6xl gap-5 px-5 md:grid-cols-3">
+          {(
+            [
+              { href: links.app, k: 'Interactive', t: 'The packet journey', d: '23 steps for a website visit, 16 for a message through the OSI stack, plus Kubernetes and email journeys. Play it like a video.', i: 'globe' },
+              { href: links.learn, k: 'Reference', t: 'Learn networking', d: 'How the world is connected, every major protocol in depth, ports, status codes, cloud, Kubernetes and more.', i: 'cap' },
+              { href: links.lab, k: 'Tool', t: 'Packet Lab', d: 'Open your own Wireshark capture (.pcap) and explore it layer by layer, privately in your browser.', i: 'flask' },
+            ] as const
+          ).map((c) => (
+            <a key={c.t} href={c.href} className="group block">
+              <Tilt className="glass h-full p-8 group-hover:border-violet-300">
+                <div className="icon-tile"><Icon name={c.i} /></div>
+                <div className="mt-5 text-xs font-semibold uppercase tracking-widest text-orange-600">{c.k}</div>
+                <h3 className="mt-1 text-2xl font-bold text-ink">{c.t} <span className="inline-block transition group-hover:translate-x-1">→</span></h3>
+                <p className="mt-2 leading-7 text-slate-600">{c.d}</p>
+              </Tilt>
+            </a>
           ))}
         </section>
 
-        {/* features */}
-        <section className="mx-auto mt-24 max-w-6xl px-5">
-          <h2 className="text-center text-3xl font-bold text-white">Everything between your keyboard and the server</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-slate-400">Every step is technically accurate. Anything simplified for teaching is marked with a "simplified" tag.</p>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
-              <div key={f.t} className="glass p-6 transition hover:border-cyan-300/30">
-                <h3 className="font-semibold text-white">{f.t}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-400">{f.d}</p>
+        {/* ---------- audience ---------- */}
+        <section className="mx-auto mt-28 max-w-6xl px-5">
+          <Heading kicker="Who it's for" title="Built for curious people at every level" />
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {AUDIENCE.map((a) => (
+              <div key={a.t} className="glass flex gap-4 p-5">
+                <div className="icon-tile shrink-0"><Icon name={a.i} /></div>
+                <div>
+                  <h3 className="font-semibold text-ink">{a.t}</h3>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{a.d}</p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* two paths */}
-        <section className="mx-auto mt-24 grid max-w-6xl gap-4 px-5 md:grid-cols-2">
-          <a href={links.app} className="glass group p-8 transition hover:border-cyan-300/40">
-            <div className="text-sm font-semibold uppercase tracking-widest text-cyan-300">Interactive</div>
-            <h3 className="mt-2 text-2xl font-bold text-white">The packet journey →</h3>
-            <p className="mt-2 text-slate-400">23 steps for a website visit, 16 for a message through the OSI stack. Play it like a video or step through with ← →.</p>
-          </a>
-          <a href={links.learn} className="glass group p-8 transition hover:border-violet-300/40">
-            <div className="text-sm font-semibold uppercase tracking-widest text-violet-300">Reference</div>
-            <h3 className="mt-2 text-2xl font-bold text-white">Learn networking →</h3>
-            <p className="mt-2 text-slate-400">How the world is connected, OSI, routing, DNS, TCP/QUIC, TLS, HTTP, every common port and status code, cloud & Kubernetes networking, and how Google, Cloudflare & co. run their networks.</p>
-          </a>
-        </section>
-
-        {/* comparison */}
-        <section className="mx-auto mt-24 max-w-6xl px-5">
-          <h2 className="text-center text-3xl font-bold text-white">How it compares</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-slate-400">Great tools exist; each shows one slice. Packet Journey connects the slices: bytes, layers, geography and timing, for a request you choose.</p>
-          <div className="glass mt-8 overflow-x-auto">
+        {/* ---------- comparison ---------- */}
+        <section className="mx-auto mt-28 max-w-6xl px-5">
+          <Heading kicker="Why another tool?" title="How it compares" sub="Great tools exist; each shows one slice. Packet Journey connects bytes, layers, geography and timing for a request you choose." />
+          <div className="glass mt-10 overflow-x-auto">
             <table className="tbl">
               <thead><tr><th>Tool</th><th>What it does well / what it doesn't show</th></tr></thead>
               <tbody>
                 {COMPARE.map(([t, d]) => (
-                  <tr key={t}><td className="whitespace-nowrap font-medium text-white">{t}</td><td>{d}</td></tr>
+                  <tr key={t}><td className="whitespace-nowrap font-medium text-ink">{t}</td><td>{d}</td></tr>
                 ))}
-                <tr><td className="whitespace-nowrap font-semibold text-cyan-300">Packet Journey</td><td className="text-white">Live DNS + geo-IP for any domain, real packet bytes at every OSI layer, routed over real cable corridors or satellites on a 3D Earth, with a latency budget and a full learning reference.</td></tr>
+                <tr><td className="whitespace-nowrap font-bold text-violet-700">Packet Journey</td><td className="font-medium text-ink">Live DNS for any domain, your real location, real packet bytes at every layer, routed over real cable corridors or satellites on a 3D Earth, with a latency budget, incident simulations, a packet lab and a full reference.</td></tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section className="mx-auto mt-24 max-w-3xl px-5 text-center">
-          <h2 className="text-3xl font-bold text-white">Ready? Press Enter.</h2>
-          <p className="mt-3 text-slate-400">Works in any modern browser. On phones and older computers it switches to a lighter 2.5D view automatically.</p>
-          <a href={links.app} className="cta mt-8">Start the journey →</a>
+        {/* ---------- final CTA ---------- */}
+        <section className="mx-auto mt-28 max-w-6xl px-5">
+          <div className="hero-dark overflow-hidden rounded-3xl px-8 py-16 text-center shadow-2xl shadow-violet-900/30">
+            <h2 className="text-4xl font-extrabold tracking-tight text-white">Ready? Press Enter.</h2>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-violet-100/90">Works in any modern browser. On phones and older computers it switches to a lighter 2.5D view automatically.</p>
+            <a href={links.app} className="cta mt-8">Start the journey →</a>
+          </div>
         </section>
       </main>
       <Footer />

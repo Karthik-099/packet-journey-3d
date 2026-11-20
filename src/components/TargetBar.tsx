@@ -5,19 +5,22 @@ const EXAMPLES = ['google.com', 'amazon.com', 'facebook.com', 'wikipedia.org', '
 
 /** "Type any domain" + visitor IP status. Lookups run in the browser (dns.google DoH, ipwho.is geo-IP). */
 export function TargetBar() {
-  const { target, targetStatus, targetError, lookup, me, meStatus, detectMe, set } = useStore();
+  const { target, targetStatus, targetError, trace, me, meStatus, gps, gpsStatus, set } = useStore();
   const [q, setQ] = useState(target.domain);
   useEffect(() => {
-    if (meStatus === 'idle') void detectMe();
-    // ?d=example.com comes from the landing page's "Trace my request" box
+    // ?d=example.com comes from the landing page's "Trace my request" box.
+    // trace() asks about location first, then looks the domain up.
     const fromUrl = new URLSearchParams(location.search).get('d');
-    if (targetStatus === 'idle') void lookup(fromUrl || target.domain);
+    if (targetStatus === 'idle') trace(fromUrl || target.domain);
     // first load only
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => setQ(target.domain), [target.domain]);
-  const meLabel =
-    meStatus === 'loading' || meStatus === 'idle'
+  const meLabel = gps
+    ? `you: GPS ${gps.lat.toFixed(4)}, ${gps.lon.toFixed(4)} (±${gps.acc} m)${me ? ` · ${me.org}${me.asn ? ' ' + me.asn : ''}` : ''}`
+    : gpsStatus === 'skipped'
+      ? 'you: example location (Mumbai)'
+      : meStatus === 'loading' || meStatus === 'idle'
       ? 'detecting your IP…'
       : meStatus === 'ok' && me
         ? `you: ${me.ip} · ${[me.city, me.country].filter(Boolean).join(', ')} · ${me.org}${me.asn ? ' ' + me.asn : ''}`
@@ -30,7 +33,7 @@ export function TargetBar() {
         className="flex items-center gap-1"
         onSubmit={(e) => {
           e.preventDefault();
-          void lookup(q); // keeps the current step so you can compare domains at the same point
+          trace(q); // keeps the current step so you can compare domains at the same point
         }}
       >
         <label className="sr-only" htmlFor="domain">Domain to visit</label>

@@ -58,3 +58,11 @@ describe('content', () => {
     expect(traceroute(c).at(-1)?.ip).toBe('93.184.216.34');
   });
 });
+
+describe('location', () => {
+  it('GPS position wins over IP geolocation for the starting point', () => {
+    const c = buildCtx({ ...defaultCtxInput, me, gps: { lat: 12.9716, lon: 77.5946, acc: 35 } });
+    expect(c.home).toEqual([12.9716, 77.5946]);
+    expect(c.homeName).toMatch(/GPS/);
+  });
+});

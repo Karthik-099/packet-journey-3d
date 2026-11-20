@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -21,26 +21,18 @@ export function Laptop({ stepId }: { stepId: string }) {
       screen.current.emissive.set(stepId === 'g-render-paint' ? '#e2e8f0' : rendering ? '#64748b' : '#0ea5e9');
     }
   });
-  const keys = useMemo(() => {
-    const k: [number, number, number][] = [];
-    for (let r = 0; r < 4; r++) for (let c = 0; c < 12; c++) k.push([-1.05 + c * 0.19, 0.07, -0.3 + r * 0.2]);
-    return k;
-  }, []);
   return (
     <group {...tipProps('laptop')}>
-      <RoundedBox args={[2.6, 0.1, 1.7]} radius={0.04}>{body('#334155')}</RoundedBox>
-      {keys.map((p, i) => (
-        <mesh key={i} position={p}>
-          <boxGeometry args={[0.15, 0.04, 0.15]} />
-          {body('#0f172a')}
-        </mesh>
-      ))}
+      <RoundedBox args={[2.6, 0.1, 1.7]} radius={0.04}>{body('#3b3363')}</RoundedBox>
+      {/* keyboard deck and trackpad as clean inset plates */}
+      <RoundedBox args={[2.25, 0.03, 0.85]} radius={0.02} position={[0, 0.06, -0.12]}>{body('#1a1538')}</RoundedBox>
+      <RoundedBox args={[0.8, 0.02, 0.45]} radius={0.02} position={[0, 0.06, 0.55]}>{body('#2a2350')}</RoundedBox>
       <mesh ref={enter} position={[1.2, 0.08, -0.1]} {...tipProps('keyboard')}>
         <boxGeometry args={[0.2, 0.05, 0.35]} />
         {glow(stepId === 'g-key' ? '#fbbf24' : '#334155', stepId === 'g-key' ? 1.5 : 0.2)}
       </mesh>
       <group position={[0, 0.85, -0.85]} rotation={[-0.2, 0, 0]} {...tipProps('browser')}>
-        <RoundedBox args={[2.6, 1.6, 0.06]} radius={0.03}>{body('#334155')}</RoundedBox>
+        <RoundedBox args={[2.6, 1.6, 0.06]} radius={0.03}>{body('#3b3363')}</RoundedBox>
         <mesh position={[0, 0, 0.035]}>
           <planeGeometry args={[2.4, 1.4]} />
           <meshStandardMaterial ref={screen} color="#020617" emissive="#0ea5e9" emissiveIntensity={0.45} />

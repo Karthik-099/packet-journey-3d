@@ -34,11 +34,11 @@ export function Physical() {
         </Card>
       </Grid>
       <p>Cables modelled on this site's globe (approximate routes):</p>
-      <Simple head={['Cable / corridor', 'From → to', 'In service']} rows={subsea.map((l) => [<span className="text-white">{l.name}</span>, `${HUBS.find((h) => h.id === l.a)?.name} → ${HUBS.find((h) => h.id === l.b)?.name}`, l.rfs ?? '—'])} />
+      <Simple head={['Cable / corridor', 'From → to', 'In service']} rows={subsea.map((l) => [<span className="text-ink">{l.name}</span>, `${HUBS.find((h) => h.id === l.a)?.name} → ${HUBS.find((h) => h.id === l.b)?.name}`, l.rfs ?? '—'])} />
       <h3>Light isn't instant</h3>
       <p>Light in glass moves at about 2/3 of c, roughly 204,000 km/s, so every 1,000 km of fiber adds ~4.9 ms one way (~10 ms round trip). Mumbai → Marseille through the Red Sea is ~8,500 km of cable, about 42 ms each way before any router queueing. That's why CDNs put servers near you.<See step="g-core">Watch it</See></p>
       <h3>Satellites</h3>
-      <Simple head={['Orbit', 'Altitude', 'Period', 'Typical RTT', 'Examples', 'Notes']} rows={SATELLITES.map((s) => [<b className="text-white">{s.orbit}</b>, s.alt, s.period, <span className="font-mono">{s.rtt}</span>, s.examples, s.notes])} />
+      <Simple head={['Orbit', 'Altitude', 'Period', 'Typical RTT', 'Examples', 'Notes']} rows={SATELLITES.map((s) => [<b className="text-ink">{s.orbit}</b>, s.alt, s.period, <span className="font-mono">{s.rtt}</span>, s.examples, s.notes])} />
       <p>A LEO dish talks to a satellite overhead in Ku/Ka band, which relays the signal to a ground station (gateway) or, with laser inter-satellite links, along a chain of satellites first. GEO latency is physics: 35,786 km up and down twice per round trip is ~240 ms of light-time before anything else.<See step="g-isp">Try LEO vs GEO</See></p>
       <h3>Inside the data center</h3>
       <p>Servers sit in racks with a top-of-rack (ToR) switch; ToRs connect to every spine switch in a <b>leaf-spine (Clos)</b> fabric, so any two servers are 2–4 hops and microseconds apart, with ECMP spreading flows. Hyperscalers build these from merchant silicon, run BGP or their own SDN controllers, and use VXLAN/EVPN or custom encapsulations for tenant isolation.</p>
@@ -167,13 +167,13 @@ export function Glossary() {
       <div className="grid gap-3 md:grid-cols-2">
         {[...CONCEPTS].sort((a, b) => a.term.localeCompare(b.term)).map((c) => (
           <details key={c.id} className="glass p-4">
-            <summary className="cursor-pointer font-semibold text-white">
+            <summary className="cursor-pointer font-semibold text-ink">
               {c.term} {c.aka && <span className="ml-1 text-xs font-normal text-slate-500">{c.aka}</span>}
-              <p className="mt-1 text-sm font-normal text-slate-400">{c.short}</p>
+              <p className="mt-1 text-sm font-normal text-slate-500">{c.short}</p>
             </summary>
-            <div className="mt-2 space-y-2 text-sm text-slate-300">
+            <div className="mt-2 space-y-2 text-sm text-slate-600">
               {c.body.map((b, i) => <p key={i}>{b}</p>)}
-              {c.example && <p className="font-mono text-xs text-cyan-300">{c.example}</p>}
+              {c.example && <p className="font-mono text-xs text-violet-600">{c.example}</p>}
             </div>
           </details>
         ))}

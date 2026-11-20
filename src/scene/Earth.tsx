@@ -90,7 +90,7 @@ export function Backbone({ dim }: { dim: boolean }) {
       <lineSegments geometry={land}>
         <lineBasicMaterial color="#cbd5e1" transparent opacity={dim ? 0.15 : 0.35} />
       </lineSegments>
-      {HUBS.map((h) => (
+      {!dim && HUBS.map((h) => (
         <mesh key={h.id} position={surf(h.at, 0.015)}>
           <sphereGeometry args={[0.014, 8, 8]} />
           <meshBasicMaterial color="#67e8f9" toneMapped={false} />

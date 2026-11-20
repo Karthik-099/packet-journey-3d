@@ -21,7 +21,7 @@ export function StepList() {
                   go(i);
                 }}
                 aria-current={i === index ? 'step' : undefined}
-                className={`flex items-center gap-2 rounded px-2 py-1.5 text-xs transition ${i === index ? 'bg-noc-cyan/15 text-white ring-1 ring-noc-cyan/50' : i < index ? 'text-slate-400 hover:bg-white/5' : 'text-slate-500 hover:bg-white/5'}`}
+                className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-[13px] transition ${i === index ? 'bg-gradient-to-r from-violet-500/25 to-orange-400/10 text-white ring-1 ring-violet-400/50' : i < index ? 'text-slate-400 hover:bg-white/5' : 'text-slate-500 hover:bg-white/5'}`}
               >
                 <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${i === index ? 'bg-noc-cyan shadow-[0_0_8px] shadow-noc-cyan' : i < index ? 'bg-noc-green' : 'bg-slate-700'}`} />
                 <span className="flex-1 truncate">{s.short}</span>
