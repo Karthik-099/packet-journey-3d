@@ -4,7 +4,7 @@ import { Line, OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useCtx, useStep, useStore } from '../store';
-import { resolve, type Ctx } from '../content';
+import type { Ctx } from '../content';
 import { HUBS } from '../content/network';
 import { NET, oneWay, rtt, serverIp, wanIp } from '../content/journey-google';
 import { haversineKm, type LatLon } from '../lib/geo';
@@ -164,7 +164,7 @@ function motionFor(id: string, L: Layout, c: Ctx): Motion {
   }
 }
 
-function Packet({ m, reduced, follow, label }: { m: Motion; reduced: boolean; follow: React.MutableRefObject<V>; label?: string }) {
+function Packet({ m, reduced, follow }: { m: Motion; reduced: boolean; follow: React.MutableRefObject<V> }) {
   const ref = useRef<THREE.Group>(null);
   const { camera } = useThree();
   const len = useMemo(() => m.pts.slice(1).reduce((n, p, i) => n + p.distanceTo(m.pts[i]!), 0), [m.pts]);
@@ -180,7 +180,7 @@ function Packet({ m, reduced, follow, label }: { m: Motion; reduced: boolean; fo
     alongPolyline(m.pts, t, ref.current.position);
     follow.current.copy(ref.current.position);
     // keep the packet and its caption readable from close-ups and from the whole-globe view
-    ref.current.scale.setScalar(Math.max(1, camera.position.distanceTo(ref.current.position) * 0.9));
+    ref.current.scale.setScalar(Math.min(2.5, Math.max(1, camera.position.distanceTo(ref.current.position) * 0.5)));
   });
   return (
     <group ref={ref}>
@@ -189,7 +189,6 @@ function Packet({ m, reduced, follow, label }: { m: Motion; reduced: boolean; fo
         <meshStandardMaterial color="#6ee7b7" emissive="#10b981" emissiveIntensity={1.6} toneMapped={false} />
       </mesh>
       <pointLight color="#fde68a" intensity={0.6} distance={0.8} />
-      {label && <Label3D position={[0, 0.06, 0]} title={label} size={0.022} color="#34d399" on />}
     </group>
   );
 }
@@ -332,7 +331,7 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
   }, [measured, c.home, c.destPoint, c.target.domain]);
   const routeHubs = useMemo(() => new Set(c.route.legs.flatMap((l) => [l.from, l.to])), [c.route]);
   // decluttered: only the object in focus carries a label (plus the destination on the globe overview)
-  const label = (t: string, sub: string | undefined, on: boolean, pos: [number, number, number] = [0, 4.2, 0]) => (on ? <Label3D position={pos} title={t} sub={sub} on size={0.3} /> : null);
+  const label = (t: string, sub: string | undefined, on: boolean, pos: [number, number, number] = [0, 4.2, 0]) => (on ? <Label3D position={pos} title={t} sub={sub} on size={0.24} /> : null);
   return (
     <>
       <WorldRig shot={shot} instant={reduced} follow={follow} following={playing && travelling && !reduced} />
@@ -410,7 +409,7 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
         const p = l.points[Math.floor(l.points.length / 2)]!;
         return <Label3D key={i} position={surf(p, 0.1).toArray()} title={l.name} size={0.045} color="#38bdf8" on />;
       })}
-      <Packet m={motion} reduced={reduced} follow={follow} label={step.packetLabel ? resolve(step.packetLabel, c) : undefined} />
+      <Packet m={motion} reduced={reduced} follow={follow} />
     </>
   );
 }

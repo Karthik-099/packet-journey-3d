@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { JOURNEYS, JOURNEY_MENU, resolve } from './content';
-import { useCtx, useStep, useStore } from './store';
+import { useCtx, useStore } from './store';
 import { useDeepLink, usePlayback, useShortcuts } from './hooks';
 import { Controls } from './components/Controls';
 import { StepList } from './components/StepList';
@@ -15,6 +15,7 @@ import { Logo } from './site/Logo';
 import { Search } from './site/Search';
 import { ThemeToggle } from './site/ThemeToggle';
 import { TripHud } from './components/TripSummary';
+import { StoryCard } from './components/StoryCard';
 import { Help } from './components/Help';
 import { LocationPrompt } from './components/LocationPrompt';
 import { Onboarding } from './components/Onboarding';
@@ -28,8 +29,7 @@ export default function App() {
   usePlayback();
   useDeepLink();
   useShortcuts();
-  const { journey, mode, view, playing, set, setJourney } = useStore();
-  const step = useStep();
+  const { journey, mode, view, set, setJourney } = useStore();
   const c = useCtx();
   // once 3D has been shown keep it mounted (paused when hidden)
   const [loaded3d, setLoaded3d] = useState(view === '3d');
@@ -73,14 +73,7 @@ export default function App() {
             {view === '2d' && <Scene2D />}
             <ObjectTip />
             <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-              <div className="panel max-w-2xl px-3 py-2">
-                <div className="h-label text-noc-cyan">
-                  {JOURNEYS[journey].steps.indexOf(step) + 1}. {step.short}
-                </div>
-                <div className="text-sm text-white">{step.title}</div>
-                {playing && <p className="mt-1 text-[13px] leading-snug text-slate-300">{resolve(step.what, c)}</p>}
-              </div>
-              {step.pdu && <div className="chip border-noc-green/60 bg-black/60 text-sm text-noc-green">{step.pdu}</div>}
+              <StoryCard />
               {journey === 'google' && <TripHud c={c} />}
             </div>
           </div>
