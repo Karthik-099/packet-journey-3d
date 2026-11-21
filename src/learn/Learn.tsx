@@ -5,6 +5,8 @@ import { Transport, Tls, Http, Ports, Protocols } from './sections-b';
 import { Physical, BigNetworks, Cloud, Security, Toolkit, Glossary } from './sections-c';
 import { Interview, Quiz } from './sections-d';
 import { DeepDives } from './sections-e';
+import { Calculators, Resources } from './sections-f';
+import { toMarkdown } from '../lib/markdown';
 
 const TOC = [
   ['big-picture', 'How the world is connected'],
@@ -23,9 +25,11 @@ const TOC = [
   ['cloud', 'Cloud networking'],
   ['security', 'Security'],
   ['toolkit', 'Troubleshooting'],
+  ['calculators', 'Calculators'],
   ['interview', 'Interview questions'],
   ['quiz', 'Test yourself'],
   ['glossary', 'Glossary'],
+  ['resources', 'Videos & reading'],
 ] as const;
 
 const READ_KEY = 'pj-read';
@@ -78,6 +82,18 @@ export function Learn() {
           <p className="mt-4 max-w-2xl text-lg text-slate-600">From a single bit on a wire to Google's global backbone. Every section links to the matching moment in the 3D journey so you can see it happen.</p>
           <div className="mt-6 flex flex-wrap items-center gap-3 print:hidden">
             <button className="cta-ghost text-sm" onClick={() => window.print()}>Save as PDF</button>
+            <button
+              className="cta-ghost text-sm"
+              onClick={() => {
+                const main = document.querySelector('main');
+                if (!main) return;
+                const url = URL.createObjectURL(new Blob([`# Learn networking (Packet Journey)\n\n${toMarkdown(main)}`], { type: 'text/markdown' }));
+                Object.assign(document.createElement('a'), { href: url, download: 'packet-journey-learn-networking.md' }).click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Download as Markdown
+            </button>
             <span className="text-sm text-slate-500">
               {read.size} of {TOC.length} sections read
             </span>
@@ -116,9 +132,11 @@ export function Learn() {
             <Cloud />
             <Security />
             <Toolkit />
+            <Calculators />
             <Interview />
             <Quiz />
             <Glossary />
+            <Resources />
           </main>
         </div>
       </div>

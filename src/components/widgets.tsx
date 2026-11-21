@@ -11,6 +11,7 @@ import { HeaderDiagram } from './HeaderDiagram';
 import { TripSummary } from './TripSummary';
 import { Incident } from './Incident';
 import { LiveBgp, MeasuredPath } from './Measured';
+import { MyConnection } from '../site/MyConnection';
 import { useReducedMotion } from '../hooks';
 
 const Box = ({ children }: { children: React.ReactNode }) => <div className="rounded-md border border-noc-edge bg-black/30 p-2 text-xs">{children}</div>;
@@ -425,6 +426,10 @@ function Http({ c }: { c: Ctx }) {
         <li className="pl-3 text-slate-500">front end → backend → app/cache/database (~25 ms)</li>
         <li><span className="text-noc-green">←</span> 200 OK text/html, br <span className="text-slate-500">(or 301/302 redirect)</span></li>
       </ol>
+      <p className="mt-2 text-slate-400">Compare with reality: here is how your browser fetched <i>this</i> page.</p>
+      <div className="mt-2">
+        <MyConnection dark />
+      </div>
     </Box>
   );
 }

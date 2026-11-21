@@ -35,3 +35,26 @@ test('learn page filters status codes', async ({ page }) => {
   await expect(http.getByRole('cell', { name: '502', exact: true })).toBeVisible();
   await expect(http.getByRole('cell', { name: '504', exact: true })).toBeVisible();
 });
+
+test('Ctrl+K search finds a status code and navigates', async ({ page }) => {
+  await page.goto('/learn.html');
+  await page.keyboard.press('Control+k');
+  await page.getByRole('dialog', { name: 'Search' }).getByRole('textbox').fill('502');
+  await expect(page.getByRole('option').first()).toContainText('502 Bad Gateway');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/learn\.html#http/);
+});
+
+test('atlas directory lists cloud providers and filters', async ({ page }) => {
+  await page.goto('/atlas.html#directory');
+  const dir = page.locator('#directory');
+  await expect(dir.getByText('Amazon Web Services')).toBeVisible();
+  await page.getByPlaceholder(/Search: AS13335/).fill('AS9498');
+  await expect(dir.getByText('Bharti Airtel')).toBeVisible();
+});
+
+test('learn has the video library and markdown export', async ({ page }) => {
+  await page.goto('/learn.html#resources');
+  await expect(page.locator('#resources a[href^="https://www.youtube.com/watch?v="]')).toHaveCount(38);
+  await expect(page.getByRole('button', { name: 'Download as Markdown' })).toBeVisible();
+});

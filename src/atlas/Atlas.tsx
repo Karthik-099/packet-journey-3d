@@ -2,15 +2,18 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Footer, Nav, links } from '../site/Nav';
 import { Icon } from '../site/Icon';
 import { CLOUD_SHARE, EDGE_NETWORKS, FACT_GROUPS, RATES, TIER1, WEBSERVER_SHARE, type Fact } from '../content/reference/atlas';
-import { LINKS, HUBS, hubById } from '../content/network';
+import { LINKS, hubById } from '../content/network';
 import { PORTS } from '../content/reference/ports';
 import { HTTP_STATUS } from '../content/reference/http-status';
 import { PROTOCOLS } from '../content/reference/protocols';
 import { DEEP } from '../content/reference/deep';
 import { CONCEPTS } from '../content/concepts';
 import { pathKm } from '../lib/geo';
+import { Directory } from './Directory';
+import { MyConnection } from '../site/MyConnection';
 
-const HeroGlobe = lazy(() => import('../landing/HeroGlobe'));
+const CableGlobe = lazy(() => import('../scene/CableGlobe'));
+import type { CableData } from '../scene/CableGlobe';
 
 const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
 
@@ -84,7 +87,12 @@ export function Atlas() {
   const subsea = LINKS.filter((l) => l.kind === 'subsea');
   const modelKm = subsea.reduce((n, l) => n + pathKm([hubById(l.a).at, ...(l.via ?? []), hubById(l.b).at]), 0);
   const wide = typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
-  const toc = [...FACT_GROUPS.map((g) => [g.id, g.title] as const), ['providers', 'Top providers'] as const, ['catalog', 'Everything in this project'] as const];
+  const [cables, setCables] = useState<CableData | null>(null);
+  // deep links like atlas.html#directory: sections render after load, so scroll once they exist
+  useEffect(() => {
+    if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+  }, []);
+  const toc = [...FACT_GROUPS.map((g) => [g.id, g.title] as const), ['providers', 'Top providers'] as const, ['directory', "Who's who"] as const, ['catalog', 'Everything in this project'] as const];
   return (
     <div className="site-bg">
       <Nav active="atlas" />
@@ -104,19 +112,24 @@ export function Atlas() {
               </nav>
             </div>
             <div className="relative h-[380px] sm:h-[460px]">
+              <div className="absolute inset-0 [mask-image:radial-gradient(circle_at_50%_50%,black_60%,transparent_76%)]">
               {wide ? (
                 <Suspense fallback={<div className="absolute inset-16 animate-pulse rounded-full bg-teal-500/20" />}>
-                  <HeroGlobe labels />
+                  <CableGlobe zoom onData={setCables} />
                 </Suspense>
               ) : (
                 <div className="absolute inset-12 rounded-full bg-gradient-to-br from-teal-500/40 to-cyan-400/30 shadow-[0_0_120px_rgba(45,212,191,.4)]" />
               )}
-              <p className="absolute bottom-1 right-2 text-[11px] text-slate-400">{HUBS.length} hubs and {subsea.length} cable corridors from this project's network model</p>
+              </div>
+              <p className="absolute bottom-1 right-2 text-[11px] text-slate-400">{cables ? `${cables.cables.length} cables · ${cables.landings.length} landing stations` : 'loading cables…'} · data: TeleGeography Submarine Cable Map (CC BY-NC-SA 3.0) · drag & scroll</p>
             </div>
           </div>
           <div className="mx-auto max-w-7xl px-5 pb-14">
             <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Since you opened this page</h2>
             <LiveCounters />
+            <div className="mt-6">
+              <MyConnection dark />
+            </div>
           </div>
         </section>
 
@@ -168,6 +181,8 @@ export function Atlas() {
               </div>
             </div>
           </section>
+
+          <Directory />
 
           <section id="catalog" className="scroll-mt-24 py-14">
             <h2 className="text-3xl font-bold tracking-tight text-ink">Everything in this project</h2>

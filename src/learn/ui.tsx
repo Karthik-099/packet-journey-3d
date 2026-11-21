@@ -1,10 +1,36 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { links } from '../site/Nav';
+import { toMarkdown } from '../lib/markdown';
+
+/** Copies an element's content as Markdown. */
+export function CopyMarkdown({ target, label = 'Copy as Markdown' }: { target: () => HTMLElement | null; label?: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        const el = target();
+        if (!el) return;
+        await navigator.clipboard.writeText(toMarkdown(el));
+        setDone(true);
+        setTimeout(() => setDone(false), 1500);
+      }}
+      className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-teal-400 hover:text-ink print:hidden"
+      aria-live="polite"
+    >
+      {done ? 'Copied' : label}
+    </button>
+  );
+}
 
 export function Section({ id, kicker, title, children }: { id: string; kicker: string; title: string; children: ReactNode }) {
+  const ref = useRef<HTMLElement>(null);
   return (
-    <section id={id} className="scroll-mt-24 border-b border-blue-100 py-14">
-      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">{kicker}</div>
+    <section ref={ref} id={id} className="scroll-mt-24 border-b border-blue-100 py-14">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">{kicker}</div>
+        <CopyMarkdown target={() => ref.current} />
+      </div>
       <h2 className="mt-2 text-3xl font-bold text-ink">{title}</h2>
       <div className="prose-net mt-6">{children}</div>
     </section>

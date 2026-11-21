@@ -6,6 +6,7 @@ const KEYS: [string, string][] = [
   ['Home / End', 'First / last step'],
   ['E', 'Toggle Beginner / Expert'],
   ['J', 'Switch journey'],
+  ['Ctrl K / ⌘K', 'Search everything'],
   ['?', 'Show / hide this help'],
   ['Esc', 'Close panels'],
   ['Drag / scroll', 'Orbit and zoom the 3D view; click any object for an explanation'],

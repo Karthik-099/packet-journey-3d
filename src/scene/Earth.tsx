@@ -51,7 +51,7 @@ function segmentsGeometry(lines: THREE.Vector3[][]) {
 }
 
 /** NASA Blue Marble day map + Black Marble city lights + ocean specular, with an atmosphere rim. */
-export function Earth() {
+export function Earth({ night: nightSide = false }: { night?: boolean }) {
   const [day, night, water] = useLoader(THREE.TextureLoader, [`${BASE}textures/earth-day.jpg`, `${BASE}textures/earth-night.jpg`, `${BASE}textures/earth-water.png`]) as [THREE.Texture, THREE.Texture, THREE.Texture];
   useMemo(() => {
     day.colorSpace = THREE.SRGBColorSpace;
@@ -62,7 +62,7 @@ export function Earth() {
     <group>
       <mesh {...tipProps('globe')}>
         <sphereGeometry args={[R, 128, 96]} />
-        <meshPhongMaterial map={day} color="#b9c8e0" emissiveMap={night} emissive="#ffcf8a" emissiveIntensity={0.55} specularMap={water} specular="#5b8fc7" shininess={22} />
+        <meshPhongMaterial map={day} color={nightSide ? '#2a3a52' : '#b9c8e0'} emissiveMap={night} emissive="#ffcf8a" emissiveIntensity={nightSide ? 0.9 : 0.55} specularMap={water} specular={nightSide ? '#1e3a5f' : '#5b8fc7'} shininess={22} />
       </mesh>
       <mesh scale={1.12}>
         <sphereGeometry args={[R, 64, 48]} />

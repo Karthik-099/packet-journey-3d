@@ -12,6 +12,7 @@ import { ObjectTip } from './components/ObjectTip';
 import { TargetBar } from './components/TargetBar';
 import { Seg } from './components/ui';
 import { Logo } from './site/Logo';
+import { Search } from './site/Search';
 import { TripHud } from './components/TripSummary';
 import { Help } from './components/Help';
 import { LocationPrompt } from './components/LocationPrompt';
@@ -44,6 +45,7 @@ export default function App() {
         <div className="flex flex-wrap items-center gap-2">
           <Seg label="Detail level" value={mode} onChange={(m) => set({ mode: m })} options={[{ v: 'beginner', l: 'Beginner' }, { v: 'expert', l: 'Expert' }]} />
           <Seg label="View" value={view} onChange={(v) => set({ view: v })} options={[{ v: '3d', l: '3D' }, { v: '2d', l: '2.5D' }]} />
+          <Search dark />
           <button className="btn" onClick={() => set({ guideOpen: true })}>Guide</button>
           <button className="btn" onClick={() => set({ conceptsOpen: true })}>Concepts</button>
           <a className="btn btn-on" href={DOCS}>Learn</a>

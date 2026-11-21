@@ -32,7 +32,7 @@ This document explains every part of the code: what it does, how the pieces conn
 | `app.html` | `src/main.tsx` → `App.tsx` | The 3D journey (website visit, message through the layers). |
 | `learn.html` | `src/learn/main.tsx` | Reference with interactive labs. |
 | `lab.html` | `src/lab/main.tsx` | Packet Lab (pcap/pcapng). |
-| `atlas.html` | `src/atlas/main.tsx` | Internet Atlas: sourced facts (`content/reference/atlas.ts`), live per-second counters, provider shares, labelled 3D globe. |
+| `atlas.html` | `src/atlas/main.tsx` | Internet Atlas: sourced facts (`content/reference/atlas.ts`), live per-second counters, your measured connection, provider shares, the Who's-who directory (`content/reference/providers.ts`, `site/BrandLogo.tsx`), and the real cable globe. |
 
 `vite.config.ts` builds all five and reads `BASE_PATH` (GitHub Pages sub-path vs `/` in the container). `VITE_SITE_URL` makes social preview URLs absolute. The landing page passes a domain as `app.html?d=example.com`.
 
@@ -106,6 +106,14 @@ Tests (`*.test.ts`) cover known vectors (CRC-32 of "123456789", textbook IP chec
 Plain React + Tailwind, light theme. Interactive parts reuse `src/lib`: live encapsulation, CIDR calculator, searchable port/status/protocol tables, protocol deep dives, the loss lab, the congestion-window chart and the BGP hijack demo (`learn/labs.tsx`), the quiz, and reading progress in `localStorage`. The Lab page uses `pcap.ts` and the same `PacketInspector` as the journey.
 
 ---
+
+## 8b. Site-wide pieces
+
+- `scene/CableGlobe.tsx`: lazy 3D globe drawing every cable from `public/data/cables.json` (built by `scripts/build-cable-data.py`) as one line geometry with a custom shader: a pulse travels along each cable at constant speed (`aT` = distance along the cable).
+- `site/Search.tsx` + `site/searchIndex.ts`: Ctrl+K search built from the same content the pages render (tested ranking).
+- `site/MyConnection.tsx`: reads `PerformanceNavigationTiming` (DNS, TCP, TLS, TTFB, `nextHopProtocol`) and `navigator.connection`; no requests.
+- `lib/markdown.ts`: DOM → Markdown for "Copy as Markdown" and the Learn download (tested).
+- `content/reference/resources.ts`: videos (verified via YouTube oEmbed), reading list and tools.
 
 ## 9. Testing
 

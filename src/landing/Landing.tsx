@@ -4,7 +4,7 @@ import { Tilt } from '../site/Tilt';
 import { Icon, type IconName } from '../site/Icon';
 import { normalizeDomain } from '../lib/lookup';
 
-const HeroGlobe = lazy(() => import('./HeroGlobe'));
+const HeroGlobe = lazy(() => import('../scene/CableGlobe'));
 
 const EXAMPLES = ['google.com', 'amazon.com', 'facebook.com', 'wikipedia.org', 'github.com', 'netflix.com', 'bbc.co.uk', 'naver.com'];
 
@@ -128,6 +128,7 @@ export function Landing() {
               </div>
             </div>
             <div className="relative h-[420px] sm:h-[520px] lg:h-[620px]">
+              <div className="absolute inset-0 [mask-image:radial-gradient(circle_at_50%_50%,black_58%,transparent_74%)]">
               <div className="pointer-events-none absolute inset-10 rounded-full bg-blue-500/25 blur-3xl" />
               {wide ? (
                 <Suspense fallback={<div className="absolute inset-16 animate-pulse rounded-full bg-gradient-to-br from-blue-500/40 to-cyan-400/30" />}>
@@ -136,7 +137,8 @@ export function Landing() {
               ) : (
                 <div className="absolute inset-12 rounded-full bg-gradient-to-br from-blue-500/50 via-sky-500/30 to-cyan-400/40 shadow-[0_0_120px_rgba(167,139,250,.5)]" />
               )}
-              <p className="absolute bottom-2 right-2 text-[11px] text-blue-200/70">Drag to spin · NASA Blue Marble imagery</p>
+              </div>
+              <p className="absolute bottom-2 right-2 text-[11px] text-blue-200/70">All 734 submarine cables · data: TeleGeography (CC BY-NC-SA) · drag to spin</p>
             </div>
           </div>
         </section>

@@ -39,6 +39,15 @@ Drop a Wireshark/tcpdump **.pcap or .pcapng**. It is decoded entirely in the bro
 ### 5. Internet Atlas: `atlas.html`
 The internet by the numbers, every figure linked to its source and date: people online, submarine cables (systems, total km, longest), international bandwidth, Starlink, data centers and hyperscale sites, IXPs and facilities, routing-table size and number of networks, IPv6 adoption, domains, TLDs, root server instances, websites, live per-second counters (HTTP requests, DNS queries, emails, searches), cloud and web-server market share, the biggest edge networks and Tier-1 carriers.
 
+### 6. Everything else
+- **Who's who**: the top 20 cloud providers, Indian and global ISPs and carriers, networking/security vendors, CDNs and exchanges, with logos and main ASNs (Atlas page).
+- **Real cable globe**: all 734 submarine cables and 1,929 landing stations from TeleGeography, glowing on a night-side Earth with light pulses flowing along each cable.
+- **Your connection, measured**: real DNS/TCP/TLS/first-byte timings and HTTP version of your own page load, from the browser's Navigation Timing API.
+- **Ctrl+K search** across steps, ports, status codes, protocols, guides, glossary, facts and companies.
+- **Network calculators**: bandwidth-delay product, transfer time, distance → latency.
+- **Videos & reading**: 38 verified videos (Kurose, Computerphile, Ben Eater, Practical Networking, Chris Greer…), 18 books/courses, 7 professional tools.
+- **Copy as Markdown** on every Learn section and a full-guide Markdown download.
+
 ### Also
 Wireshark-style inspector · latency budget · video mode (camera follows the packet, subtitles, optional voice) · Beginner/Expert · deep and share links · keyboard shortcuts (`?`) · first-visit guide · per-step RFC sources · 2.5D fallback for phones and browsers without WebGL · reduced-motion support · a **Live data** switch that turns off every outside request.
 
@@ -98,6 +107,8 @@ The full walkthrough of every module is in **[docs/ARCHITECTURE.md](docs/ARCHITE
 | **Vitest** | 51 unit tests: checksums, CRC, DNS, routing, cable cuts, satellites, CIDR, lookups, measurements, pcap parsing, simulations, content. |
 | **Playwright + axe-core** | End-to-end tests of every journey step and accessibility checks in CI. |
 | **ESLint + typescript-eslint** | Lint gate. |
+
+**Submarine cable data** (`public/data/cables.json`) is derived from the [TeleGeography Submarine Cable Map](https://www.submarinecablemap.com/) under **CC BY-NC-SA 3.0** (attribution, non-commercial, share-alike); regenerate it with `scripts/build-cable-data.py`. **Logos** come from [Simple Icons](https://simpleicons.org/) (CC0 icon data); trademarks belong to their owners.
 
 **Data sources (requests come from the visitor's browser; nothing is stored server-side):** dns.google (DNS-over-HTTPS), ipwho.is / ipapi.co (geo-IP), Globalping (MTR), RIPEstat (routing/RPKI), PeeringDB (peering), NASA Blue Marble / Black Marble (public-domain imagery, bundled), Natural Earth (bundled). The **Live data** switch disables all of them.
 
