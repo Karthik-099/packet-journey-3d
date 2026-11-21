@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: ghcr.io/karthik-099/packet-journey-3d
   # CI overwrites this with the git SHA of the image it just built and scanned
-  tag: "7e9742ad44d338d6905870c1fb419c209a8f13a1"
+  tag: "4b3aa2037fcaad37e7d0bf3124a3ab59f4e87396"
   pullPolicy: IfNotPresent
 
 # needed only if the GHCR package is private
