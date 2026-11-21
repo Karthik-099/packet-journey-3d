@@ -18,6 +18,8 @@ export interface CtxInput {
   gps?: { lat: number; lon: number; acc: number } | null;
   /** cable/link ids cut in the incident simulator */
   cut?: string[];
+  /** measured serving location (CDN edge from response headers or speed-of-light test) */
+  edge?: { at: LatLon; name: string } | null;
 }
 
 const valid = (g: Geo | null | undefined): g is Geo => !!g && Number.isFinite(g.lat) && Number.isFinite(g.lon);
@@ -34,7 +36,10 @@ export function buildCtx(i: CtxInput): Ctx {
   const g = i.target.geo;
   let destPoint: LatLon;
   let destName: string;
-  if (i.target.cdn && i.dest === 'edge') {
+  if (i.edge && i.dest === 'edge') {
+    destPoint = i.edge.at;
+    destName = i.edge.name;
+  } else if (i.target.cdn && i.dest === 'edge') {
     const h = nearestHub(home);
     destPoint = h.at;
     destName = `${i.target.cdn} edge near ${h.name} (likely)`;

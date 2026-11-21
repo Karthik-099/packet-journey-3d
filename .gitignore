@@ -9,3 +9,4 @@ playwright-report
 *.tfstate.*
 *.tfvars
 !*.tfvars.example
+*.tsbuildinfo

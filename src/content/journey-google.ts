@@ -458,6 +458,7 @@ export const journeyGoogle: Journey = {
       short: 'Server front door',
       title: 'Load balancer / CDN edge at the destination',
       focus: 'google',
+      widget: 'cdn',
       what: (c) =>
         c.target.cdn
           ? `Your packet arrives at ${c.target.cdn}'s edge. A load balancer picks one of many front-end servers, which does the secure handshake with you and forwards your request to the right service inside ${c.target.cdn}'s network.`
@@ -603,3 +604,31 @@ export const journeyGoogle: Journey = {
     },
   ],
 };
+
+/** What the moving packet carries at each step (shown next to it in 3D). */
+const PACKET_LABELS: Record<string, (c: Ctx) => string> = {
+  'g-key': () => 'USB HID report: Enter (0x28)',
+  'g-os': () => 'Input event → browser',
+  'g-url': (c) => `URL: https://${D(c)}/`,
+  'g-cache': () => 'Cache lookup (miss)',
+  'g-dns-stub': (c) => `DNS query: ${D(c)} A?`,
+  'g-dns-recursive': () => 'Resolver cache: miss',
+  'g-dns-root': (c) => `Ask root: who runs .${c.target.tld}?`,
+  'g-dns-tld': (c) => `Ask .${c.target.tld}: who runs ${c.target.zone}?`,
+  'g-dns-auth': (c) => `Answer: ${D(c)} = ${serverIp(c)}`,
+  'g-dns-answer': (c) => `DNS answer: ${serverIp(c)} (TTL ${c.target.ttl}s)`,
+  'g-arp': () => `ARP: who has ${NET.router}?`,
+  'g-wifi': () => '802.11 frame (WPA2/3 encrypted)',
+  'g-nat': (c) => `NAT: ${NET.laptop} → ${wanIp(c)}`,
+  'g-isp': (c) => `IP packet → ${serverIp(c)}`,
+  'g-bgp': () => 'Route lookup (longest prefix)',
+  'g-core': (c) => `TCP SYN → ${serverIp(c)}:443`,
+  'g-gfe': () => 'SYN arrives at the front end',
+  'g-tcp': () => 'SYN · SYN-ACK · ACK',
+  'g-tls': (c) => `TLS ClientHello (SNI ${D(c)})`,
+  'g-http': (c) => `GET / ${c.quic ? 'HTTP/3' : 'HTTP/2'}`,
+  'g-back': () => '200 OK + HTML (compressed)',
+  'g-render-parse': () => 'HTML → DOM + CSSOM',
+  'g-render-paint': () => 'Layout → paint → pixels',
+};
+for (const s of journeyGoogle.steps) s.packetLabel = PACKET_LABELS[s.id];

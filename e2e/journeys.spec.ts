@@ -58,3 +58,23 @@ test('learn has the video library and markdown export', async ({ page }) => {
   await expect(page.locator('#resources a[href^="https://www.youtube.com/watch?v="]')).toHaveCount(38);
   await expect(page.getByRole('button', { name: 'Download as Markdown' })).toBeVisible();
 });
+
+test('theme toggle persists across pages', async ({ page }) => {
+  await page.goto('/learn.html');
+  await expect(page.locator('html')).toHaveClass(/light/);
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+  await expect(page.locator('html')).toHaveClass(/dark/);
+  await page.goto('/app.html#hi-l7');
+  await expect(page.locator('html')).toHaveClass(/dark/);
+  await page.getByRole('button', { name: /Skip/ }).click();
+  await page.getByRole('button', { name: 'Switch to light theme' }).click();
+  await page.goto('/atlas.html');
+  await expect(page.locator('html')).toHaveClass(/light/);
+});
+
+test('packet lab draws the conversation ladder', async ({ page }) => {
+  await page.goto('/lab.html');
+  await page.getByRole('button', { name: 'Load sample capture' }).click();
+  await page.getByRole('button', { name: /^Packet 10: .*HTTP GET/ }).click();
+  await expect(page.getByText('Packet 10: where the')).toBeVisible();
+});

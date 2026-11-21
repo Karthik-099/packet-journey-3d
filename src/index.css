@@ -82,3 +82,77 @@ input[type=range] { accent-color: var(--color-noc-cyan); }
 .icon-tile::before, .icon-tile::after { content: ''; position: absolute; width: 8px; height: 8px; border-color: #22d3ee; }
 .icon-tile::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 6px; }
 .icon-tile::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 6px; }
+
+/* ---------- themes ----------
+   Pages are written for one look (site light, app dark). The other look remaps Tailwind's colour
+   variables inside a scope; .hero-dark / .keep-dark / the 3D view restore the originals. */
+html.dark { background: #07111d; }
+html.light { background: #eef4f8; }
+
+html.dark .site-bg {
+  color: #c3d0e0;
+  background:
+    radial-gradient(55rem 32rem at 0% -5%, rgba(37, 99, 235, .20), transparent 60%),
+    radial-gradient(45rem 30rem at 100% 0%, rgba(16, 185, 129, .12), transparent 60%),
+    linear-gradient(180deg, #06101b 0%, #07111d 45%, #050d17 100%);
+  background-attachment: fixed;
+  --color-ink: #e6eefb;
+  --color-slate-50: #0e1a2b; --color-slate-100: #132238; --color-slate-200: #1e3049; --color-slate-300: #2f4561;
+  --color-slate-400: oklch(55.4% 0.046 257.417); --color-slate-500: oklch(70.4% 0.04 256.788);
+  --color-slate-600: oklch(86.9% 0.022 252.894); --color-slate-700: oklch(92.9% 0.013 255.508);
+  --color-slate-800: oklch(96.8% 0.007 247.896); --color-slate-900: oklch(98.4% 0.003 247.858);
+  --color-blue-50: #0f2340; --color-blue-100: #15294a; --color-blue-200: #1f3a63; --color-blue-300: #2c5288;
+  --color-blue-700: #93c5fd; --color-blue-800: #bfdbfe; --color-blue-900: #dbeafe;
+  --color-sky-100: #0f2a40; --color-sky-800: #7dd3fc; --color-cyan-100: #0c2d36;
+  --color-cyan-700: #67e8f9; --color-cyan-800: #a5f3fc; --color-teal-700: #5eead4;
+  --color-emerald-700: #6ee7b7; --color-emerald-800: #a7f3d0;
+  --color-rose-700: #fda4af; --color-rose-800: #fecdd3; --color-amber-700: #fcd34d; --color-amber-800: #fde68a;
+}
+html.dark .site-bg :is(.hero-dark, .keep-dark, .icon-tile) {
+  --color-ink: #0b1b2e;
+  --color-slate-50: oklch(98.4% 0.003 247.858); --color-slate-100: oklch(96.8% 0.007 247.896);
+  --color-slate-200: oklch(92.9% 0.013 255.508); --color-slate-300: oklch(86.9% 0.022 252.894);
+  --color-slate-400: oklch(70.4% 0.04 256.788); --color-slate-500: oklch(55.4% 0.046 257.417);
+  --color-slate-600: oklch(44.6% 0.043 257.281); --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-slate-800: oklch(27.9% 0.041 260.031); --color-slate-900: oklch(20.8% 0.042 265.755);
+  --color-blue-50: oklch(97% 0.014 254.604); --color-blue-100: oklch(93.2% 0.032 255.585);
+  --color-blue-200: oklch(88.2% 0.059 254.128); --color-blue-300: oklch(80.9% 0.105 251.813);
+}
+html.dark .site-bg .glass { background-color: rgba(13, 25, 42, .82); box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.6); }
+html.dark .site-bg :is(.bg-white, .cta-ghost):not(.hero-dark *) { background-color: #0e1a2b; }
+html.dark .site-bg .bg-white\/80 { background-color: rgba(7, 17, 29, .8); }
+html.dark .site-bg .bg-white\/90 { background-color: rgba(14, 26, 43, .9); }
+html.dark .site-bg :is(.text-blue-600, .text-sky-600) { color: #7cb4ff; }
+html.dark .site-bg :is(.text-cyan-600, .text-teal-500) { color: #5eead4; }
+html.dark .site-bg .text-emerald-600 { color: #6ee7b7; }
+html.dark .site-bg .text-rose-600 { color: #fda4af; }
+html.dark .site-bg .text-amber-600 { color: #fcd34d; }
+
+html.light .app-bg {
+  background: radial-gradient(70rem 40rem at 0% 0%, rgba(16,185,129,.10), transparent 60%), radial-gradient(60rem 35rem at 100% 0%, rgba(34,211,238,.12), transparent 55%), #eef4f8;
+  --color-noc-bg: #eef4f8; --color-noc-panel: #ffffff; --color-noc-edge: #c9d8e2;
+  --color-noc-cyan: #0e7490; --color-noc-green: #047857; --color-noc-amber: #b45309; --color-noc-rose: #be123c;
+  --color-white: #0b1b2e;
+  --color-slate-100: oklch(27.9% 0.041 260.031); --color-slate-200: oklch(37.2% 0.044 257.287);
+  --color-slate-300: oklch(44.6% 0.043 257.281); --color-slate-400: oklch(44.6% 0.043 257.281);
+  --color-slate-600: oklch(70.4% 0.04 256.788); --color-slate-700: oklch(86.9% 0.022 252.894);
+  --color-emerald-200: #047857; --color-emerald-300: #047857; --color-emerald-400: #10b981;
+  --color-cyan-200: #0e7490; --color-cyan-300: #0e7490; --color-sky-300: #0369a1;
+  --color-rose-200: #be123c; --color-rose-300: #be123c; --color-amber-200: #fde68a; --color-amber-300: #b45309;
+}
+html.light .app-bg .keep-dark {
+  --color-noc-bg: #03080c; --color-noc-panel: #08141b; --color-noc-edge: #143039;
+  --color-noc-cyan: #22d3ee; --color-noc-green: #34d399; --color-noc-amber: #fbbf24; --color-noc-rose: #fb7185;
+  --color-white: #fff;
+  --color-slate-100: oklch(96.8% 0.007 247.896); --color-slate-200: oklch(92.9% 0.013 255.508);
+  --color-slate-300: oklch(86.9% 0.022 252.894); --color-slate-400: oklch(70.4% 0.04 256.788);
+  --color-slate-600: oklch(44.6% 0.043 257.281); --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-emerald-200: oklch(90.5% 0.093 164.15); --color-emerald-300: oklch(84.5% 0.143 164.978); --color-emerald-400: oklch(76.5% 0.177 163.223);
+  --color-cyan-200: oklch(91.7% 0.08 205.041); --color-cyan-300: oklch(86.5% 0.127 207.078); --color-sky-300: oklch(82.8% 0.111 230.318);
+  --color-rose-200: oklch(89.2% 0.058 10.001); --color-rose-300: oklch(81% 0.117 11.638);
+  --color-amber-200: oklch(92.4% 0.12 95.746); --color-amber-300: oklch(87.9% 0.169 91.605);
+}
+html.light .app-bg .panel { box-shadow: 0 1px 2px rgba(11,27,46,.06), 0 8px 24px -14px rgba(11,27,46,.25); }
+/* smooth switch, not on first paint */
+.site-bg, .app-bg, .glass, .panel { transition: background-color .25s, border-color .25s, color .25s; }
+html.light .app-bg :is(.bg-black\/20, .bg-black\/30, .bg-black\/40, .bg-black\/50):not(.keep-dark *) { background-color: #f1f6f9; }

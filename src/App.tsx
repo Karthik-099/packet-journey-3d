@@ -13,6 +13,7 @@ import { TargetBar } from './components/TargetBar';
 import { Seg } from './components/ui';
 import { Logo } from './site/Logo';
 import { Search } from './site/Search';
+import { ThemeToggle } from './site/ThemeToggle';
 import { TripHud } from './components/TripSummary';
 import { Help } from './components/Help';
 import { LocationPrompt } from './components/LocationPrompt';
@@ -46,6 +47,7 @@ export default function App() {
           <Seg label="Detail level" value={mode} onChange={(m) => set({ mode: m })} options={[{ v: 'beginner', l: 'Beginner' }, { v: 'expert', l: 'Expert' }]} />
           <Seg label="View" value={view} onChange={(v) => set({ view: v })} options={[{ v: '3d', l: '3D' }, { v: '2d', l: '2.5D' }]} />
           <Search dark />
+          <ThemeToggle className="border-noc-edge bg-noc-panel text-slate-300 hover:border-noc-cyan/70 hover:text-white" />
           <button className="btn" onClick={() => set({ guideOpen: true })}>Guide</button>
           <button className="btn" onClick={() => set({ conceptsOpen: true })}>Concepts</button>
           <a className="btn btn-on" href={DOCS}>Learn</a>
@@ -60,7 +62,7 @@ export default function App() {
 
         <main className="flex flex-col md:min-h-0">
           {journey === 'hi' ? <MessageInput /> : <LatencyBar />}
-          <div className="relative h-[52vh] min-h-[300px] border-y border-noc-edge md:h-auto md:flex-1">
+          <div className="keep-dark relative h-[52vh] min-h-[300px] border-y border-noc-edge md:h-auto md:flex-1">
             {loaded3d && (
               <div className={view === '3d' ? 'absolute inset-0' : 'hidden'}>
                 <Suspense fallback={<div className="grid h-full place-items-center font-mono text-xs text-slate-500">loading 3D world…</div>}>

@@ -26,9 +26,12 @@ export function Onboarding() {
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#07041a]/70 p-4 backdrop-blur-sm" onClick={close}>
       <div role="dialog" aria-modal="true" aria-labelledby="guide-title" className="w-full max-w-2xl overflow-hidden rounded-2xl border border-noc-edge bg-noc-panel shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-500 px-6 py-5">
+        <div className="keep-dark bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-500 px-6 py-5">
           <h2 id="guide-title" className="text-xl font-bold text-white">Welcome to Packet Journey</h2>
           <p className="mt-1 text-sm text-white/85">An interactive, step-by-step 3D tour of how data really moves across the internet.</p>
+          <p className="mt-3 text-sm leading-6 text-white/90">
+            <b>Why:</b> opening a website sends your request thousands of kilometres and back in a fraction of a second. This tour stops at every point along the way, using real lookups and real packet bytes, so the internet stops being a black box. The whole trip takes about 3 minutes.
+          </p>
         </div>
         <ol className="grid gap-3 p-6 sm:grid-cols-2">
           {STEPS.map((s, i) => (
@@ -43,7 +46,10 @@ export function Onboarding() {
         </ol>
         <div className="flex items-center justify-between border-t border-noc-edge px-6 py-4">
           <span className="text-xs text-slate-400">Press <kbd className="rounded bg-white/10 px-1.5 py-0.5 font-mono">?</kbd> for keyboard shortcuts</span>
-          <button autoFocus className="btn-primary" onClick={close}>Start exploring →</button>
+          <div className="flex gap-2">
+            <button className="btn" onClick={close}>Explore on my own</button>
+            <button autoFocus className="btn-primary" onClick={() => { close(); set({ playing: true }); }}>Play the guided tour →</button>
+          </div>
         </div>
       </div>
     </div>

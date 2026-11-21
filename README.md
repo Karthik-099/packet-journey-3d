@@ -25,7 +25,8 @@
 - **Backbone**: Dijkstra over a model of ~30 hubs and named submarine cables (AAE-1, SEA-ME-WE, i2i, APG, FASTER, MAREA, Grace Hopper, EllaLink, 2Africa…), animated at the real speed of light in glass. TTL counts down in a traceroute view.
 - **Measured, not modelled**: one click runs a **real MTR** from a probe in your country (Globalping) and draws it on the globe next to the model. Mumbai → naver.com: model 124 ms, measured 117 ms.
 - **Incident simulator**: cut submarine cables (one-click "Red Sea, February 2024" preset) and watch traffic reroute or fail.
-- **Destination**: CDN edge vs geo-IP origin (anycast networks detected by operator or CDN CNAME), load balancer, TCP, TLS 1.3, HTTP/2 or HTTP/3, the trip back, rendering, and a **trip summary** ("travelled 11,732 km each way, ≈124 ms round trip, through 7 routers and 3 submarine cables").
+- **Edge or origin, proven**: a probe in your country makes a real HTTPS request to the site. The response headers name the CDN edge that answered (Cloudflare `cf-ray`, CloudFront `x-amz-cf-pop`, Fastly `x-served-by`, Wikimedia `cp####`, Google `gws`…) and whether it was a cache HIT. A speed-of-light check backs it up: if the TCP connect is faster than light could reach the geo-IP location, the server must be closer. The verified edge becomes the destination on the globe. Example: wikipedia.org from Mumbai is answered by Wikimedia's Singapore cache (`cp5021`), 55 ms away, not by Virginia.
+- **Destination**: load balancer, TCP, TLS 1.3, HTTP/2 or HTTP/3, the trip back, rendering, and a **trip summary** ("travelled 11,732 km each way, ≈124 ms round trip, through 7 routers and 3 submarine cables").
 
 ### 2. A message through the 7 layers (16 steps): `app.html#hi-l7`
 Type anything ("how are you"). It becomes UTF-8 bytes, optionally a TLS record, a TCP segment, an IPv4 packet and an Ethernet frame (padded to 64 bytes, CRC-32), then signals on copper, fiber or Wi-Fi. The receiver then checks and strips each header. RFC-style header diagrams show the real field values.
@@ -34,13 +35,13 @@ Type anything ("how are you"). It becomes UTF-8 bytes, optionally a TLS record, 
 How the world is connected (tiers, peering, IXPs, RIRs) · OSI and TCP/IP with live encapsulation · addressing, subnets/CIDR calculator, NAT, IPv6, endpoints · routing (OSPF, IS-IS, BGP, anycast, ECMP, MPLS, RPKI) with a **BGP hijack demo** · DNS · TCP/UDP/QUIC with a **loss lab** (HTTP/2 head-of-line blocking vs HTTP/3) and a **congestion-window chart** · TLS & HTTPS · HTTP methods and **every status code** with real-world causes · **110 ports** · **60+ protocols** · **25 in-depth protocol guides** (how it works, format, security, common problems, commands) · submarine cable anatomy (repeaters/EDFAs, power feed, branching units, landing stations, repair ships) and satellites · how Google, Cloudflare, Meta, Netflix, AWS and Akamai run their networks · cloud networking · security · troubleshooting commands · interview questions · quiz · glossary. "Save as PDF" included.
 
 ### 4. Packet Lab: `lab.html`
-Drop a Wireshark/tcpdump **.pcap or .pcapng**. It is decoded entirely in the browser: Ethernet, VLAN, Linux cooked, ARP, IPv4/IPv6, ICMP, TCP, UDP, DNS, HTTP and TLS records. You get a packet list, a layer tree with hex, protocol hierarchy, top conversations, DNS lookups, TCP handshake RTTs and retransmissions. A sample capture can be loaded or downloaded to open in Wireshark.
+Drop a Wireshark/tcpdump **.pcap or .pcapng**. It is decoded entirely in the browser: Ethernet, VLAN, Linux cooked, ARP, IPv4/IPv6, ICMP, TCP, UDP, DNS, HTTP and TLS records. You get a packet list, a **byte bar** showing how much each layer adds, a **who-talks-to-whom ladder** (hosts as columns, one arrow per packet), a layer tree with hex, protocol hierarchy, top conversations, DNS lookups, TCP handshake RTTs and retransmissions. A sample capture can be loaded or downloaded to open in Wireshark.
 
 ### 5. Internet Atlas: `atlas.html`
 The internet by the numbers, every figure linked to its source and date: people online, submarine cables (systems, total km, longest), international bandwidth, Starlink, data centers and hyperscale sites, IXPs and facilities, routing-table size and number of networks, IPv6 adoption, domains, TLDs, root server instances, websites, live per-second counters (HTTP requests, DNS queries, emails, searches), cloud and web-server market share, the biggest edge networks and Tier-1 carriers.
 
 ### 6. Everything else
-- **Who's who**: the top 20 cloud providers, Indian and global ISPs and carriers, networking/security vendors, CDNs and exchanges, with logos and main ASNs (Atlas page).
+- **Who's who**: 134 entries with logos and main ASNs: the top 30 cloud providers, 18 Indian ISPs, 30 global ISPs and carriers, public DNS resolvers, DNS hosts and registries, CDNs, networking/security vendors and exchanges (Atlas page).
 - **Real cable globe**: all 734 submarine cables and 1,929 landing stations from TeleGeography, glowing on a night-side Earth with light pulses flowing along each cable.
 - **Your connection, measured**: real DNS/TCP/TLS/first-byte timings and HTTP version of your own page load, from the browser's Navigation Timing API.
 - **Ctrl+K search** across steps, ports, status codes, protocols, guides, glossary, facts and companies.
@@ -49,7 +50,7 @@ The internet by the numbers, every figure linked to its source and date: people 
 - **Copy as Markdown** on every Learn section and a full-guide Markdown download.
 
 ### Also
-Wireshark-style inspector · latency budget · video mode (camera follows the packet, subtitles, optional voice) · Beginner/Expert · deep and share links · keyboard shortcuts (`?`) · first-visit guide · per-step RFC sources · 2.5D fallback for phones and browsers without WebGL · reduced-motion support · a **Live data** switch that turns off every outside request.
+**Dark and light themes** on every page (one saved choice) · rack servers with live drive LEDs and a captioned packet in 3D · Wireshark-style inspector · latency budget · video mode (camera follows the packet, subtitles, optional voice) · Beginner/Expert · deep and share links · keyboard shortcuts (`?`) · first-visit guide · per-step RFC sources · 2.5D fallback for phones and browsers without WebGL · reduced-motion support · a **Live data** switch that turns off every outside request.
 
 ---
 
@@ -104,7 +105,7 @@ The full walkthrough of every module is in **[docs/ARCHITECTURE.md](docs/ARCHITE
 | **Tailwind CSS v4** | Utility styling with a small theme; no CSS framework runtime. |
 | **Chakra Petch + Inter + JetBrains Mono (fontsource)** | Square display face for headings, Inter for reading, mono for bytes; all bundled, no font CDN. |
 | **topojson-client + world-atlas** | Natural Earth coastlines for the flat map. |
-| **Vitest** | 51 unit tests: checksums, CRC, DNS, routing, cable cuts, satellites, CIDR, lookups, measurements, pcap parsing, simulations, content. |
+| **Vitest** | 68 unit tests: checksums, CRC, DNS, routing, CDN header evidence and the speed-of-light check, cable cuts, satellites, CIDR, lookups, measurements, pcap parsing, simulations, content. |
 | **Playwright + axe-core** | End-to-end tests of every journey step and accessibility checks in CI. |
 | **ESLint + typescript-eslint** | Lint gate. |
 

@@ -40,7 +40,7 @@ export function Search({ dark = false }: { dark?: boolean }) {
       </button>
       {open && (
         <div className="fixed inset-0 z-[70] flex items-start justify-center bg-[#020812]/60 p-4 pt-[12vh] backdrop-blur-sm" onClick={() => setOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="Search" className="w-full max-w-2xl overflow-hidden rounded-xl border border-slate-700 bg-[#04121f] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-modal="true" aria-label="Search" className="keep-dark w-full max-w-2xl overflow-hidden rounded-xl border border-slate-700 bg-[#04121f] shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <input
               ref={input}
               value={q}

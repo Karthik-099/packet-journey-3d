@@ -2,7 +2,8 @@ import {
   siAirtel, siAkamai, siAlibabacloud, siBroadcom, siBt, siCisco, siCloudflare, siContabo, siDeutschetelekom, siDigitalocean,
   siEricsson, siF5, siFastly, siFortinet, siGooglecloud, siHetzner, siHuawei, siJio, siJunipernetworks, siLumen, siMikrotik,
   siNokia, siOrange, siOvh, siPaloaltonetworks, siScaleway, siTata, siTelefonica, siUbiquiti, siUpcloud, siVerizon,
-  siVodafone, siVultr, siYandexcloud,
+  siVodafone, siVultr, siYandexcloud, siIonos, siExoscale, siNaver, siBaidu, siTelenor, siQuad9, siAdguard, siNextdns,
+  siGoogle, siGodaddy, siNamecheap, siBunnydotnet, siGcore, siKeycdn, siJsdelivr, siSpectrum,
 } from 'simple-icons';
 
 /** Brand marks from Simple Icons (CC0 icon data; trademarks belong to their owners). Only these are bundled. */
@@ -11,7 +12,8 @@ const ICONS: Record<string, { path: string; hex: string }> = Object.fromEntries(
     siAirtel, siAkamai, siAlibabacloud, siBroadcom, siBt, siCisco, siCloudflare, siContabo, siDeutschetelekom, siDigitalocean,
     siEricsson, siF5, siFastly, siFortinet, siGooglecloud, siHetzner, siHuawei, siJio, siJunipernetworks, siLumen, siMikrotik,
     siNokia, siOrange, siOvh, siPaloaltonetworks, siScaleway, siTata, siTelefonica, siUbiquiti, siUpcloud, siVerizon,
-    siVodafone, siVultr, siYandexcloud,
+    siVodafone, siVultr, siYandexcloud, siIonos, siExoscale, siNaver, siBaidu, siTelenor, siQuad9, siAdguard, siNextdns,
+    siGoogle, siGodaddy, siNamecheap, siBunnydotnet, siGcore, siKeycdn, siJsdelivr, siSpectrum,
   ].map((i) => [i.slug, { path: i.path, hex: i.hex }]),
 );
 

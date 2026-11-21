@@ -10,7 +10,7 @@ export function LocationPrompt() {
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center bg-[#07041a]/70 p-4 backdrop-blur-sm">
       <div role="dialog" aria-modal="true" aria-labelledby="loc-title" className="w-full max-w-lg overflow-hidden rounded-2xl border border-noc-edge bg-noc-panel shadow-2xl shadow-black/50">
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-500 px-6 py-5">
+        <div className="keep-dark bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-500 px-6 py-5">
           <div className="flex items-center gap-3 text-white">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/20"><Icon name="pin" className="h-6 w-6" /></span>
             <div>

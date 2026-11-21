@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -130,20 +130,64 @@ export function Isp({ on }: { on: boolean }) {
   );
 }
 
+/** A rack cabinet of 1U servers: drive bays, status strip and blinking activity LEDs. Brightens on hover. */
 export function ServerPair({ id, on }: { id: string; on: boolean }) {
+  const UNITS = 6;
+  const leds = useRef<THREE.InstancedMesh>(null);
+  const [hover, setHover] = useState(false);
+  const col = useMemo(() => new THREE.Color(), []);
+  const last = useRef(0);
+  useEffect(() => {
+    const m = new THREE.Object3D();
+    for (let i = 0; i < UNITS * 2; i++) {
+      m.position.set(0.46 + (i % 2) * 0.09, 0.32 + Math.floor(i / 2) * 0.34, 0.47);
+      m.updateMatrix();
+      leds.current?.setMatrixAt(i, m.matrix);
+    }
+    if (leds.current) leds.current.instanceMatrix.needsUpdate = true;
+  }, []);
+  useFrame(({ clock }) => {
+    if (!leds.current || clock.elapsedTime - last.current < 0.12) return;
+    last.current = clock.elapsedTime;
+    // activity LEDs flicker like real disk/network lights; busier when this server is in focus
+    for (let i = 0; i < UNITS * 2; i++) leds.current.setColorAt(i, col.set(i % 2 ? (Math.random() < (on ? 0.6 : 0.25) ? '#fbbf24' : '#3f2d0a') : '#34d399'));
+    if (leds.current.instanceColor) leds.current.instanceColor.needsUpdate = true;
+  });
+  const lit = on || hover;
   return (
-    <group {...tipProps(id)}>
-      {[-0.5, 0.5].map((x) => (
-        <group key={x} position={[x, 0.9, 0]}>
-          <RoundedBox args={[0.8, 1.8, 0.8]} radius={0.05}>{body('#18233d')}</RoundedBox>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <mesh key={i} position={[0, -0.6 + i * 0.3, 0.41]}>
-              <planeGeometry args={[0.6, 0.05]} />
-              {glow(on ? '#67e8f9' : '#0e7490', on ? 1.5 : 0.5)}
+    <group
+      {...tipProps(id)}
+      onPointerEnter={(e) => {
+        e.stopPropagation();
+        setHover(true);
+      }}
+      onPointerLeave={() => setHover(false)}
+    >
+      {/* cabinet frame */}
+      <mesh position={[0, 1.1, -0.05]}>
+        <boxGeometry args={[1.45, 2.25, 1.0]} />
+        <meshStandardMaterial color="#0b1622" metalness={0.7} roughness={0.35} emissive={lit ? '#0e7490' : '#000000'} emissiveIntensity={lit ? 0.25 : 0} />
+      </mesh>
+      {Array.from({ length: UNITS }, (_, u) => (
+        <group key={u} position={[0, 0.32 + u * 0.34, 0]}>
+          <RoundedBox args={[1.25, 0.28, 0.9]} radius={0.02}>{body('#1f2a3a')}</RoundedBox>
+          {/* front bezel: four drive bays + a status strip */}
+          {[-0.45, -0.3, -0.15, 0].map((x) => (
+            <mesh key={x} position={[x, 0, 0.455]}>
+              <planeGeometry args={[0.12, 0.18]} />
+              <meshStandardMaterial color="#0f172a" metalness={0.4} roughness={0.6} />
             </mesh>
           ))}
+          <mesh position={[0.22, 0, 0.456]}>
+            <planeGeometry args={[0.26, 0.05]} />
+            {glow(lit ? '#22d3ee' : '#155e75', lit ? 1.6 : 0.5)}
+          </mesh>
         </group>
       ))}
+      <instancedMesh ref={leds} args={[undefined, undefined, UNITS * 2]}>
+        <sphereGeometry args={[0.025, 8, 8]} />
+        <meshBasicMaterial toneMapped={false} />
+      </instancedMesh>
     </group>
   );
 }

@@ -58,6 +58,7 @@ export type Widget =
   | 'bgp'
   | 'fields'
   | 'summary'
+  | 'cdn'
   | 'tls'
   | 'http'
   | 'render';
@@ -102,6 +103,8 @@ export interface Step {
   hosts?: Dyn<Host[]>;
   /** Contribution to the running latency budget, in ms */
   latencyMs?: (c: Ctx) => number;
+  /** Short caption shown next to the moving packet in 3D: what it carries right now */
+  packetLabel?: Dyn<string>;
   /** Minimum time on screen while playing (e.g. to let an animation finish) */
   minPlayMs?: (c: Ctx) => number;
 }

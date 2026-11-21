@@ -37,7 +37,7 @@ export function TargetBar() {
         }}
       >
         <label className="sr-only" htmlFor="domain">Domain to visit</label>
-        <div className="flex items-center rounded-md border border-noc-edge bg-black/40 focus-within:border-noc-cyan">
+        <div className="flex items-center rounded-md border border-noc-edge bg-noc-bg focus-within:border-noc-cyan">
           <span className="pl-2 font-mono text-xs text-slate-500">https://</span>
           <input
             id="domain"

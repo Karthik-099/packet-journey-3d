@@ -31,13 +31,9 @@ const sleep = (ms: number, signal?: AbortSignal) =>
     });
   });
 
-export async function runMtr(target: string, country: string, signal?: AbortSignal): Promise<MtrResult> {
-  const r = await fetch('https://api.globalping.io/v1/measurements', {
-    method: 'POST',
-    signal,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ type: 'mtr', target, locations: [{ magic: country || 'world' }], limit: 1, measurementOptions: { packets: 3 } }),
-  });
+/** Create a Globalping measurement and poll until it finishes; returns the first probe's result. */
+async function globalping(body: Record<string, unknown>, signal?: AbortSignal): Promise<{ probe: Record<string, unknown>; result: Record<string, unknown> }> {
+  const r = await fetch('https://api.globalping.io/v1/measurements', { method: 'POST', signal, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
   if (r.status === 429) throw new Error('Measurement rate limit reached (Globalping allows ~250 tests per hour per IP). Try again later.');
   if (!r.ok) throw new Error(`Could not start the measurement (${r.status})`);
   const { id } = (await r.json()) as { id?: unknown };
@@ -48,23 +44,57 @@ export async function runMtr(target: string, country: string, signal?: AbortSign
     if (m.status !== 'finished') continue;
     const res = (m.results as Record<string, unknown>[] | undefined)?.[0];
     if (!res) throw new Error('No probe was available for this location');
-    const p = res.probe as Record<string, unknown>;
-    const hops = ((res.result as Record<string, unknown>)?.hops as Record<string, unknown>[] | undefined) ?? [];
-    return {
-      probe: { city: str(p.city), country: str(p.country), network: str(p.network), asn: num(p.asn) ?? 0, lat: num(p.latitude) ?? NaN, lon: num(p.longitude) ?? NaN },
-      hops: hops.map((h) => {
-        const s = (h.stats ?? {}) as Record<string, unknown>;
-        return {
-          ip: str(h.resolvedAddress) || null,
-          host: str(h.resolvedHostname) || null,
-          asn: Array.isArray(h.asn) ? (h.asn as unknown[]).filter((a): a is number => typeof a === 'number') : [],
-          avg: num(s.avg),
-          loss: num(s.loss) ?? 0,
-        };
-      }),
-    };
+    return { probe: (res.probe ?? {}) as Record<string, unknown>, result: (res.result ?? {}) as Record<string, unknown> };
   }
   throw new Error('The measurement took too long');
+}
+
+const probeOf = (p: Record<string, unknown>) => ({ city: str(p.city), country: str(p.country), network: str(p.network), asn: num(p.asn) ?? 0, lat: num(p.latitude) ?? NaN, lon: num(p.longitude) ?? NaN });
+
+export async function runMtr(target: string, country: string, signal?: AbortSignal): Promise<MtrResult> {
+  const { probe, result } = await globalping({ type: 'mtr', target, locations: [{ magic: country || 'world' }], limit: 1, measurementOptions: { packets: 3 } }, signal);
+  const hops = (result.hops as Record<string, unknown>[] | undefined) ?? [];
+  return {
+    probe: probeOf(probe),
+    hops: hops.map((h) => {
+      const s = (h.stats ?? {}) as Record<string, unknown>;
+      return {
+        ip: str(h.resolvedAddress) || null,
+        host: str(h.resolvedHostname) || null,
+        asn: Array.isArray(h.asn) ? (h.asn as unknown[]).filter((a): a is number => typeof a === 'number') : [],
+        avg: num(s.avg),
+        loss: num(s.loss) ?? 0,
+      };
+    }),
+  };
+}
+
+export interface HttpCheck {
+  probe: MtrResult['probe'];
+  status: number | null;
+  ip: string | null;
+  timings: { dns: number | null; tcp: number | null; tls: number | null; firstByte: number | null; total: number | null };
+  headers: Record<string, string>;
+}
+
+/** A real HTTPS HEAD request to the site from a probe in `country`: headers reveal which edge answered. */
+export async function runHttpCheck(host: string, country: string, signal?: AbortSignal): Promise<HttpCheck> {
+  const { probe, result } = await globalping(
+    { type: 'http', target: host, locations: [{ magic: country || 'world' }], limit: 1, measurementOptions: { protocol: 'HTTPS', request: { method: 'HEAD', path: '/' } } },
+    signal,
+  );
+  const t = (result.timings ?? {}) as Record<string, unknown>;
+  const raw = (result.headers ?? {}) as Record<string, unknown>;
+  const headers: Record<string, string> = {};
+  // trust boundary: keep only string headers, bounded in size
+  for (const [k, v] of Object.entries(raw).slice(0, 80)) if (typeof v === 'string') headers[k.toLowerCase()] = v.slice(0, 300);
+  return {
+    probe: probeOf(probe),
+    status: num(result.statusCode),
+    ip: str(result.resolvedAddress) || null,
+    timings: { dns: num(t.dns), tcp: num(t.tcp), tls: num(t.tls), firstByte: num(t.firstByte), total: num(t.total) },
+    headers,
+  };
 }
 
 /** Geolocate public hops (private/CGNAT hops have no meaningful location). */

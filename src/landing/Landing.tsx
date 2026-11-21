@@ -115,6 +115,19 @@ export function Landing() {
                 <button className="cta justify-center">Trace my request →</button>
               </form>
               {err && <p className="mt-2 text-sm text-rose-300" role="alert">{err}</p>}
+              <ol className="mt-5 grid max-w-xl gap-2 text-sm text-blue-100/90 sm:grid-cols-3" aria-label="What happens when you start">
+                {[
+                  ['Real lookup', 'We find the real IP, nameservers and server location of the site you typed.'],
+                  ['Watch the trip', '23 short steps in 3D: keyboard, DNS, router, ISP, cables, data center and back.'],
+                  ['Pause and dig in', 'Every step has a plain-English story, real timings and the actual packet bytes.'],
+                ].map(([t, d], i) => (
+                  <li key={t} className="rounded-lg border border-white/10 bg-white/5 p-3 backdrop-blur">
+                    <span className="font-display text-xs font-semibold uppercase tracking-wider text-emerald-300">{i + 1}. {t}</span>
+                    <p className="mt-1 text-[13px] leading-5 text-slate-300">{d}</p>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 max-w-xl text-[13px] text-slate-400">About 3 minutes start to finish. No sign-up, nothing to install. If you've ever wondered what "loading…" is actually doing, this is it.</p>
               <div className="mt-4 flex flex-wrap gap-2 text-xs">
                 {EXAMPLES.map((d) => (
                   <a key={d} href={`${links.app}?d=${d}#g-key`} className="rounded-full border border-white/15 bg-white/5 px-3 py-1 font-mono text-blue-100 backdrop-blur transition hover:bg-white/15">

@@ -3,7 +3,17 @@ import { useMemo } from 'react';
 import { JOURNEYS, type Access, type Ctx, type Dest, type JourneyId, type Medium } from './content';
 import { buildCtx } from './content/ctx';
 import { DEFAULT_TARGET, geoIp, normalizeDomain, resolveTarget, type Geo, type Target } from './lib/lookup';
-import { bgpInfo, locateHops, runMtr, type BgpInfo, type MtrResult } from './lib/measure';
+import { bgpInfo, locateHops, runHttpCheck, runMtr, type BgpInfo, type HttpCheck, type MtrResult } from './lib/measure';
+import { analyzeHeaders, physicsCheck, type EdgeEvidence, type Physics } from './lib/cdn';
+
+export interface EdgeCheck {
+  status: 'idle' | 'loading' | 'ok' | 'failed';
+  domain?: string;
+  check?: HttpCheck;
+  evidence?: EdgeEvidence;
+  physics?: Physics;
+  error?: string;
+}
 
 export interface Measured {
   status: 'idle' | 'loading' | 'ok' | 'failed';
@@ -46,6 +56,8 @@ interface State {
   measured: Measured;
   bgp: Record<string, BgpInfo | 'loading' | 'error'>;
   measure: () => Promise<void>;
+  edge: EdgeCheck;
+  checkEdge: () => Promise<void>;
   fetchBgp: (ip: string) => Promise<void>;
   setOffline: (v: boolean) => void;
   tip: string | null;
@@ -106,6 +118,23 @@ export const useStore = create<State>((set, get) => ({
   cut: [],
   offline: typeof localStorage !== 'undefined' && localStorage.getItem(OFFLINE_KEY) === '1',
   measured: { status: 'idle' },
+  edge: { status: 'idle' },
+  checkEdge: async () => {
+    const { target, me, offline } = get();
+    if (offline || !target.live) return;
+    const domain = target.domain;
+    set({ edge: { status: 'loading', domain } });
+    try {
+      const check = await runHttpCheck(domain, me?.countryCode || 'IN');
+      const evidence = analyzeHeaders(check.headers);
+      const g = target.geo;
+      const p = check.probe;
+      const physics = g && Number.isFinite(g.lat) && Number.isFinite(p.lat) && check.timings.tcp ? physicsCheck([p.lat, p.lon], [g.lat, g.lon], check.timings.tcp) : undefined;
+      if (get().target.domain === domain) set({ edge: { status: 'ok', domain, check, evidence, physics } });
+    } catch (e) {
+      if (get().target.domain === domain) set({ edge: { status: 'failed', domain, error: e instanceof Error ? e.message : 'Check failed' } });
+    }
+  },
   bgp: {},
   setOffline: (v) => {
     localStorage.setItem(OFFLINE_KEY, v ? '1' : '0');
@@ -209,7 +238,10 @@ export const useStore = create<State>((set, get) => ({
     set({ targetStatus: 'loading', targetError: null });
     try {
       const target = await resolveTarget(domain, ac.signal);
-      if (lookupCtl === ac) set({ target, targetStatus: 'ok' });
+      if (lookupCtl === ac) {
+        set({ target, targetStatus: 'ok' });
+        void get().checkEdge(); // real CDN-vs-origin evidence for the new domain
+      }
     } catch (e) {
       if (lookupCtl === ac) set({ targetStatus: 'failed', targetError: ac.signal.aborted ? 'Lookup timed out' : e instanceof Error ? e.message : 'Lookup failed' });
     } finally {
@@ -236,5 +268,16 @@ export function useCtx(): Ctx {
   const target = useStore((s) => s.target);
   const gps = useStore((s) => s.gps);
   const cut = useStore((s) => s.cut);
-  return useMemo(() => buildCtx({ message, tls, medium, access, dest, quic, me, target, gps, cut }), [message, tls, medium, access, dest, quic, me, target, gps, cut]);
+  const edge = useStore((s) => s.edge);
+  const edgeDest = useMemo(() => verifiedDest(edge, target.domain), [edge, target.domain]);
+  return useMemo(() => buildCtx({ message, tls, medium, access, dest, quic, me, target, gps, cut, edge: edgeDest }), [message, tls, medium, access, dest, quic, me, target, gps, cut, edgeDest]);
+}
+
+/** Where the measured evidence says the site was really served from (null = no evidence yet). */
+export function verifiedDest(edge: EdgeCheck, domain: string): { at: [number, number]; name: string } | null {
+  if (edge.status !== 'ok' || edge.domain !== domain || !edge.evidence) return null;
+  const { evidence: e, physics: ph, check } = edge;
+  if (e.pop) return { at: e.pop.at, name: `${e.operator ?? 'CDN'} edge, ${e.pop.city} (${e.pop.code}) · verified` };
+  if (ph?.closerThanGeoIp && check && Number.isFinite(check.probe.lat)) return { at: [check.probe.lat, check.probe.lon], name: `${e.operator ?? 'nearby edge'} near ${check.probe.city} · verified by RTT` };
+  return null;
 }

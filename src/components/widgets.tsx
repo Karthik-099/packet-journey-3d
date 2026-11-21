@@ -12,6 +12,7 @@ import { TripSummary } from './TripSummary';
 import { Incident } from './Incident';
 import { LiveBgp, MeasuredPath } from './Measured';
 import { MyConnection } from '../site/MyConnection';
+import { CdnCheck } from './CdnCheck';
 import { useReducedMotion } from '../hooks';
 
 const Box = ({ children }: { children: React.ReactNode }) => <div className="rounded-md border border-noc-edge bg-black/30 p-2 text-xs">{children}</div>;
@@ -459,6 +460,7 @@ export function StepWidget({ step, c }: { step: Step; c: Ctx }) {
     case 'bgp': return <Bgp c={c} />;
     case 'fields': return <HeaderDiagram step={step} c={c} />;
     case 'summary': return <TripSummary c={c} />;
+    case 'cdn': return <CdnCheck c={c} />;
     case 'tls': return <Tls c={c} />;
     case 'http': return <Http c={c} />;
     case 'render': return <Render step={step} />;

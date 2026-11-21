@@ -4,6 +4,7 @@ import { Icon } from '../site/Icon';
 import { PacketInspector } from '../components/PacketInspector';
 import { dissect, readCapture, stats, writePcap, type Dissected } from '../lib/pcap';
 import { sampleFrames } from '../lib/sample-capture';
+import { LayerBar, Ladder } from './Ladder';
 
 const PROTO_COLOR: Record<string, string> = { ARP: 'bg-amber-100 text-amber-800', DNS: 'bg-sky-100 text-sky-800', TCP: 'bg-blue-100 text-blue-800', HTTP: 'bg-emerald-100 text-emerald-800', TLS: 'bg-sky-100 text-sky-800', ICMP: 'bg-cyan-100 text-cyan-800', ICMPv6: 'bg-cyan-100 text-cyan-800', UDP: 'bg-slate-100 text-slate-700', QUIC: 'bg-rose-100 text-rose-800' };
 const MAX_BYTES = 50 * 1024 * 1024;
@@ -120,20 +121,17 @@ export function Lab() {
               <div className="space-y-3">
                 {cur && (
                   <>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {cur.layers.map((l, i) => (
-                        <span key={i} className="flex items-center gap-1.5">
-                          {i > 0 && <span className="text-slate-400">›</span>}
-                          <span className="rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 px-2.5 py-1 text-xs font-semibold text-white">{l}</span>
-                        </span>
-                      ))}
-                    </div>
+                    <LayerBar p={cur} />
                     <div className="rounded-2xl bg-[#08141b] p-2 shadow-xl shadow-blue-900/20">
                       <PacketInspector key={cur.no} data={cur.inspection} />
                     </div>
                   </>
                 )}
               </div>
+            </div>
+
+            <div className="mt-5">
+              <Ladder packets={shown} sel={sel} onSelect={setSel} t0={t0} />
             </div>
 
             <section className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">

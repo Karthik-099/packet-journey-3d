@@ -1,5 +1,6 @@
 import { Logo } from './Logo';
 import { Search } from './Search';
+import { ThemeToggle } from './ThemeToggle';
 const BASE = import.meta.env.BASE_URL;
 
 export const links = { home: `${BASE}`, app: `${BASE}app.html`, learn: `${BASE}learn.html`, lab: `${BASE}lab.html`, atlas: `${BASE}atlas.html` };
@@ -14,6 +15,7 @@ export function Nav({ active }: { active: 'home' | 'learn' | 'lab' | 'atlas' }) 
         </a>
         <div className="ml-auto flex items-center gap-1 text-sm">
           <Search />
+          <ThemeToggle className="mx-1 border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-ink" />
           <a href={links.home} className={`hidden rounded-lg px-3 py-1.5 sm:inline ${active === 'home' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Home</a>
           <a href={links.learn} className={`rounded-lg px-3 py-1.5 ${active === 'learn' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Learn</a>
           <a href={links.lab} className={`hidden rounded-lg px-3 py-1.5 sm:inline ${active === 'lab' ? 'text-ink' : 'text-slate-500 hover:text-ink'}`}>Packet Lab</a>

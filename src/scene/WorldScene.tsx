@@ -4,7 +4,7 @@ import { Line, OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import type { OrbitControls as OrbitImpl } from 'three-stdlib';
 import { useCtx, useStep, useStore } from '../store';
-import type { Ctx } from '../content';
+import { resolve, type Ctx } from '../content';
 import { HUBS } from '../content/network';
 import { NET, oneWay, rtt, serverIp, wanIp } from '../content/journey-google';
 import { haversineKm, type LatLon } from '../lib/geo';
@@ -164,8 +164,9 @@ function motionFor(id: string, L: Layout, c: Ctx): Motion {
   }
 }
 
-function Packet({ m, reduced, follow }: { m: Motion; reduced: boolean; follow: React.MutableRefObject<V> }) {
+function Packet({ m, reduced, follow, label }: { m: Motion; reduced: boolean; follow: React.MutableRefObject<V>; label?: string }) {
   const ref = useRef<THREE.Group>(null);
+  const { camera } = useThree();
   const len = useMemo(() => m.pts.slice(1).reduce((n, p, i) => n + p.distanceTo(m.pts[i]!), 0), [m.pts]);
   const t0 = useRef(performance.now());
   useEffect(() => {
@@ -178,6 +179,8 @@ function Packet({ m, reduced, follow }: { m: Motion; reduced: boolean; follow: R
     const t = reduced ? 1 : m.loop ? 1 - Math.abs((e % 2) - 1) : Math.min(1, e);
     alongPolyline(m.pts, t, ref.current.position);
     follow.current.copy(ref.current.position);
+    // keep the packet and its caption readable from close-ups and from the whole-globe view
+    ref.current.scale.setScalar(Math.max(1, camera.position.distanceTo(ref.current.position) * 0.9));
   });
   return (
     <group ref={ref}>
@@ -186,6 +189,7 @@ function Packet({ m, reduced, follow }: { m: Motion; reduced: boolean; follow: R
         <meshStandardMaterial color="#6ee7b7" emissive="#10b981" emissiveIntensity={1.6} toneMapped={false} />
       </mesh>
       <pointLight color="#fde68a" intensity={0.6} distance={0.8} />
+      {label && <Label3D position={[0, 0.06, 0]} title={label} size={0.022} color="#34d399" on />}
     </group>
   );
 }
@@ -406,7 +410,7 @@ export function WorldScene({ reduced }: { reduced: boolean }) {
         const p = l.points[Math.floor(l.points.length / 2)]!;
         return <Label3D key={i} position={surf(p, 0.1).toArray()} title={l.name} size={0.045} color="#38bdf8" on />;
       })}
-      <Packet m={motion} reduced={reduced} follow={follow} />
+      <Packet m={motion} reduced={reduced} follow={follow} label={step.packetLabel ? resolve(step.packetLabel, c) : undefined} />
     </>
   );
 }
