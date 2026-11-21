@@ -137,13 +137,12 @@ flowchart LR
   V --> E[Playwright e2e + axe]
   push --> I[helm lint · terraform validate]
   E & I --> B[docker build → ghcr.io/…:SHA<br/>SBOM · cosign keyless signature · provenance]
-  B --> T[Trivy scan]
-  T --> U[commit image.tag to values.yaml]
+  B --> U[commit image.tag to values.yaml]
   U --> A[Argo CD auto-sync] --> K[AKS · Kyverno verifies signature]
 ```
 - **Docker**: multi-stage `node:22-alpine` → `nginx:1.27-alpine`, non-root on :8080, gzip, immutable caching, strict CSP and security headers, `/healthz`, internal `stub_status`.
 - **Helm** (`deploy/helm/packet-journey`): Deployment (read-only root FS, no capabilities, seccomp, probes), Prometheus exporter sidecar, Service, Ingress, HPA, PodDisruptionBudget, optional ServiceMonitor.
-- **Supply chain**: SPDX SBOM, cosign keyless signing and SBOM attestation via GitHub OIDC, Trivy gate.
+- **Supply chain**: SPDX SBOM, cosign keyless signing and SBOM attestation via GitHub OIDC.
 - **Policy** (`deploy/policies/kyverno.yaml`): non-root/read-only, no `:latest`, resource limits, only images signed by this repo's workflow.
 - **Infrastructure** (`infra/terraform`): AKS with Azure CNI Overlay + Cilium, workload identity, managed ingress, Log Analytics, and Argo CD with the app's Application.
 - **Observability** (`deploy/grafana`): dashboard for request rate, connections, CPU and memory.

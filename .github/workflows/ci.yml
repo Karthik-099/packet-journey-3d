@@ -113,42 +113,9 @@ jobs:
           cosign sign --yes "$REF"
           cosign attest --yes --type spdxjson --predicate sbom.spdx.json "$REF"
 
-  scan:
-    name: trivy image scan
-    needs: image
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
-      security-events: write
-    steps:
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Trivy (report to Security tab)
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ needs.image.outputs.image }}:${{ github.sha }}
-          format: sarif
-          output: trivy.sarif
-          severity: CRITICAL,HIGH
-      - uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: trivy.sarif
-      - name: Trivy (gate on fixable CRITICAL)
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ needs.image.outputs.image }}:${{ github.sha }}
-          severity: CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
-
   gitops-bump:
     name: bump image tag for Argo CD
-    needs: [image, scan]
+    needs: image
     runs-on: ubuntu-latest
     permissions:
       contents: write

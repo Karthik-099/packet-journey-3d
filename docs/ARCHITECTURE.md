@@ -127,7 +127,7 @@ Plain React + Tailwind. Interactive parts reuse `src/lib`: live encapsulation, C
 
 ## 10. Delivery
 
-- **CI** (`.github/workflows/ci.yml`): verify (lint, typecheck, unit, build) → e2e + accessibility → infra (helm lint, terraform fmt/validate, policy syntax) → image (build, provenance, SPDX SBOM, cosign keyless sign + SBOM attestation) → Trivy → bump `values.yaml` for Argo CD.
+- **CI** (`.github/workflows/ci.yml`): verify (lint, typecheck, unit, build) → e2e + accessibility → infra (helm lint, terraform fmt/validate, policy syntax) → image (build, provenance, SPDX SBOM, cosign keyless sign + SBOM attestation) → bump `values.yaml` for Argo CD.
 - **Pages** (`pages.yml`): static build to GitHub Pages.
 - **Container**: non-root nginx, strict CSP (only the APIs listed above), `Permissions-Policy: geolocation=(self)`, `/healthz`, internal `stub_status`.
 - **Kubernetes** (for hosting the site): Helm chart with exporter sidecar, HPA, PDB, optional ServiceMonitor; Kyverno policies; Terraform for AKS + Argo CD; Grafana dashboard.
